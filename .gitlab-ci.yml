@@ -1,0 +1,56 @@
+image: node:10.15.3
+
+stages:
+  - install_dependencies
+  - build
+  - test
+  - deploy
+
+cache:
+  paths:
+    - node_modules/
+
+install_dependencies:
+  stage: install_dependencies
+  script:
+    - npm i
+  only:
+    changes:
+      - package.json
+      
+
+build_job:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - build/
+
+unit_test:
+  stage: test
+  script:
+    - npm test
+
+code_quality:
+  stage: test
+  script:
+    - npm test
+
+performance:
+  stage: test
+  script:
+    - npm test
+
+deploy_job:
+  image: rambabusaravanan/firebase
+  stage: deploy
+  environment:
+    name: waza-membership
+    url: https://waza-membership.web.app
+  only:
+    - developer
+  script:
+    - firebase use waza-membership --token $FIREBASE_TOKEN
+    - firebase target:apply hosting user waza-membership
+    - firebase deploy --only hosting -m "Pipe $CI_PIPELINE_ID Build $CI_BUILD_ID" --token $FIREBASE_TOKEN

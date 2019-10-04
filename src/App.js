@@ -4,7 +4,7 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <h2>update</h2>
+      <h2>set CI/CD</h2>
     </div>
   );
 }
