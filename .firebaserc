@@ -7,6 +7,9 @@
       "hosting": {
         "user": [
           "waza-membership"
+        ],
+        "admin": [
+          "admin-waza-membership"
         ]
       }
     }
