@@ -4,7 +4,7 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <h2>set CI/CD</h2>
+      <h2>update lan 2</h2>
     </div>
   );
 }

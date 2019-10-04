@@ -46,7 +46,7 @@ deploy_job:
   image: rambabusaravanan/firebase
   stage: deploy
   environment:
-    name: waza-membership(admin)
+    name: admin-waza-membership
     url: https://admin-waza-membership.web.app
   only:
     - developer
