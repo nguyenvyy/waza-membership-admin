@@ -42,7 +42,7 @@ performance:
   script:
     - npm test
 
-deploy_job:
+deploy as review app:
   image: rambabusaravanan/firebase
   stage: deploy
   environment:
