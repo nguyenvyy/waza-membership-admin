@@ -46,7 +46,7 @@ deploy as review app:
   image: rambabusaravanan/firebase
   stage: deploy
   environment:
-    name: admin-waza-membership
+    name: review/$CI_COMMIT_REF_NAME
     url: https://admin-waza-membership.web.app
   only:
     - developer
