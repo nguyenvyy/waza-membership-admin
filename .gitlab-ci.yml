@@ -53,4 +53,4 @@ deploy as review app:
   script:
     - firebase use waza-membership --token $FIREBASE_TOKEN
     - firebase target:apply hosting admin admin-waza-membership
-    - firebase deploy --only hosting -m "Pipe $CI_PIPELINE_ID Build $CI_BUILD_ID" --token $FIREBASE_TOKEN
+    - firebase deploy --only hosting -m "Commit $CI_COMMIT_TITLE Pipe $CI_PIPELINE_ID Build $CI_BUILD_ID" --token $FIREBASE_TOKEN
