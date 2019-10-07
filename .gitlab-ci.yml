@@ -46,10 +46,8 @@ deploy as review app:
   image: rambabusaravanan/firebase
   stage: deploy
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: review
     url: https://admin-waza-membership.web.app
-  only:
-    - developer
   script:
     - firebase use waza-membership --token $FIREBASE_TOKEN
     - firebase target:apply hosting admin admin-waza-membership
