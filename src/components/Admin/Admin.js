@@ -1,7 +1,8 @@
 import React from 'react';
+
 import { NavBar } from '../NavBar/NavBar';
 
-export const Admin = () => {
+const Admin = () => {
 
     return (
         <div className="d-flex">
@@ -9,3 +10,5 @@ export const Admin = () => {
         </div>
     )
 }
+
+export default Admin;
