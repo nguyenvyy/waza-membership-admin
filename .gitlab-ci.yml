@@ -45,6 +45,9 @@ performance:
 deploy as review app:
   image: rambabusaravanan/firebase
   stage: deploy
+  only:
+    - develop
+    - master
   environment:
     name: review
     url: https://admin-waza-membership.web.app
