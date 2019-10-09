@@ -2,14 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import './App.css';
-import { LoginPage } from './pages/LoginPage/LoginPage';
-import { Admin } from './layouts/Admin';
+import { Login } from './components/Login/Login';
+import { Admin } from './components/Admin/Admin';
 
 function App() {
   return (
     <div className="App container-full">
       <Router>
-        <LoginPage />
+        <Login />
         <Admin />
       </Router>
     </div>
@@ -17,10 +17,3 @@ function App() {
 }
 
 export default App;
-
-export function confirmPassword(password) {
-  let result  = true;
-  if(password.length >= 6) return false
-  return result;
-
-}

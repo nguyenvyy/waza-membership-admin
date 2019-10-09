@@ -1,9 +1,9 @@
 import React from 'react';
 
-import './LoginPage.css'
-import { LoginForm } from '../../components/LoginForm/LoginForm';
+import './Login.css'
+import { LoginForm } from './LoginForm/LoginForm';
 
-export const LoginPage = () => {
+export const Login = () => {
 
     return (
         <div className="login-page container-full d-flex-center">
