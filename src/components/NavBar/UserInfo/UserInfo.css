@@ -1,0 +1,29 @@
+.user-paner {
+	display: flex;
+	align-items: center;
+	height: 5%;
+	margin: 15px;
+	color: white;
+	padding: 0px 8px;
+	justify-content: space-between;
+	background: rgba(255, 255, 255, 0.2);
+}
+
+.user-paner-collapsed {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 5%;
+	margin: 15px;
+	color: white;
+	cursor: pointer;
+}
+
+.user-name {
+	white-space: nowrap;
+	width: 130px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	
+}
+

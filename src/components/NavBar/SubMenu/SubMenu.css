@@ -1,0 +1,16 @@
+.sub-menu {
+	color: rgba(255, 255, 255, 0.65);
+	padding: 0 24px;
+	height: 40px;
+	margin-top: 4px;
+	cursor: pointer;
+	position: relative;
+}
+.sub-menu .title.actived {
+	color: white;
+}
+
+.btn-dropdown {
+	color: white;
+}
+

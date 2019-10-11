@@ -3,7 +3,7 @@ import React from 'react';
 import './Login.css'
 import { LoginForm } from './LoginForm/LoginForm';
 
-export const Login = () => {
+const Login = () => {
 
     return (
         <div className="login-page container-full d-flex-center">
@@ -13,3 +13,5 @@ export const Login = () => {
         </div>
     )
 }
+
+export default Login

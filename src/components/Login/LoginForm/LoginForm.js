@@ -1,14 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import './LoginForm.css'
 import { Input } from '../../Input/Input';
 
 
 export const LoginForm = () => {
-
+    const history = useHistory()
     const onSubmit = (e) => {
         e.preventDefault();
+        history.push({
+            pathname: '/'
+        })
     }
     return (
         <form className="login-form d-flex-col"  onSubmit={onSubmit}>

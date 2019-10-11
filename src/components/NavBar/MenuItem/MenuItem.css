@@ -1,0 +1,17 @@
+.menu-item {
+    color: rgba(255, 255, 255, 0.65);
+    height: 40px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.menu-item .title {
+    color: inherit;
+    margin-left: 24px;
+}
+.menu-item.actived {
+    background-color: #1890ff;
+    color: white;
+}
+
