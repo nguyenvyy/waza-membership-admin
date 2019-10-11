@@ -1,0 +1,18 @@
+.nav-bar {
+	position: relative;
+	background: #001529;
+	transition: all ease-in-out 200ms;
+}
+
+.nav-bar-trigger {
+	position: fixed;
+	bottom: 0;
+	z-index: 1;
+	height: 45px;
+	color: #fff;
+	background: #002140;
+	cursor: pointer;
+	transition: all ease-in-out 200ms;
+}
+
+
