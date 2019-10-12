@@ -1,3 +1,6 @@
-import { compose } from "redux";
+import { combineReducers } from "redux";
+import { authReducer } from "./authen-reducer";
 
-export const rootReducer = compose();
+export const rootReducer = combineReducers({
+    user: authReducer
+});
