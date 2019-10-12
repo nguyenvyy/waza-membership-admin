@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 
-import './LoginForm.css'
+import './LoginForm.scss'
 import { Input } from '../../Input/Input';
 
 

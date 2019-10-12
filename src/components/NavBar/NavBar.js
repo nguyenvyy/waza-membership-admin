@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from 'antd';
 
-import './NavBar.css';
+import './NavBar.scss';
 import { navItems } from '../../config/nav-items-config';
 import { MenuItems } from './MenuItems/MenuItems';
 import { UserInfo } from './UserInfo/UserInfo';

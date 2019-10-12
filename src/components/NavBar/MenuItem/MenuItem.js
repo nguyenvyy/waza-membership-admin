@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import './MenuItem.css'
+import './MenuItem.scss'
 import { LetterIcon } from '../LetterIcon/LetterIcon';
 
 export const MenuItem = React.memo(

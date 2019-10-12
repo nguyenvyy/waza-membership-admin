@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import 'antd/dist/antd.css';
 
-import './App.css';
+import './App.scss';
 import { routes } from './config/route-config'
 import { RouteWithSubRoutes } from './components/CustomRoute/RouteWithSubRoutes/RouteWithSubRoutes';
 import { PageLoading } from './components/PageLoading/PageLoading';

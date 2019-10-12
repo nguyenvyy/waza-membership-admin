@@ -1,7 +1,7 @@
 import React from 'react'
 import { Icon, Tooltip } from 'antd'
 
-import './UserInfo.css'
+import './UserInfo.scss'
 
 export const UserInfo = ({collapsed, username = 'unknown'}) => (
     <div className={`user-paner${collapsed ? '-collapsed' : ''}`}>

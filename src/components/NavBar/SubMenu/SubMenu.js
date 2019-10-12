@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import classNames from 'classnames';
 import { useLocation } from 'react-router-dom';
 
-import './SubMenu.css'
+import './SubMenu.scss'
 import { LetterIcon } from '../LetterIcon/LetterIcon'
 import { Icon } from 'antd';
 import { DropMenu, RIGHT } from '../DropMenu/DropMenu';

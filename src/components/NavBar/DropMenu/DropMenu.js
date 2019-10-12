@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import './DropMenu.css'
+import './DropMenu.scss'
 import { MenuItems } from '../MenuItems/MenuItems';
 
 export const DOWN = 'DOWN'
