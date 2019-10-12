@@ -11,7 +11,8 @@ export const configStore = (preloadedState) => {
     const middlwareEnhancer = applyMiddleware(...middlware);
     
     const enhancer = [
-        middlwareEnhancer
+        middlwareEnhancer,
+        window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     ]
 
     const composEnhancer = compose(...enhancer);

@@ -19,19 +19,14 @@ export const navItems = [
         CollapsedIcon: LetterIcon,
         items: [
             {
-                title: 'Public',
+                title: 'Active',
                 Component: MenuItem,
-                to: '/a/voucher/voucher1'
+                to: '/a/voucher/active'
             },
             {
-                title: 'Privative',
+                title: 'Manage Voucher',
                 Component: MenuItem,
-                to: '/a/voucher/voucher2'
-            },
-            {
-                title: 'Buy',
-                Component: MenuItem,
-                to: '/a/voucher/voucher3'
+                to: '/a/voucher/manage-voucher'
             }
         ]
     },
@@ -43,24 +38,14 @@ export const navItems = [
         CollapsedIcon: LetterIcon,
         items: [
             {
-                title: 'Combo1',
+                title: 'Active',
                 Component: MenuItem,
-                to: '/a/combo/combo1'
+                to: '/a/combo/active'
             },
             {
-                title: 'Combo2',
+                title: 'Manage Combo',
                 Component: MenuItem,
-                to: '/a/combo/combo2'
-            },
-            {
-                title: 'Combo3',
-                Component: MenuItem,
-                to: '/a/combo/combo3'
-            },
-            {
-                title: 'Combo4',
-                Component: MenuItem,
-                to: '/a/combo/combo3'
+                to: '/a/combo/manage-combo'
             }
         ]
     },
@@ -71,19 +56,14 @@ export const navItems = [
         to: '/a/compaign',
         items: [
             {
-                title: 'Compaign1',
+                title: 'Active',
                 Component: MenuItem,
-                to: '/a/compaign/compaign1'
+                to: '/a/compaign/active'
             },
             {
-                title: 'Compaign2',
+                title: 'Manage Compaign',
                 Component: MenuItem,
-                to: '/a/compaign/compaign2'
-            },
-            {
-                title: 'Compaign3',
-                Component: MenuItem,
-                to: '/a/compaign/compaign3'
+                to: '/a/compaign/manage-compaign'
             }
         ]
     },

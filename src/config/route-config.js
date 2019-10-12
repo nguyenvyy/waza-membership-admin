@@ -1,5 +1,6 @@
 import { lazy } from 'react'
 import { Redirect } from 'react-router-dom'
+import { PrivateRoute } from '../components/CustomRoute/PrivateRoute/PrivateRoute';
 // import { PrivateRoute } from "../components/CustomRoute/PrivateRoute/PrivateRoute";
 
 const Admin = lazy(() => import('../components/Admin/Admin'));
@@ -14,7 +15,8 @@ export const routes = [
     },
     {
         path: '/a',
-        component: Admin,        
+        component: Admin,
+        customRoute: PrivateRoute       
     },
     {
         path: '/login',
