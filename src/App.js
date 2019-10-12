@@ -10,7 +10,7 @@ import { PageLoading } from './components/PageLoading/PageLoading';
 function App() {
   // const [fakeAuthen, setFakeAuthen] = React.useState(false);
   return (
-    <div className="App container-full">
+    <div className="App">
       <Router>
         <Suspense fallback={<PageLoading />}>
           <Switch>

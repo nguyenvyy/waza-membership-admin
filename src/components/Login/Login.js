@@ -6,7 +6,7 @@ import { LoginForm } from './LoginForm/LoginForm';
 const Login = () => {
 
     return (
-        <div className="login-page container-full d-flex-center">
+        <div className="login-page d-flex-center">
             <div className="wrap-login-form">
                 <LoginForm />
             </div>

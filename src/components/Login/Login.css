@@ -1,3 +1,6 @@
+.login-page {
+    height: 100vh;
+}
 .wrap-login-form {
     min-width: 400px;
     padding: 50px 0 90px 0;
