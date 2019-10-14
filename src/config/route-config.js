@@ -16,7 +16,9 @@ export const routes = [
     {
         path: '/a',
         component: Admin,
-        customRoute: PrivateRoute       
+        customRoute: PrivateRoute,
+        items: [
+        ]
     },
     {
         path: '/login',

@@ -1,7 +1,7 @@
 
 const initState = {
     user: null,
-    isLoggedIn: false,
+    isLoggedIn: true,
     isLoadingUser: true,
 }
 
