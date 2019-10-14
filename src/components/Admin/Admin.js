@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { Suspense } from 'react';
+import { Switch } from 'react-router-dom'
 
 import { NavBar } from '../NavBar/NavBar';
+import { PageLoading } from '../PageLoading/PageLoading';
+import { RouteWithSubRoutes } from '../CustomRoute/RouteWithSubRoutes/RouteWithSubRoutes';
 
-const Admin = () => {
+const Admin = ({ routes = [] }) => {
 
     const navWidth = {
         maxWidth: {
@@ -16,13 +19,17 @@ const Admin = () => {
             width: '50px'
         }
     }
-    
+
     return (
         <div className="d-flex container-full">
             <NavBar {...navWidth} />
-            <div className="pages">
-
-            </div>
+            <Suspense fallback={<PageLoading />}>
+                <Switch>
+                    {routes.map((route, index) => (
+                        <RouteWithSubRoutes key={index} {...route} />
+                    ))}
+                </Switch>
+            </Suspense>
         </div>
     )
 }

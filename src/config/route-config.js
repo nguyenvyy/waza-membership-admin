@@ -3,8 +3,11 @@ import { Redirect } from 'react-router-dom'
 import { PrivateRoute } from '../components/CustomRoute/PrivateRoute/PrivateRoute';
 // import { PrivateRoute } from "../components/CustomRoute/PrivateRoute/PrivateRoute";
 
-const Admin = lazy(() => import('../components/Admin/Admin'));
-const Login = lazy(() => import('../components/Login/Login'));
+const Admin = lazy(() => import('../components/Admin/Admin'))
+const Login = lazy(() => import('../components/Login/Login'))
+
+const Combo = lazy(() => import('../components/Combo/Combo'))
+const ActiveCombo = lazy(() => import('../components/Combo/ActiveCombo/ActiveCombo'))
 
 export const routes = [
     {
@@ -17,7 +20,24 @@ export const routes = [
         path: '/a',
         component: Admin,
         customRoute: PrivateRoute,
-        items: [
+        routes: [
+            {
+                path: '/a/combo',
+                component: Combo,
+                routes: [
+                    {
+                        from: '/a/combo',
+                        customRoute: Redirect,
+                        to: '/a/combo/active',
+                        exact: true,
+                    },
+                    {
+                        path: '/a/combo/active',
+                        component: ActiveCombo
+                    }
+                ]
+            },
+            
         ]
     },
     {
