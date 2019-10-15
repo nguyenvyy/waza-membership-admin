@@ -2,8 +2,8 @@ import React, { Suspense } from 'react';
 import { Switch } from 'react-router-dom'
 
 import { NavBar } from '../NavBar/NavBar';
-import { PageLoading } from '../PageLoading/PageLoading';
-import { RouteWithSubRoutes } from '../CustomRoute/RouteWithSubRoutes/RouteWithSubRoutes';
+import { PageLoading } from '../common/PageLoading/PageLoading';
+import { RouteWithSubRoutes } from '../../routes/RouteWithSubRoutes';
 
 const Admin = ({ routes = [] }) => {
 

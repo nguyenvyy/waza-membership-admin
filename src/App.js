@@ -5,9 +5,9 @@ import 'antd/dist/antd.css';
 
 import './App.scss';
 import { routes } from './config/route-config'
-import { RouteWithSubRoutes } from './components/CustomRoute/RouteWithSubRoutes/RouteWithSubRoutes';
-import { PageLoading } from './components/PageLoading/PageLoading';
+import { PageLoading } from './components/common/PageLoading/PageLoading';
 import { configStore } from './redux/store/store';
+import { RouteWithSubRoutes } from './routes/RouteWithSubRoutes';
 
 const store = configStore()
 
