@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 
 import './LoginForm.scss'
-import { Input } from '../../Input/Input';
+import { Input } from '../../common/Input';
 
 
 export const LoginForm = () => {

@@ -1,11 +1,10 @@
 import { lazy } from 'react'
 import { Redirect } from 'react-router-dom'
-import { PrivateRoute } from '../components/CustomRoute/PrivateRoute/PrivateRoute';
-// import { PrivateRoute } from "../components/CustomRoute/PrivateRoute/PrivateRoute";
+
+import { PrivateRoute } from '../routes/PrivateRoute'
 
 const Admin = lazy(() => import('../components/Admin/Admin'))
 const Login = lazy(() => import('../components/Login/Login'))
-
 const Combo = lazy(() => import('../components/Combo/Combo'))
 const ActiveComboContainer = lazy(() => import('../redux/container/ActiveComboContainer'))
 
