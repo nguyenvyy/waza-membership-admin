@@ -14,6 +14,6 @@ const checkIsActiveCombo = combo => {
 
 export const getActiveCombos = createSelector(
     [getCombos],
-    combos => combos.filter(() => true)
+    combos => combos.filter(checkIsActiveCombo)
 ) 
 

@@ -45,7 +45,7 @@ export const navItems = [
             {
                 title: 'Manage Combo',
                 Component: MenuItem,
-                to: '/a/combo/manage-combo'
+                to: '/a/combo/manage'
             }
         ]
     },

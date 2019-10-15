@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import { PrivateRoute } from '../routes/PrivateRoute'
+import Demo from '../components/Combo/ManageCombo/ManageCombo'
 
 const Admin = lazy(() => import('../components/Admin/Admin'))
 const Login = lazy(() => import('../components/Login/Login'))
@@ -33,6 +34,10 @@ export const routes = [
                     {
                         path: '/a/combo/active',
                         component: ActiveComboContainer
+                    },
+                    {
+                        path: '/a/combo/manage',
+                        component: Demo
                     }
                 ]
             },
