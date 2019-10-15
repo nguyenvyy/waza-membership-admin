@@ -7,7 +7,7 @@ const Admin = lazy(() => import('../components/Admin/Admin'))
 const Login = lazy(() => import('../components/Login/Login'))
 
 const Combo = lazy(() => import('../components/Combo/Combo'))
-const ActiveCombo = lazy(() => import('../components/Combo/ActiveCombo/ActiveCombo'))
+const ActiveComboContainer = lazy(() => import('../redux/container/ActiveComboContainer'))
 
 export const routes = [
     {
@@ -33,7 +33,7 @@ export const routes = [
                     },
                     {
                         path: '/a/combo/active',
-                        component: ActiveCombo
+                        component: ActiveComboContainer
                     }
                 ]
             },

@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { Switch } from 'react-router-dom'
 
+import './Admin.scss'
 import { NavBar } from '../NavBar/NavBar';
 import { PageLoading } from '../PageLoading/PageLoading';
 import { RouteWithSubRoutes } from '../CustomRoute/RouteWithSubRoutes/RouteWithSubRoutes';
@@ -23,6 +24,7 @@ const Admin = ({ routes = [] }) => {
     return (
         <div className="d-flex container-full">
             <NavBar {...navWidth} />
+            <div className="views">
             <Suspense fallback={<PageLoading />}>
                 <Switch>
                     {routes.map((route, index) => (
@@ -30,6 +32,7 @@ const Admin = ({ routes = [] }) => {
                     ))}
                 </Switch>
             </Suspense>
+            </div>
         </div>
     )
 }
