@@ -2,12 +2,13 @@ import { lazy } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import { PrivateRoute } from '../routes/PrivateRoute'
-import Demo from '../components/Combo/ManageCombo/ManageCombo'
+import ManageCombo from '../components/Combo/ManageCombo/ManageCombo'
 
 const Admin = lazy(() => import('../components/Admin/Admin'))
 const Login = lazy(() => import('../components/Login/Login'))
 const Combo = lazy(() => import('../components/Combo/Combo'))
 const ActiveComboContainer = lazy(() => import('../redux/container/ActiveComboContainer'))
+const DetailComboContainer = lazy(() => import('../redux/container/DetailComboContainer'))
 
 export const routes = [
     {
@@ -37,7 +38,11 @@ export const routes = [
                     },
                     {
                         path: '/a/combo/manage',
-                        component: Demo
+                        component: ManageCombo
+                    },
+                    {
+                        path: '/a/combo/detail/:id',
+                        component: DetailComboContainer
                     }
                 ]
             },
