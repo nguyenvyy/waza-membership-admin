@@ -37,7 +37,7 @@ const DetailCombo = ({ combo, history }) => {
                     </Descriptions.Item>
                     <Descriptions.Item label="Vouchers" span={3}>
                         <ul>
-                            {voucherIdArray.map(voucher => <li> {voucher} x 14  </li>)}
+                            {voucherIdArray.map((voucher, index) => <li key={index}> {voucher} x 14  </li>)}
                         </ul>
                     </Descriptions.Item>
                     <Descriptions.Item label="Description" span={3}>
