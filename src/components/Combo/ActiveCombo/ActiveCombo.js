@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import uuid from 'uuid'
 import { Link } from 'react-router-dom'
-import { Table, Divider, Spin, Icon } from 'antd';
+import { Table, Divider, Input, Form } from 'antd';
 
 import './ActiveCombo.scss'
 import { debounce } from '../../../utils';
@@ -14,8 +14,6 @@ const VouchersDetail = ({ voucherIdArray }) => (
         </ul>
     </>
 )
-
-const Loading = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 
 const ActiveCombo = ({ combos }) => {
     const [isSearching, setIsSearching] = useState(false);
@@ -116,9 +114,16 @@ const ActiveCombo = ({ combos }) => {
         <div className="active-combos">
             <Header title="Active Combos" />
             <div>
-                <span>search: </span> 
-                <input value={search} onChange={searchChange} placeholder="enter combo name" />
-                { isSearching && <Spin indicator={Loading} />}
+                <Form layout="inline">
+                    <Form.Item
+                        label="Search"
+                        hasFeedback={isSearching}
+                        validateStatus="validating"
+                        
+                    >
+                        <Input value={search} onChange={searchChange}  placeholder="enter combo name" id="validating" />
+                    </Form.Item>
+                </Form>
 
             </div>
             <div className="combo-list">
