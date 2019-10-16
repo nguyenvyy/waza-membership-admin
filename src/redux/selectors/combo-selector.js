@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect'
 
 const getCombos = state => state.combo.items
+const getComboIdFromProps = (_, id) => id
 
 const checkIsActiveCombo = combo => {
     if (combo.isDeleted) return !combo.isDeleted
@@ -12,8 +13,18 @@ const checkIsActiveCombo = combo => {
     return isValidDay
 }
 
+const checkValidComboById = (combo, id) => combo.id.toString() === id
+
 export const getActiveCombos = createSelector(
     [getCombos],
     combos => combos.filter(checkIsActiveCombo)
-) 
+)
 
+
+export const getComboById = createSelector(
+    [getCombos, getComboIdFromProps],
+    (combos, id) => {
+        
+        return combos.find(combo => checkValidComboById(combo, id))
+    }
+)

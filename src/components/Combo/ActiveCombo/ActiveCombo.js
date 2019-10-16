@@ -5,10 +5,10 @@ import { Table, Divider, Spin, Icon } from 'antd';
 
 import './ActiveCombo.scss'
 import { debounce } from '../../../utils';
+import { Header } from '../Header/Header';
 
-const VouchersDetail = ({ voucherIdArray, description }) => (
+const VouchersDetail = ({ voucherIdArray }) => (
     <>
-        <p>description: {description}</p> 
         <ul>
             {voucherIdArray.map((item, index) => <li key={index}>{item} x 14 detail....</li>)}
         </ul>
@@ -67,6 +67,13 @@ const ActiveCombo = ({ combos }) => {
             width: 100
         },
         {
+            key: 'duration',
+            title: 'Duration',
+            dataIndex: 'id',
+            render: id => `${id * 10} Ngày`,
+            width: 100
+        },
+        {
             key: 'fromDate',
             title: 'From',
             dataIndex: 'fromDate',
@@ -96,7 +103,7 @@ const ActiveCombo = ({ combos }) => {
             title: 'Action',
             render: (_, record) => (
                 <span>
-                    <Link to={`/a/combo/active/${record.id}`}>View Detail</Link>
+                    <Link to={`/a/combo/detail/${record.id}`}>View Detail</Link>
                     <Divider type="vertical" />
                     <span className="fake-link">Stop</span>
                 </span>
@@ -107,10 +114,7 @@ const ActiveCombo = ({ combos }) => {
 
     return (
         <div className="active-combos">
-            <div className="header">
-                <h1 >Active Combos</h1>
-                <hr className="" />
-            </div>
+            <Header title="Active Combos" />
             <div>
                 <span>search: </span> 
                 <input value={search} onChange={searchChange} placeholder="enter combo name" />
