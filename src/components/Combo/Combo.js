@@ -1,15 +1,11 @@
-import React, { Suspense, useEffect } from 'react'
+import React, { Suspense } from 'react'
 import { Switch } from 'react-router-dom'
-import { connect } from 'react-redux'
 
 import { RouteWithSubRoutes } from '../../routes/RouteWithSubRoutes'
 import { PageLoading } from '../common/PageLoading/PageLoading'
-import { featchCombos } from '../../redux/actions/combo-actions/actions'
 
-const Combo = ({routes, featchCombos}) => {
-    useEffect(() =>{
-        featchCombos()
-    }, [featchCombos])
+const Combo = ({routes}) => {
+
     return (
         <div className="combo">
             <Suspense fallback={<PageLoading />}>
@@ -23,4 +19,4 @@ const Combo = ({routes, featchCombos}) => {
     )
 }
 
-export default connect(undefined, {featchCombos})(Combo)
+export default Combo
