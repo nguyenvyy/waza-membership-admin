@@ -1,9 +1,11 @@
-import { REQUEST_COMBOS, STOP_COMBOS_REQUEST, RECEIVE_COMBOS } from "../actions/combo-actions/types"
+import { REQUEST_COMBOS, STOP_COMBOS_REQUEST, RECEIVE_COMBOS, RECEIVE_EXTRA_COMBOS, RECEIVE_DETAIL_COMBO } from "../actions/combo-actions/types"
 
 const initState = {
     items: [],
-    vouchers: [],
-    isFetching: false
+    vouchersByCombo: [],
+    isFetching: false,
+    detailCombo: {},
+    page: 0
 }
 
 export const comboReducer = (state = initState, action) => {
@@ -17,6 +19,20 @@ export const comboReducer = (state = initState, action) => {
                 ...state,
                 isFetching: false,
                 items: action.combos,
+                lastUpdated: action.receivedAt
+            }
+        case RECEIVE_EXTRA_COMBOS:
+            return {
+                ...state,
+                isFetching: false,
+                items: [...state.items, ...action.combos],
+                lastUpdated: action.receivedAt
+            }
+        case RECEIVE_DETAIL_COMBO: 
+            return {
+                ...state,
+                isFetching: false,
+                detailCombo: {...action.combo},
                 lastUpdated: action.receivedAt
             }
         default:
