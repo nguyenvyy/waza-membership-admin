@@ -15,7 +15,12 @@ const VouchersDetail = ({ voucher_array }) => (
     </>
 )
 
-const ActiveCombo = ({ combos, isFetching }) => {
+const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo }) => {
+    useEffect(() =>{
+        if(combos.length === 0)
+        featchCombos({state: true, isDeleted: false })
+    }, [combos.length, featchCombos])
+
     const [isSearching, setIsSearching] = useState(false);
 
     const [displayCombos, setDisplayCombos] = useState([]);
@@ -41,6 +46,11 @@ const ActiveCombo = ({ combos, isFetching }) => {
     const searchChange = e => {
         setSearch(e.target.value)
         setIsSearching(true)
+    }
+
+    const goDetailCombo = (record) => {
+        receiveDetailCombo(record)
+        return `/a/combo/detail/${record.id}`
     }
 
     const tableConfig = {
@@ -100,7 +110,7 @@ const ActiveCombo = ({ combos, isFetching }) => {
             title: 'Action',
             render: (_, record) => (
                 <span>
-                    <Link to={`/a/combo/detail/${record.id}`}>View Detail</Link>
+                    <Link to={() => goDetailCombo(record)}>View Detail</Link>
                     <Divider type="vertical" />
                     <span className="fake-link">Stop</span>
                 </span>

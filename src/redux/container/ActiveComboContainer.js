@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import ActiveCombo from '../../components/Combo/ActiveCombo/ActiveCombo'
 
 import { getActiveCombos } from '../selectors/combo-selector'
-import { featchCombos } from '../actions/combo-actions/actions'
+import { featchCombos, receiveDetailCombo } from '../actions/combo-actions/actions'
 
 const mapStateToProps = (state) => {
     const combos = getActiveCombos(state)
@@ -12,7 +12,8 @@ const mapStateToProps = (state) => {
 
 
 const mapDispatchToProps = {
-    featchCombos
+    featchCombos,
+    receiveDetailCombo
 }
 
 const ActiveComboContainer = connect(mapStateToProps, mapDispatchToProps)(ActiveCombo)
