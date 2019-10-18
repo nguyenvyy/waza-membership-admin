@@ -13,3 +13,8 @@ export function debounce(func, wait) {
         timeout = setTimeout(executeFunction, wait);
     };
 };
+
+export const formatVND = value => value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+export const deleteformatVND = value => value.replace(/\$\s?|(,*)/g, '')
+
