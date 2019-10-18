@@ -7,15 +7,15 @@ import './ActiveCombo.scss'
 import { debounce } from '../../../utils';
 import { Header } from '../Header/Header';
 
-const VouchersDetail = ({ voucherIdArray }) => (
+const VouchersDetail = ({ voucher_array }) => (
     <>
         <ul>
-            {voucherIdArray.map((item, index) => <li key={index}>{item} x 14 detail....</li>)}
+            {voucher_array.map((item, index) =>  <li key={index}>{item.voucher_id} x {item.count}, detail....</li>)}
         </ul>
     </>
 )
 
-const ActiveCombo = ({ combos }) => {
+const ActiveCombo = ({ combos, isFetching }) => {
     const [isSearching, setIsSearching] = useState(false);
 
     const [displayCombos, setDisplayCombos] = useState([]);
@@ -29,7 +29,7 @@ const ActiveCombo = ({ combos }) => {
 
     const searchCombo = useCallback(
         debounce(str => {
-            setDisplayCombos(combos.filter(combo => combo.description.includes(str)))
+            setDisplayCombos(combos.filter(combo => combo.combo_name.includes(str)))
         }, 300), [combos]
     )
 
@@ -60,38 +60,37 @@ const ActiveCombo = ({ combos }) => {
         {
             key: 'name',
             title: 'Name',
-            dataIndex: 'id',
-            render: id => `Name ${id}`,
+            dataIndex: 'combo_name',
             width: 100
         },
         {
             key: 'duration',
             title: 'Duration',
-            dataIndex: 'id',
-            render: id => `${id * 10} Ngày`,
+            dataIndex: 'days',
+            render: days => `${days} Ngày`,
             width: 100
         },
         {
             key: 'fromDate',
             title: 'From',
-            dataIndex: 'fromDate',
+            dataIndex: 'from_date',
             width: 150,
             sorter: (a, b) => new Date(a.id) - new Date(b.id)
         },
         {
             key: 'toDate',
             title: 'To',
-            dataIndex: 'toDate',
+            dataIndex: 'to_date',
             width: 150,
             sorter: (a, b) => new Date(a.id) - new Date(b.id)
         },
         {
-            key: 'voucherIdArray',
+            key: 'voucherArray',
             title: 'Vouchers',
-            dataIndex: 'voucherIdArray',
-            render: voucherIdArray => (
+            dataIndex: 'voucher_array',
+            render: vouchers => (
                 <ul className="voucher-list">
-                    {voucherIdArray.map((item, index) => <li key={index}>{item} x 3</li>)}
+                    {vouchers.map((item, index) => <li key={index}>{item.voucher_id} x {item.count}</li>)}
                 </ul>
             ),
             width: 150
@@ -128,6 +127,7 @@ const ActiveCombo = ({ combos }) => {
             </div>
             <div className="combo-list">
                 <Table
+                    loading={isFetching}
                     {...tableConfig}
                     dataSource={(displayCombos.length > 0 ? displayCombos : null)}
                     columns={columns}
