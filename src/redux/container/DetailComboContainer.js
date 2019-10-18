@@ -1,16 +1,14 @@
 import { connect } from 'react-redux'
+import { featchDetailCombo } from '../actions/combo-actions/actions'
 import DetailCombo from '../../components/Combo/DetailCombo/DetailCombo'
-import { getComboById } from '../selectors/combo-selector'
 
 const mapStateToProps = (state, ownProps) => {
-    const comboId = ownProps.match.params.id
-    const combo = getComboById(state, comboId)
-    return {combo, isFetching: state.combo.isFetching}
+    return {combo: state.combo.detailCombo, isFetching: state.combo.isFetching}
 }
 
 
 const mapDispatchToProps = {
-
+    featchDetailCombo
 }
 
 const DetailComboContainer = connect(mapStateToProps, mapDispatchToProps)(DetailCombo)

@@ -1,16 +1,19 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import { Button, Icon, Descriptions, Badge } from 'antd'
 import ButtonGroup from 'antd/lib/button/button-group'
 
 import './DetailCombo.scss'
 import { Header } from '../Header/Header'
 import { PageLoading } from '../../common/PageLoading/PageLoading'
-import { ComboNotFound } from './CompoNotFound'
+import { ComboNotFound } from '../CompoNotFound'
 
 
 
-const DetailCombo = ({ combo = {}, history, isFetching }) => {
+const DetailCombo = ({ combo, history, match, isFetching, featchDetailCombo }) => {
     const { id, combo_name, description, value, state, from_date, to_date, voucher_array, isDeleted, days} = combo
+    useEffect(() => {
+        if(id === undefined)  featchDetailCombo({id: match.params.id})
+    }, [featchDetailCombo, id, match.params.id])
     const goBack = () => history.goBack()
     const goEditCombo = () => history.push(`/a/combo/edit/${id}`)
 
