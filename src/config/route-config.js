@@ -9,6 +9,7 @@ const Login = lazy(() => import('../components/Login/Login'))
 const Combo = lazy(() => import('../components/Combo/Combo'))
 const ActiveComboContainer = lazy(() => import('../redux/container/ActiveComboContainer'))
 const DetailComboContainer = lazy(() => import('../redux/container/DetailComboContainer'))
+const EditComboContainer = lazy(() => import('../redux/container/EditComboContainer'))
 
 export const routes = [
     {
@@ -43,6 +44,10 @@ export const routes = [
                     {
                         path: '/a/combo/detail/:id',
                         component: DetailComboContainer
+                    },
+                    {
+                        path: '/a/combo/edit/:id',
+                        component: EditComboContainer
                     }
                 ]
             },
