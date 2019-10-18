@@ -5,7 +5,7 @@ import { getComboById } from '../selectors/combo-selector'
 const mapStateToProps = (state, ownProps) => {
     const comboId = ownProps.match.params.id
     const combo = getComboById(state, comboId)
-    return {combo}
+    return {combo, isFetching: state.combo.isFetching}
 }
 
 
