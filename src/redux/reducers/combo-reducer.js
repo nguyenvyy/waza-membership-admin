@@ -1,11 +1,11 @@
-import { REQUEST_COMBOS, STOP_COMBOS_REQUEST, RECEIVE_COMBOS, RECEIVE_EXTRA_COMBOS, RECEIVE_DETAIL_COMBO } from "../actions/combo-actions/types"
+import { REQUEST_COMBOS, STOP_COMBOS_REQUEST, RECEIVE_COMBOS, RECEIVE_EXTRA_COMBOS, RECEIVE_DETAIL_COMBO, EDIT_COMBO, ADD_COMBO } from "../actions/combo-actions/types"
+// import { getComboIndexById } from "../selectors/combo-selector"
 
 const initState = {
     items: [],
-    vouchersByCombo: [],
     isFetching: false,
     detailCombo: {},
-    page: 0
+    page: -1
 }
 
 export const comboReducer = (state = initState, action) => {
@@ -35,7 +35,24 @@ export const comboReducer = (state = initState, action) => {
                 detailCombo: {...action.combo},
                 lastUpdated: action.receivedAt
             }
+        case EDIT_COMBO:
+            // debugger
+            // const comboIndex = getComboIndexById(state, action.comboId)
+            // if(comboIndex < 0) return state
+            // const newVoucherArray = state.items[comboIndex].voucher_array.slice()
+            // const newCombo = {
+            //     ...state.items[comboIndex],
+            //     voucher_array: [
+            //         ...newVoucherArray.splice(action.voucherIndex, 1)
+            //     ]
+            // }
+            // const newCombos = state.items.slice()
+            // newCombos.splice(comboIndex, 1, newCombo)
+            return state
+        case ADD_COMBO:
+            return state
         default:
             return state
     }
-} 
+}
+

@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 import moment from 'moment'
-
-const getCombos = state => state.combo.items
+// handle combo
+const getCombos = combo => combo.items
 const getComboIdFromProps = (_, id) => id
 
 export const checkIsActiveCombo = combo => {
@@ -14,7 +14,7 @@ export const checkIsActiveCombo = combo => {
     return isValidDay
 }
 
-const checkValidComboById = (combo, id) => combo.id.toString() === id
+const checkValidComboById = (combo, id) => combo.id.toString() === id.toString()
 
 export const getActiveCombos = createSelector(
     [getCombos],
@@ -31,6 +31,9 @@ export const getComboById = createSelector(
 export const getComboIndexById = createSelector(
     [getCombos, getComboIdFromProps],
     (combos, id) => {
+        console.log(combos.findIndex(combo => checkValidComboById(combo, id)))
         return combos.findIndex(combo => checkValidComboById(combo, id))
     }
 )
+
+//handle voucher in combo
