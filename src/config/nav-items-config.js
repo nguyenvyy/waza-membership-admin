@@ -1,4 +1,3 @@
-
 import { SubMenu } from "../components/NavBar/SubMenu/SubMenu";
 import { MenuItem } from "../components/NavBar/MenuItem/MenuItem";
 import { LetterIcon } from '../components/NavBar/LetterIcon/LetterIcon';
@@ -26,7 +25,7 @@ export const navItems = [
             {
                 title: 'Manage Voucher',
                 Component: MenuItem,
-                to: '/a/voucher/manage-voucher'
+                to: '/a/voucher/manage'
             }
         ]
     },

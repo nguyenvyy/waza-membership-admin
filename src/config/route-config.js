@@ -3,6 +3,10 @@ import { Redirect } from 'react-router-dom'
 
 import { PrivateRoute } from '../routes/PrivateRoute'
 import ManageCombo from '../components/Combo/ManageCombo/ManageCombo'
+import { from } from 'rxjs'
+import ActiveVoucher from '../components/Voucher/ActiveVoucher/ActiveVoucher'
+import ManageVoucher from '../components/Voucher/ManageVoucher/ManageVoucher'
+import CreateVoucher from '../components/Voucher/CreateVoucher/CreateVoucher'
 
 const Admin = lazy(() => import('../components/Admin/Admin'))
 const Login = lazy(() => import('../components/Login/Login'))
@@ -10,6 +14,7 @@ const Combo = lazy(() => import('../components/Combo/Combo'))
 const ActiveComboContainer = lazy(() => import('../redux/container/ActiveComboContainer'))
 const DetailComboContainer = lazy(() => import('../redux/container/DetailComboContainer'))
 const EditComboContainer = lazy(() => import('../redux/container/EditComboContainer'))
+const Voucher = lazy(() => import('../components/Voucher/Voucher'))
 
 export const routes = [
     {
@@ -51,11 +56,29 @@ export const routes = [
                     }
                 ]
             },
-            
+            {
+                path: '/a/voucher',
+                component: Voucher,
+                routes: [
+                    {
+                        path: '/a/voucher/active',
+                        component: ActiveVoucher
+                    },
+                    {
+                        path: '/a/voucher/manage',
+                        component: ManageVoucher
+                    },
+                    {
+                        path: '/a/voucher/create',
+                        component: CreateVoucher
+                    }
+                ]
+            }
+        
         ]
     },
     {
         path: '/login',
         component: Login,
-    }
+    },
 ]

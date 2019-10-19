@@ -1,0 +1,63 @@
+.cr-voucher {
+    margin-left: 20px;
+}
+.data-table {
+    margin: 20px;
+    border: 1px solid lightgray;
+}
+.main-crvoucher {
+    margin-left: 20px;
+}
+.create-voucher {
+    width: 90%;
+    margin-top: 20px;
+    border: 1px solid black;
+    height: auto;
+    display: flex;
+}
+.create1 {
+    width: 45%;
+    margin-left: 5%;
+}
+.content-create {
+    margin-top: 20px;
+    font-size: 16px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    label {
+        display: inline-block;
+        width: 126px;
+        text-align: right;
+    }
+    input {
+        margin-left: 20px;
+        width: 180px;
+    }
+    .ant-select {
+        margin-left: 20px;
+        width: 180px !important;
+    }
+}
+.content-create:nth-child(6) {
+    display: flex;
+    align-items: center;
+    textarea {
+        margin-left: 20px;
+        width: 250px;
+    }
+}
+.content-create:nth-child(1) {
+    input {
+        background: lightgray;
+    }
+}
+.btn-footer {
+    margin-top: 50px;
+    margin-left: 140px;
+    :nth-child(2){
+        margin-left: 20px;
+    }
+}
+.text {
+    color :red;
+    cursor: pointer;
+}
