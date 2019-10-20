@@ -12,12 +12,21 @@ export const getComboFromAPI = (params) => Axios(
         },
         params
     }
-).then(res => {
-    console.log(res)
-    return res.data
-})
+)
 
-export const PostComboToAPI = (data) => Axios(
+export const getDetailComboFromAPI = (_id) => Axios(
+    {
+        method: 'GET',
+        responseType: "json",
+        url: `https://dnguyen-combo-manager.herokuapp.com/combos/${_id}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        }
+    }
+)
+
+export const postComboToAPI = (data) => Axios(
     {
         method: 'POST',
         responseType: "json",
@@ -28,21 +37,30 @@ export const PostComboToAPI = (data) => Axios(
         },
         data
     }
-).then(res => {
-    return { data: res.data, status: res.status}
-})
+)
 
-export const PathComboToAPI = (data) => Axios(
+export const editComboToAPI = (data, _id) => Axios(
     {
-        method: 'POST',
+        method: 'PATCH',
         responseType: "json",
-        url: `https://dnguyen-combo-manager.herokuapp.com//combos/edit/${data._id}`,
+        url: `https://dnguyen-combo-manager.herokuapp.com/combos/edit/${_id}`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
         },
         data
     }
-).then(res => {
-    return { data: res.data, status: res.status}
-})
+)
+
+//delete combo by Id
+export const deleteComboToAPI = (_id) => Axios(
+    {
+        method: 'PATCH',
+        responseType: "json",
+        url: `https://dnguyen-combo-manager.herokuapp.com/combos/del/${_id}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        }
+    }
+)

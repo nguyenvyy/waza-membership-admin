@@ -1,11 +1,13 @@
 import { connect } from 'react-redux'
 
-import { featchCombos, receiveDetailCombo, postCombo } from '../actions/combo-actions/actions'
+import { featchCombos, receiveDetailCombo, addPostCombo, stopPatchCombo, deletePatchCombo } from '../actions/combo-actions/actions'
 import ManageCombo from '../../components/Combo/ManageCombo/ManageCombo'
+import { getNoDeletedCombos } from '../selectors/combo-selector'
 
 const mapStateToProps = (state) => {
+    const combos = getNoDeletedCombos(state.combo)
     return {
-        combos: state.combo.items,
+        combos: combos,
         isFetching: state.combo.isFetching,
         page: state.combo.page
     }
@@ -15,7 +17,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
     featchCombos,
     receiveDetailCombo,
-    postCombo
+    addPostCombo,
+    stopPatchCombo,
+    deletePatchCombo
 }
 
 const ActiveComboContainer = connect(mapStateToProps, mapDispatchToProps)(ManageCombo)

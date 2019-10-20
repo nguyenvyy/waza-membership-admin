@@ -1,85 +1,37 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import uuid from 'uuid'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
 import ButtonGroup from 'antd/lib/button/button-group'
-import { Button, Icon, Input, Form, DatePicker, Select, Table, Divider } from 'antd'
+import { Button, Icon, Input, Form, DatePicker, Select, Table, Divider, message } from 'antd'
 
 import { Header } from '../Header/Header'
-import { formatVND } from '../../../utils'
-import { checkPositiveNumber, checkDivideBy } from '../../../utils/validate'
 import { ComboNotFound } from '../CompoNotFound'
+import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
+import { PageLoading } from '../../common/PageLoading/PageLoading'
 
 const VouchersDetail = voucher => <p>voucher</p>
 
-const EditCombo = ({ combo, history, match, featchDetailCombo }) => {
+const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, isFetching }) => {
     const [changedCombo, setChangedCombo] = useState({
-        id: '',
         value: 0,
         combo_name: '',
         state: true,
         from_date: null,
         to_date: null,
         isDeleted: false,
-        voucher_array: [],
         description: '',
+        voucher_array: [],
         days: 30
     })
-
     useEffect(() => {
-        if (combo.id === undefined) {
-            featchDetailCombo({ id: match.params.id })
-        }
-        else {
+        if (combo._id !== undefined) {
             setChangedCombo({ ...combo })
+        } else {
+            featchDetailCombo(match.params.id)
         }
-    }, [combo.id])
-
-    const tableConfig = {
-        pagination: false,
-        size: 'small',
-        expandedRowRender: VouchersDetail,
-        rowKey: () => uuid()
-    }
-    const columns = [
-        {
-            key: 'id',
-            title: 'ID',
-            render: (_, record) => <p>{record.count}</p>,
-            width: 50
-        },
-        {
-            key: 'name',
-            title: 'Name',
-            render: (_, record) => <p>{record.count}</p>,
-            width: 100
-        },
-        {
-            key: 'service',
-            title: 'Service',
-            render: (_, record) => <p>{record.count}</p>,
-            width: 100
-        },
-        {
-            key: 'count',
-            title: 'Count',
-            render: (_, record) => <p>{record.count}</p>,
-            width: 100
-        },
-        {
-            key: 'action',
-            title: 'Action',
-            render: (_) => (
-                <span>
-                    <Link to={`/a/voucher/detail/1`}>View Detail</Link>
-                    <Divider type="vertical" />
-                    <span className="fake-link">Delete</span>
-                </span>
-            ),
-            width: 200
-        }
-    ]
+    }, [combo])
 
     const onChange = ({ target: { id, value } }) => {
 
@@ -88,9 +40,133 @@ const EditCombo = ({ combo, history, match, featchDetailCombo }) => {
     const onChangeState = value => {
         setChangedCombo({ ...changedCombo, state: value === 'true' ? true : false })
     }
+
+    const dateFormat = 'YYYY/MM/DD'
     const onChangeRangePicker = ([from, to]) => {
         setChangedCombo({ ...changedCombo, from_date: from.format(dateFormat), to_date: to.format(dateFormat) })
     }
+    const disabledDate = current => current && current <= moment().endOf('day')
+
+    // manage selected voucher
+    const [selectedVouchers, setSelectedVouchers] = useState({
+        move: {
+            value: null,
+            count: 0
+        },
+        food: {
+            value: null,
+            count: 0
+        },
+        shopping: {
+            value: null,
+            count: 0
+        },
+    })
+
+    // handle close/open  SelectVoucherModal
+    const [isOpenSelectVoucherModal, setIsOpenSelectVoucherModal] = useState(false);
+    const handleOpenSelectVoucherModal = () => {
+        setIsOpenSelectVoucherModal(true);
+    }
+    const handleCloseSelectVoucherModal = (memoSelectVouchers) => {
+        if (memoSelectVouchers !== undefined) {
+            setSelectedVouchers({
+                ...memoSelectVouchers
+            })
+        }
+        setIsOpenSelectVoucherModal(false);
+    }
+
+    const handleAddVoucher = () => {
+        handleOpenSelectVoucherModal()
+    }
+
+    //handle change select voucher with select in table
+    const onChangeSelectedVouchers = (selectedRowKeys, selectedRows) => {
+        let length = selectedRows.length;
+        if (length > 0) {
+            let subcategory = selectedRows[0].subcategory
+            const index = selectedRows.findIndex(row => row._id === selectedRowKeys[length - 1])
+            setSelectedVouchers({
+                ...selectedVouchers,
+                [subcategory]: {
+                    count: 1,
+                    value: selectedRows[index]
+                }
+            })
+        }
+    }
+    // handle edit selected voucher 
+    const onChangeCount = (e, subcategory) => {
+        const count = +e.target.value > 50 ? 50 : +e.target.value
+        setSelectedVouchers({
+            ...selectedVouchers,
+            [subcategory]: {
+                ...selectedVouchers[subcategory],
+                count
+            }
+        })
+    }
+    const handleDeleteVoucher = (e, subcategory) => {
+        setSelectedVouchers({
+            ...selectedVouchers,
+            [subcategory]: {
+                value: null,
+                count: 0
+            }
+        })
+    }
+
+
+    // handle to display voucher in table selected voucher
+    const objectConverttoArr = (selectedVouchers) => {
+        const keys = Object.keys(selectedVouchers);
+        return keys.map(key => selectedVouchers[key])
+    }
+    const selectedVouchersArr = useMemo(() => {
+        return objectConverttoArr(selectedVouchers).filter(voucher => voucher.value !== null && voucher.count > 0)
+    }, [selectedVouchers])
+    const tableConfig = {
+        pagination: false,
+        size: 'small',
+        expandedRowRender: VouchersDetail,
+        rowKey: () => uuid()
+    }
+    const columns = [
+        {
+            key: 'name',
+            title: 'Name',
+            dataIndex: 'value.voucher_name',
+            width: 150
+        },
+        {
+            key: 'service',
+            title: 'Service',
+            dataIndex: 'value.subcategory',
+            width: 100
+        },
+        {
+            key: 'count',
+            title: 'Count',
+            dataIndex: 'count',
+            render: (count, record) => <Input type="number" value={count} onChange={(e) => onChangeCount(e, record.value.subcategory)} />,
+            width: 80
+        },
+        {
+            key: 'action',
+            title: 'Action',
+            render: (_, record) => (
+                <span>
+                    <Link className="fake-link" to={`/a/voucher/detail/${record.value._id}`}>ViewDetal</Link>
+                    <Divider type="vertical" />
+                    <span className="fake-link" onClick={(e) => handleDeleteVoucher(e, record.value.subcategory)}>Delete</span>
+                </span>
+            ),
+            width: 200
+        }
+    ]
+
+
 
 
     const onSubmit = e => {
@@ -98,28 +174,48 @@ const EditCombo = ({ combo, history, match, featchDetailCombo }) => {
 
     }
     const goBack = () => history.goBack()
-    const disabledDate = current => current && current <= moment().endOf('day')
-    const validateForm = () => {
-        let result = checkPositiveNumber(changedCombo.days)
-        let result2 = checkPositiveNumber(changedCombo.value)
-        let result3 = checkDivideBy(+changedCombo.value, 1000)
-        console.log(result, result2, result3, changedCombo.value)
+    const saveChangedCombo = () => {
+        const hide = message.loading('Edit combo....', 0);
+        let voucher_array = selectedVouchersArr.map(({ count, value }) => ({ count, voucher_id: value._id }));
+        let combo = {
+            ...changedCombo,
+            voucher_array
+        }
+        editPatchCombo(combo).then(res => {
+            switch (res.status) {
+                case 200:
+                    setTimeout(hide, 100);
+                    message.success('Edit combo success', 2)
+                    break;
+                case 400:
+                    setTimeout(hide, 100);
+                    message.error('edit combo fail', 2);
+                    message.warning(`${res.data.message}`, 5);
+                    break;
+                case 404:
+                    setTimeout(hide, 100);
+                    message.error('combo not found', 2);
+                    message.warning(`${res.data.message}`, 5);
+                    break;
+                default:
+                    setTimeout(hide, 100);
+                    break;
+            }
+        })
     }
-
-    const dateFormat = 'DD/MM/YYYY'
 
     return (
         <div className="edit-combo">
             <Header title="Edit Combo" />
             {
-                (combo.id === undefined) ? (
-                    <ComboNotFound />
+                (combo._id === undefined) ? (
+                    isFetching ?  <PageLoading /> : <ComboNotFound />
                 ) : (
                         <>
                             <div className="edit-from">
                                 <Form layout="horizontal" labelAlign="left" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onSubmit={onSubmit}>
-                                    <Form.Item label="ID" wrapperCol={{ span: 4 }}>
-                                        <Input disabled value={changedCombo.id} />
+                                    <Form.Item label="Name" wrapperCol={{ span: 4 }}>
+                                        <Input id="combo_name" onChange={onChange} value={changedCombo.combo_name} />
                                     </Form.Item>
                                     <Form.Item label="Using duration" wrapperCol={{ span: 4 }}>
                                         <Input id="days" onChange={onChange} value={`${changedCombo.days}`} suffix="Ngày" />
@@ -132,7 +228,7 @@ const EditCombo = ({ combo, history, match, featchDetailCombo }) => {
                                             onChange={onChangeRangePicker}
                                             disabledDate={disabledDate}
                                             value={
-                                                changedCombo.from_date !== null ?
+                                                changedCombo.to_date !== null ?
                                                     [moment(changedCombo.from_date, dateFormat), moment(changedCombo.to_date, dateFormat)] :
                                                     null
                                             }
@@ -142,7 +238,7 @@ const EditCombo = ({ combo, history, match, featchDetailCombo }) => {
                                     <Form.Item label="Price" wrapperCol={{ span: 5 }}>
                                         <Input
                                             id="value"
-                                            value={formatVND(`${changedCombo.value}`)}
+                                            value={changedCombo.value}
                                             onChange={onChange}
                                             suffix="VNĐ" />
                                     </Form.Item>
@@ -160,18 +256,18 @@ const EditCombo = ({ combo, history, match, featchDetailCombo }) => {
                                     </Form.Item>
                                     <Form.Item label="Vouchers" wrapperCol={{ span: 20 }}>
                                         <div>
-                                            <Button>Add Voucher</Button>
-                                            <span>maximum 1 voucher for per service</span>
+                                            <Button onClick={handleAddVoucher}>Add Voucher</Button>
                                         </div>
+                                        <SelectVoucherContainer
+                                            selectedVouchers={selectedVouchers}
+                                            onChangeSelectedVouchers={onChangeSelectedVouchers}
+                                            handleCloseSelectVoucherModal={handleCloseSelectVoucherModal}
+                                            isOpenSelectVoucherModal={isOpenSelectVoucherModal}
+                                        />
                                         <Table
                                             {...tableConfig}
-                                            dataSource={changedCombo.voucher_array.length > 0 ? changedCombo.voucher_array : null}
+                                            dataSource={selectedVouchersArr.length > 0 ? selectedVouchersArr : null}
                                             columns={columns} />
-                                    </Form.Item>
-                                    <Form.Item>
-                                        <Button type="primary" htmlType="submit">
-                                            Submit
-                                        </Button>
                                     </Form.Item>
                                 </Form>
                             </div>
@@ -181,13 +277,12 @@ const EditCombo = ({ combo, history, match, featchDetailCombo }) => {
                                         Go back
                                         <Icon type="left" />
                                     </Button>
-                                    <Button onClick={validateForm} className="go-back" type="primary">
+                                    <Button onClick={saveChangedCombo} className="go-back" type="primary">
                                         Save
                                         <Icon type="save" />
                                     </Button>
                                 </ButtonGroup>
                             </div>
-
                         </>
                     )
             }

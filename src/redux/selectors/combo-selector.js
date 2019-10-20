@@ -8,17 +8,26 @@ export const checkIsActiveCombo = combo => {
     if (combo.isDeleted) return !combo.isDeleted
     if (!combo.state) return combo.state
     const presentTime = Date.now();
-    const fromDate = moment(combo.from_date, 'DD/MM/YYYY').valueOf()
-    const toDate = moment(combo.to_date,'DD/MM/YYYY').valueOf()
+    const fromDate = moment(combo.from_date, 'YYYY/MM/DD').valueOf()
+    const toDate = moment(combo.to_date,'YYYY/MM/DD').valueOf()
     const isValidDay = (presentTime >= fromDate && presentTime <= toDate) ? true : false
     return isValidDay
 }
 
-const checkValidComboById = (combo, id) => combo.id.toString() === id.toString()
+export const checkNoDeletedCombo = combo => {
+    return !combo.isDeleted
+}
+
+const checkValidComboById = (combo, id) => combo._id.toString() === id.toString()
 
 export const getActiveCombos = createSelector(
     [getCombos],
     combos => combos.filter(checkIsActiveCombo)
+)
+
+export const getNoDeletedCombos = createSelector(
+    [getCombos],
+    combos => combos.filter(checkNoDeletedCombo)
 )
 
 export const getComboById = createSelector(

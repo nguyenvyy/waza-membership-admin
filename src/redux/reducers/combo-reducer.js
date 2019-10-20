@@ -1,11 +1,12 @@
-import { REQUEST_COMBOS, STOP_COMBOS_REQUEST, RECEIVE_COMBOS, RECEIVE_EXTRA_COMBOS, RECEIVE_DETAIL_COMBO, EDIT_COMBO, ADD_COMBO } from "../actions/combo-actions/types"
-// import { getComboIndexById } from "../selectors/combo-selector"
+import { REQUEST_COMBOS, STOP_COMBOS_REQUEST, RECEIVE_COMBOS, RECEIVE_EXTRA_COMBOS, RECEIVE_DETAIL_COMBO, EDIT_COMBO, ADD_COMBO, DELETE_COMBO } from "../actions/combo-actions/types"
+import { getComboIndexById } from "../selectors/combo-selector"
 
 const initState = {
     items: [],
     isFetching: false,
     detailCombo: {},
-    page: -1
+    page: -1,
+    maxLenght: 0
 }
 
 export const comboReducer = (state = initState, action) => {
@@ -29,30 +30,42 @@ export const comboReducer = (state = initState, action) => {
                 items: [...state.items, ...action.combos],
                 lastUpdated: action.receivedAt
             }
-        case RECEIVE_DETAIL_COMBO: 
+        case RECEIVE_DETAIL_COMBO:
             return {
                 ...state,
                 isFetching: false,
-                detailCombo: {...action.combo},
+                detailCombo: { ...action.combo },
                 lastUpdated: action.receivedAt
             }
         case EDIT_COMBO:
-            // debugger
-            // const comboIndex = getComboIndexById(state, action.comboId)
-            // if(comboIndex < 0) return state
-            // const newVoucherArray = state.items[comboIndex].voucher_array.slice()
-            // const newCombo = {
-            //     ...state.items[comboIndex],
-            //     voucher_array: [
-            //         ...newVoucherArray.splice(action.voucherIndex, 1)
-            //     ]
-            // }
-            // const newCombos = state.items.slice()
-            // newCombos.splice(comboIndex, 1, newCombo)
-            return state
+            const comboIndex = getComboIndexById(state, action.combo._id)
+            if (comboIndex < 0) {
+                return { ...state, detailCombo: { ...action.combo } }
+            } else {
+                let newCombos = state.items.slice();
+                newCombos.splice(comboIndex, 1, action.combo);
+                return {
+                    ...state,
+                    items: newCombos,
+                    detailCombo: { ...action.combo }
+                }
+            }
+        case DELETE_COMBO:
+            const deletedComboIndex = getComboIndexById(state, action.combo._id)
+            if (deletedComboIndex < 0) {
+                return { ...state, detailCombo: { ...action.combo } }
+            } else {
+                let newCombos = state.items.slice();
+                newCombos.splice(deletedComboIndex, 1, action.combo);
+                return {
+                    ...state,
+                    items: newCombos,
+                    detailCombo: { ...action.combo }
+                }
+            }
         case ADD_COMBO:
             return {
-                ...state,
+                page: state.page,
                 isFetching: false,
                 items: [...state.items, action.combo],
                 lastUpdated: action.receivedAt

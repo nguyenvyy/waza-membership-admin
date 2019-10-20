@@ -10,12 +10,12 @@ import { ComboNotFound } from '../CompoNotFound'
 
 
 const DetailCombo = ({ combo, history, match, isFetching, featchDetailCombo }) => {
-    const { id, combo_name, description, value, state, from_date, to_date, voucher_array, isDeleted, days} = combo
+    const { _id, combo_name, description, value, state, from_date, to_date, voucher_array, isDeleted, days} = combo
     useEffect(() => {
-        if(id === undefined)  featchDetailCombo({id: match.params.id})
-    }, [featchDetailCombo, id, match.params.id])
+        if(_id === undefined)  featchDetailCombo(match.params.id)
+    }, [_id, featchDetailCombo, match.params.id])
     const goBack = () => history.goBack()
-    const goEditCombo = () => history.push(`/a/combo/edit/${id}`)
+    const goEditCombo = () => history.push(`/a/combo/edit/${_id}`)
 
     const status = useMemo(
         _ => {
@@ -32,12 +32,12 @@ const DetailCombo = ({ combo, history, match, isFetching, featchDetailCombo }) =
         <div className="detail-combo">
             <Header title="Detail Combo" />
             {
-                (isFetching === false) ? (
-                    (id === undefined) ? <ComboNotFound /> :(
+                (combo._id === undefined) ? (
+                    isFetching ?  <PageLoading /> : <ComboNotFound />
+                ) : (
                     <>
                         <div className="">
                             <Descriptions title={combo_name} bordered  >
-                                <Descriptions.Item label="Id" span={3}>{id}</Descriptions.Item>
                                 <Descriptions.Item label="Duration">{days} Ngày</Descriptions.Item>
                                 <Descriptions.Item label="From Date">{from_date}</Descriptions.Item>
                                 <Descriptions.Item label="To Date">{to_date}</Descriptions.Item>
@@ -69,7 +69,7 @@ const DetailCombo = ({ combo, history, match, isFetching, featchDetailCombo }) =
                             </ButtonGroup>
                         </div>
                     </>)
-                ) : (<PageLoading />)
+                
             }
         </div>
     )

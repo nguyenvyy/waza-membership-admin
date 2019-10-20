@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import uuid from 'uuid'
 import moment from 'moment'
 import { Modal, Form, Input, DatePicker, Select, Button, Table, Divider, message } from 'antd'
@@ -12,7 +12,7 @@ const VouchersDetail = ({ value: voucher }) => (
     </p>
 )
 
-export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, postCombo }) => {
+export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, addPostCombo }) => {
     // data new combo
     const [newCombo, setNewCombo] = useState({
         value: 0,
@@ -129,7 +129,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, p
             voucher_array,
             ...newCombo
         }
-        postCombo(combo).then(res => {
+        addPostCombo(combo).then(res => {
             switch (res.status) {
                 case 201:
                     setTimeout(hide, 100);
