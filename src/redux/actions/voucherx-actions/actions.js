@@ -22,6 +22,6 @@ export const featchVouchers = (params) => async dispatch => {
     }   
     catch (err) {
         dispatch(stopRequestVouchers())
-        throw new Error(err);
+        return err
     }
 }

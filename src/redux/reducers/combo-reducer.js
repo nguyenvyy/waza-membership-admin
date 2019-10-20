@@ -19,6 +19,7 @@ export const comboReducer = (state = initState, action) => {
                 ...state,
                 isFetching: false,
                 items: action.combos,
+                page: 9999,
                 lastUpdated: action.receivedAt
             }
         case RECEIVE_EXTRA_COMBOS:
@@ -50,7 +51,12 @@ export const comboReducer = (state = initState, action) => {
             // newCombos.splice(comboIndex, 1, newCombo)
             return state
         case ADD_COMBO:
-            return state
+            return {
+                ...state,
+                isFetching: false,
+                items: [...state.items, action.combo],
+                lastUpdated: action.receivedAt
+            }
         default:
             return state
     }

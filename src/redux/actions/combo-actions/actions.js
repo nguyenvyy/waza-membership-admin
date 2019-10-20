@@ -1,7 +1,7 @@
-import { REQUEST_COMBOS, STOP_COMBOS_REQUEST, RECEIVE_COMBOS, RECEIVE_EXTRA_COMBOS, RECEIVE_DETAIL_COMBO } from "./types";
-import { getComboFromAPI } from "./services";
+import { REQUEST_COMBOS, STOP_COMBOS_REQUEST, RECEIVE_COMBOS, RECEIVE_EXTRA_COMBOS, RECEIVE_DETAIL_COMBO, ADD_COMBO } from "./types";
+import { getComboFromAPI, PostComboToAPI } from "./services";
 
-// handle combo
+// handle get combo
 export const requestCombos = () => ({ type: REQUEST_COMBOS })
 export const stopRequestCombos = () => ({ type: STOP_COMBOS_REQUEST })
 export const receiveCombos = (combos) => ({ type: RECEIVE_COMBOS, combos, receiveAt: Date.now() })
@@ -13,10 +13,10 @@ export const featchCombos = (params) => async dispatch => {
     try {
         const data = await getComboFromAPI(params);
         dispatch(receiveCombos(data));
-    }   
+    }
     catch (err) {
         dispatch(stopRequestCombos())
-        throw new Error(err);
+        return err;
     }
 }
 
@@ -28,7 +28,7 @@ export const featchExtraCombos = (params) => async dispatch => {
     }
     catch (err) {
         dispatch(stopRequestCombos())
-        throw new Error(err);
+        return err;
     }
 }
 
@@ -40,7 +40,22 @@ export const featchDetailCombo = (params) => async dispatch => {
     }
     catch (err) {
         dispatch(stopRequestCombos())
-        throw new Error(err);
+        
+        return err;
     }
+}
+
+// handle post combo
+export const addCombo = combo => ({ type: ADD_COMBO, combo })
+export const postCombo = combo => dispatch => {
+    return PostComboToAPI(combo)
+        .then(res => {
+            dispatch(addCombo(res.data))
+            return res
+        })
+        .catch(err => {
+            dispatch(stopRequestCombos())
+            return err.response
+        })
 }
 
