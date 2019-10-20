@@ -58,6 +58,12 @@
     }
 }
 .text {
-    color :red;
+    color :blue;
     cursor: pointer;
+}
+.action-acvoucher {
+    display: flex;
+    p:not(:nth-child(1)) {
+        padding-left: 20px;
+    }
 }
