@@ -39,7 +39,11 @@ const ActiveVoucher = () => {
             dataIndex: '',
             key: 'x',
             render: () => (
-                <p className="text">Delete</p>
+                <div className="action-acvoucher">
+                    <p className="text">View</p>
+                    <p className="text">Details</p>
+                    <p className="text">Disable</p>
+                </div>
             )
           }
     ]
