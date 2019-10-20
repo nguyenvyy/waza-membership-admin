@@ -1,3 +1,10 @@
-.not-found {
 
+
+
+.fake-link {
+    cursor: pointer;
+    color: #1890ff;
+    &:hover {
+        color: #40a9ff;
+    }
 }
