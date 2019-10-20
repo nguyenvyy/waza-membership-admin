@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import uuid from 'uuid'
 import { Link } from 'react-router-dom'
-import { Table, Divider, Input, Form } from 'antd';
+import { Table, Divider, Input, Form, message } from 'antd';
 
 import './ActiveCombo.scss'
 import { debounce } from '../../../utils';
@@ -15,11 +15,11 @@ const VouchersDetail = ({ voucher_array }) => (
     </>
 )
 
-const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo }) => {
+const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo, page, stopPatchCombo }) => {
     useEffect(() =>{
-        if(combos.length === 0)
-        featchCombos({state: true, isDeleted: false })
-    }, [combos.length, featchCombos])
+        if(page !== 9999)
+        featchCombos({page: 0, limit: 9999})
+    }, [featchCombos, page])
 
     const [isSearching, setIsSearching] = useState(false);
 
@@ -48,9 +48,33 @@ const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo }) =
         setIsSearching(true)
     }
 
-    const goDetailCombo = (record) => {
-        receiveDetailCombo(record)
-        return `/a/combo/detail/${record.id}`
+    const stopCombo = (combo) => {
+        const hide = message.loading('Stop combo....', 0);
+        const newCombo = {
+            ...combo,
+            state: false
+        }
+        stopPatchCombo(newCombo).then(res => {
+            switch (res.status) {
+                case 200:
+                    setTimeout(hide, 50);
+                    message.success('Stop combo success', 2)
+                    break;
+                case 400:
+                    setTimeout(hide, 50);
+                    message.error('Stop combo fail', 2);
+                    message.warning(`${res.data.message}`, 3);
+                    break;
+                case 404:
+                    setTimeout(hide, 50);
+                    message.error('Combo not found', 2);
+                    message.warning(`${res.data.message}`, 3);
+                    break;
+                default:
+                    setTimeout(hide, 50);
+                    break;
+            }
+        })
     }
 
     const tableConfig = {
@@ -61,12 +85,6 @@ const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo }) =
         rowKey: () => uuid()
     }
     const columns = [
-        {
-            key: 'id',
-            title: 'ID',
-            dataIndex: 'id',
-            width: 50
-        },
         {
             key: 'name',
             title: 'Name',
@@ -108,11 +126,11 @@ const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo }) =
         {
             key: 'action',
             title: 'Action',
-            render: (_, record) => (
+            render: (record) => (
                 <span>
-                    <Link to={() => goDetailCombo(record)}>View Detail</Link>
+                    <Link to={`/a/combo/detail/${record._id}`} onClick={() => receiveDetailCombo(record)}>View Detail</Link>
                     <Divider type="vertical" />
-                    <span className="fake-link">Stop</span>
+                    <span onClick={() => stopCombo(record)} className="fake-link">Stop</span>
                 </span>
             ),
             width: 200

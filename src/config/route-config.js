@@ -1,7 +1,6 @@
 import { lazy } from 'react'
 import { Redirect } from 'react-router-dom'
 import { PrivateRoute } from '../routes/PrivateRoute'
-import ManageCombo from '../components/Combo/ManageCombo/ManageCombo'
 import ActiveVoucher from '../components/Voucher/ActiveVoucher/ActiveVoucher'
 import ManageVoucher from '../components/Voucher/ManageVoucher/ManageVoucher'
 import CreateVoucher from '../components/Voucher/CreateVoucher/CreateVoucher'
@@ -13,6 +12,7 @@ const ActiveComboContainer = lazy(() => import('../redux/container/ActiveComboCo
 const DetailComboContainer = lazy(() => import('../redux/container/DetailComboContainer'))
 const EditComboContainer = lazy(() => import('../redux/container/EditComboContainer'))
 const Voucher = lazy(() => import('../components/Voucher/Voucher'))
+const ManageComboContainer = lazy(() => import('../redux/container/ManageComboContainer'))
 
 export const routes = [
     {
@@ -42,7 +42,7 @@ export const routes = [
                     },
                     {
                         path: '/a/combo/manage',
-                        component: ManageCombo
+                        component: ManageComboContainer
                     },
                     {
                         path: '/a/combo/detail/:id',

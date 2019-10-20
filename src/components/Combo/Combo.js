@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react'
 import { Switch } from 'react-router-dom'
 
+import './Combo.scss'
 import { RouteWithSubRoutes } from '../../routes/RouteWithSubRoutes'
 import { PageLoading } from '../common/PageLoading/PageLoading'
 
