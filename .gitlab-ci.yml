@@ -27,20 +27,20 @@ build_job:
     paths:
       - build/
 
-unit_test:
-  stage: test
-  script:
-    - npm test
+# unit_test:
+#   stage: test
+#   script:
+#     - npm test
 
-code_quality:
-  stage: test
-  script:
-    - npm test
+# code_quality:
+#   stage: test
+#   script:
+#     - npm test
 
-performance:
-  stage: test
-  script:
-    - npm test
+# performance:
+#   stage: test
+#   script:
+#     - npm test
 
 deploy as review app:
   image: rambabusaravanan/firebase
