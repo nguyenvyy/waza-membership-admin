@@ -17,7 +17,7 @@ export const receiveDetailVouchers = vouchers => ({ type: RECEIVE_DETAIL_VOUCHER
 export const featchVouchers = (params) => async (dispatch, getState) => {
     dispatch(requestVouchers())
     try {
-        const user = getState().user.user;
+        const user = getState().user.info;
         const token = user && user.token
         const data = await getVouchersFromAPI(params, token);
         dispatch(receiveVouchers(data))
