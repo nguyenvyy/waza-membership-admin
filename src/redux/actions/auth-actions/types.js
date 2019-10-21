@@ -1,0 +1,4 @@
+export const LOGIN = 'LOGIN'
+export const STOP_LOGIN = 'STOP_LOGIN'
+export const AUTHENTICATION_SUCCEEDED = 'AUTHENTICATION_SUCCEEDED'
+export const LOGOUT = 'LOGOUT'
