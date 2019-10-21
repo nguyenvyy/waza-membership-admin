@@ -3,7 +3,7 @@ import { serverURL } from "../../../constant";
 
 export const loginRequest = user => Axios({
     method: 'POST',
-    url: `${serverURL}/user/login`,
+    url: `${serverURL}/users/login`,
     responseType: 'json',
     headers: {
         'Content-Type': 'application/json',
@@ -14,7 +14,7 @@ export const loginRequest = user => Axios({
 
 export const logoutRequest = token => Axios({
     method: 'POST',
-    url: `${serverURL}/user/logout`,
+    url: `${serverURL}/users/logout`,
     responseType: 'json',
     headers: {
         'Content-Type': 'application/json',

@@ -1,0 +1,24 @@
+[{
+    "user": {
+        "isDeleted": false,
+        "_id": "5dac3ad4645b72001790ce47",
+        "username": "admin",
+        "createdAt": "2019-10-20T10:45:40.205Z",
+        "updatedAt": "2019-10-21T02:54:31.253Z",
+        "__v": 4
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGFjM2FkNDY0NWI3MjAwMTc5MGNlNDciLCJpYXQiOjE1NzE2MjY0NzF9.hqWRoNx7b8ti_gvSSoJVszLmXZRx-nENEDzm-ydHvHo"
+},
+{
+    "user": {
+        "isDeleted": false,
+        "_id": "5dada510e10f660017c254df",
+        "username": "nguyenvy",
+        "password": "Vy@123",
+        "createdAt": "2019-10-21T12:31:12.650Z",
+        "updatedAt": "2019-10-21T12:31:13.003Z",
+        "__v": 1
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGFkYTUxMGUxMGY2NjAwMTdjMjU0ZGYiLCJpYXQiOjE1NzE2NjEwNzJ9.X0MzrRlSFbGbAmkq02IWJhBZnwsRcNWZSUoVy3yiaQY"
+}
+]

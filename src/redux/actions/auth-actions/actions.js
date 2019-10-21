@@ -1,21 +1,21 @@
 import { LOGIN, AUTHENTICATION_SUCCEEDED, STOP_LOGIN, LOGOUT } from "./types";
 import { loginRequest } from "./services";
 
-export const requestLogin = () => ({type: LOGIN})
+export const login = () => ({type: LOGIN})
 export const saveUser = user => ({type: AUTHENTICATION_SUCCEEDED, user})
 export const stopLogin = () => ({type: STOP_LOGIN})
 export const logout = () => ({type: LOGOUT})
 
-export const login = user => dispatch => {
-    dispatch(requestLogin())
-    loginRequest(user)
+export const requestLogin = user => dispatch => {
+    dispatch(login())
+    return loginRequest(user)
         .then(res => {
-            saveUser(res.data)
-            stopLogin()
+            dispatch(saveUser(res.data))
+            dispatch(stopLogin())
             return res
         })
         .catch(err => {
-            stopLogin()
-            return err
+            dispatch(stopLogin())
+            return err.response
         })
 }
