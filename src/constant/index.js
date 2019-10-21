@@ -1,1 +1,1 @@
-export const serverURL = 'https://dnguyen-combo-manager.herokuapp.com/'
+export const serverURL = 'https://dnguyen-combo-manager.herokuapp.com'
