@@ -8,10 +8,12 @@ export const receiveCombos = (combos) => ({ type: RECEIVE_COMBOS, combos, receiv
 export const receiveExtraCombos = (combos) => ({ type: RECEIVE_EXTRA_COMBOS, combos, receiveAt: Date.now() })
 export const receiveDetailCombo = combo => ({ type: RECEIVE_DETAIL_COMBO, combo, receiveAt: Date.now() })
 
-export const featchCombos = (params) => async dispatch => {
+export const featchCombos = (params) => async (dispatch, getState) => {
     dispatch(requestCombos())
     try {
-        const res = await getComboFromAPI(params);
+        const user = getState().user.user;
+        const token = user && user.token
+        const res = await getComboFromAPI(params, token);
         dispatch(receiveCombos(res.data));
     }
     catch (err) {
@@ -20,10 +22,12 @@ export const featchCombos = (params) => async dispatch => {
     }
 }
 
-export const featchExtraCombos = (params) => async dispatch => {
+export const featchExtraCombos = (params) => async (dispatch, getState) => {
     dispatch(requestCombos())
     try {
-        const res = await getComboFromAPI(params);
+        const user = getState().user.user;
+        const token = user && user.token
+        const res = await getComboFromAPI(params, token);
         dispatch(receiveExtraCombos(res.data));
     }
     catch (err) {
@@ -32,26 +36,30 @@ export const featchExtraCombos = (params) => async dispatch => {
     }
 }
 
-export const featchDetailCombo = (_id) => async dispatch => {
+export const featchDetailCombo = (_id) => async (dispatch, getState) => {
     dispatch(requestCombos())
     try {
+        const user = getState().user.user;
+        const token = user && user.token
         const res = await getDetailComboFromAPI(_id);
-        dispatch(receiveDetailCombo(res.data));
+        dispatch(receiveDetailCombo(res.data, token));
     }
     catch (err) {
         dispatch(stopRequestCombos())
-        
+
         return err;
     }
 }
 
 
-export const addCombo = combo => ({ type: ADD_COMBO, combo, receiveAt: Date.now()})
-export const editCombo = combo => ({type: EDIT_COMBO, combo, receiveAt: Date.now()})
-export const deleteCombo = combo => ({type: DELETE_COMBO, combo, receiveAt: Date.now()})
+export const addCombo = combo => ({ type: ADD_COMBO, combo, receiveAt: Date.now() })
+export const editCombo = combo => ({ type: EDIT_COMBO, combo, receiveAt: Date.now() })
+export const deleteCombo = combo => ({ type: DELETE_COMBO, combo, receiveAt: Date.now() })
 
-export const addPostCombo = combo => dispatch => {
-    return postComboToAPI(combo)
+export const addPostCombo = combo => (dispatch, getState) => {
+    const user = getState().user.user;
+    const token = user && user.token
+    return postComboToAPI(combo, token)
         .then(res => {
             dispatch(addCombo(res.data))
             return res
@@ -62,13 +70,15 @@ export const addPostCombo = combo => dispatch => {
         })
 }
 
-export const editPatchCombo = (combo) => dispatch => {
-    const allowedUpdates = ['combo_name','description','value','state','from_date','to_date','voucher_array','days']
+export const editPatchCombo = (combo) => (dispatch, getState) => {
+    const allowedUpdates = ['combo_name', 'description', 'value', 'state', 'from_date', 'to_date', 'voucher_array', 'days']
     const updates = allowedUpdates.reduce((acc, curr) => {
         acc[curr] = combo[curr]
         return acc
     }, {})
-    return editComboToAPI(updates, combo._id)
+    const user = getState().user.user;
+    const token = user && user.token
+    return editComboToAPI(updates, combo._id, token)
         .then(res => {
             dispatch(editCombo(res.data))
             return res
@@ -79,13 +89,15 @@ export const editPatchCombo = (combo) => dispatch => {
         })
 }
 
-export const stopPatchCombo = (combo) => dispatch => {
+export const stopPatchCombo = (combo) => (dispatch, getState) => {
+    const user = getState().user.user;
+    const token = user && user.token
     const allowedUpdates = ['state']
     const updates = allowedUpdates.reduce((acc, curr) => {
         acc[curr] = combo[curr]
         return acc
     }, {})
-    return editComboToAPI(updates, combo._id)
+    return editComboToAPI(updates, combo._id, token)
         .then(res => {
             dispatch(editCombo(res.data))
             return res
@@ -96,8 +108,10 @@ export const stopPatchCombo = (combo) => dispatch => {
         })
 }
 
-export const deletePatchCombo = _id => dispatch => {
-    return deleteComboToAPI(_id)
+export const deletePatchCombo = _id => (dispatch, getState) => {
+    const user = getState().user.user;
+    const token = user && user.token
+    return deleteComboToAPI(_id, token)
         .then(res => {
             dispatch(deleteCombo(res.data))
             return res

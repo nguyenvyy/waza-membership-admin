@@ -14,10 +14,12 @@ export const receiveExtraVouchers = (vouchers) => ({ type: RECEIVE_EXTRA_VOUCHER
 export const receiveDetailVouchers = vouchers => ({ type: RECEIVE_DETAIL_VOUCHER, vouchers, receiveAt: Date.now() })
 
 
-export const featchVouchers = (params) => async dispatch => {
+export const featchVouchers = (params) => async (dispatch, getState) => {
     dispatch(requestVouchers())
     try {
-        const data = await getVouchersFromAPI(params);
+        const user = getState().user.user;
+        const token = user && user.token
+        const data = await getVouchersFromAPI(params, token);
         dispatch(receiveVouchers(data))
     }   
     catch (err) {

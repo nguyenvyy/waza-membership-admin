@@ -1,66 +1,71 @@
 import Axios from "axios";
+import { serverURL } from "../../../constant";
 
-
-export const getComboFromAPI = (params) => Axios(
+export const getComboFromAPI = (params, token) => Axios(
     {
         method: 'GET',
         responseType: "json",
-        url: 'https://dnguyen-combo-manager.herokuapp.com/combos',
+        url: `${serverURL}/combos`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
+            'Authorization': `Bearer ${token}`
         },
         params
     }
 )
 
-export const getDetailComboFromAPI = (_id) => Axios(
+export const getDetailComboFromAPI = (_id, token) => Axios(
     {
         method: 'GET',
         responseType: "json",
-        url: `https://dnguyen-combo-manager.herokuapp.com/combos/${_id}`,
+        url: `${serverURL}/combos/${_id}`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
+            'Authorization': `Bearer ${token}`
         }
     }
 )
 
-export const postComboToAPI = (data) => Axios(
+export const postComboToAPI = (data, token) => Axios(
     {
         method: 'POST',
         responseType: "json",
-        url: 'https://dnguyen-combo-manager.herokuapp.com/combos/new',
+        url: `${serverURL}/combos/new`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
+            'Authorization': `Bearer ${token}`
         },
         data
     }
 )
 
-export const editComboToAPI = (data, _id) => Axios(
+export const editComboToAPI = (data, _id, token) => Axios(
     {
         method: 'PATCH',
         responseType: "json",
-        url: `https://dnguyen-combo-manager.herokuapp.com/combos/edit/${_id}`,
+        url: `${serverURL}/combos/edit/${_id}`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
+            'Authorization': `Bearer ${token}`
         },
         data
     }
 )
 
 //delete combo by Id
-export const deleteComboToAPI = (_id) => Axios(
+export const deleteComboToAPI = (_id, token) => Axios(
     {
         method: 'PATCH',
         responseType: "json",
-        url: `https://dnguyen-combo-manager.herokuapp.com/combos/del/${_id}`,
+        url: `${serverURL}/combos/del/${_id}`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
+            'Authorization': `Bearer ${token}`
         }
     }
 )

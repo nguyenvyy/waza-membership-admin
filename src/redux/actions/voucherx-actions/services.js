@@ -1,13 +1,15 @@
 import Axios from "axios"
+import { serverURL } from "../../../constant"
 
-export const getVouchersFromAPI = (params) => Axios(
+export const getVouchersFromAPI = (params, token) => Axios(
     {
         method: 'GET',
         responseType: "json",
-        url: 'https://dnguyen-combo-manager.herokuapp.com/vouchers',
+        url: `${serverURL}/vouchers`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
+            'Authorization': `Bearer ${token}`
         },
         params
     }
