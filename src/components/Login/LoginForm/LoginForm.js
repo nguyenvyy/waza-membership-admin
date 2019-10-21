@@ -1,37 +1,91 @@
-import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
-
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'
 import './LoginForm.scss'
 import { Input } from '../../common/Input';
+import { Button, message } from 'antd';
+import { requestLogin } from '../../../redux/actions/auth-actions/actions';
 
 
 export const LoginForm = () => {
-    const history = useHistory()
-    const onSubmit = (e) => {
-        e.preventDefault();
-        history.push({
-            pathname: '/'
+    const isLogging = useSelector(state => state.user.isLoadingUser)
+    const dispath = useDispatch()
+    const [user, setUser] = useState({
+        username: '',
+        password: ''
+    })
+    useEffect(() => {
+        const user = localStorage.getItem('user')
+        if (user !== null) {
+            setUser(JSON.parse(user))
+        }
+    }, [])
+    const [isRemember, setIsRemember] = useState(false)
+    const onChangeRemember = e => {
+        setIsRemember(!isRemember)
+    }
+
+
+    const onChange = ({ target: { name, value } }) => {
+        setUser({
+            ...user,
+            [name]: value
         })
     }
+
+    const handleLogin = _ => {
+
+        dispath(requestLogin(user)).then(res => {
+            switch (res.status) {
+                case 200:
+                    message.success('Login success')
+                    if (isRemember) {
+                        localStorage.setItem('user', JSON.stringify(user))
+                    }
+                    break;
+                case 400:
+                    message.error('username or password is incorrect')
+                    break;
+                default:
+                    message.error('Login failed')
+                    break;
+            }
+        })
+    }
+    const onEnter = e => {
+        if (e.keyCode === 13) {
+            handleLogin()
+        }
+    }
     return (
-        <form className="login-form d-flex-col"  onSubmit={onSubmit}>
-            <label className="login-form-title" htmlFor="username">Login</label>
+        <div className="login-form d-flex-col" >
+            <label className="login-form-title" htmlFor="username">Waza MemberShip(Admin)</label>
             <div className="wrap-input">
-                <Input className="input" id="username" placeholder="Username" />
+                <Input className="input" name="username" placeholder="Username"
+                    value={user.username}
+                    onChange={onChange}
+                    onKeyUp={onEnter}
+                />
             </div>
             <div className="wrap-input">
-                <Input className="input" type="password" placeholder="Password" />
+                <Input className="input" name="password" type="password" placeholder="Password"
+                    value={user.password}
+                    onChange={onChange}
+                    onKeyUp={onEnter}
+                />
             </div>
             <div className="d-flex justify-content-between form-group ">
                 <div className="remember-user">
-                    <Input id="remember" type="checkbox"/>
+                    <Input id="remember" type="checkbox" checked={isRemember} onChange={onChangeRemember} />
                     <label htmlFor="remember">Remember me</label>
                 </div>
                 <div>
                     <Link className="forgot-password" to="/forgot-password">Forgot</Link>
                 </div>
             </div>
-            <Input className="btn btn-submit" type="submit" value="Login" />
-        </form>
+            <Button className="btn-submit" loading={isLogging} onClick={handleLogin}>
+                LOGIN
+            </Button>
+        </div>
     )
 }
