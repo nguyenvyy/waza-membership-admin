@@ -17,5 +17,9 @@ export const DropMenu = ({type = DOWN, items, ...rest}) => {
                 throw new Error('Drop type is invalid')
         }
     }, [type])
-    return <MenuItems className={`${dropClassType}`} items={items}  {...rest} />
+    return (
+        <div className={`${dropClassType}`}>
+            <MenuItems className="drop-menu" items={items}  {...rest} />
+        </div>
+    )
 }
