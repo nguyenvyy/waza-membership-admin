@@ -1,17 +1,8 @@
 import { LOGIN, AUTHENTICATION_SUCCEEDED, STOP_LOGIN, LOGOUT } from "../actions/auth-actions/types"
-const user = {
-    isDeleted: false,
-    _id: '5dada510e10f660017c254df',
-    username: 'nguyenvy',
-    createdAt: '2019-10-21T12:31:12.650Z',
-    updatedAt: '2019-10-21T16:48:15.543Z',
-    __v: 33,
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGFkYTUxMGUxMGY2NjAwMTdjMjU0ZGYiLCJpYXQiOjE1NzE2Nzc3Njd9.fZ4E21dIvgMDq15ehxfi07bCujGtQGtgEoM813UNq50'
-}
 
 const initState = {
-    info: user,
-    isLoggedIn: true,
+    info: null,
+    isLoggedIn: false,
     isLoadingUser: false,
 }
 

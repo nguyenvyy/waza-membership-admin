@@ -1,5 +1,5 @@
 import { LOGIN, AUTHENTICATION_SUCCEEDED, STOP_LOGIN, LOGOUT } from "./types";
-import { loginRequest } from "./services";
+import { loginRequest, logoutRequest } from "./services";
 
 export const login = () => ({type: LOGIN})
 export const saveUser = user => ({type: AUTHENTICATION_SUCCEEDED, user})
@@ -17,5 +17,19 @@ export const requestLogin = user => dispatch => {
         .catch(err => {
             dispatch(stopLogin())
             return err.response
+        })
+}
+
+export const requestLogout = () => (dispatch, getState) => {
+    const user = getState().user.info;
+    const token = user && user.token
+    return logoutRequest(token)
+        .then(res => {
+            dispatch(logout())
+            return res
+        })
+        .catch(err => {
+            dispatch(logout())
+            return err
         })
 }
