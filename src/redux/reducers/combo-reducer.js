@@ -6,7 +6,7 @@ const initState = {
     isFetching: false,
     detailCombo: {},
     page: -1,
-    maxLenght: 0
+    maxPage: 0
 }
 
 export const comboReducer = (state = initState, action) => {

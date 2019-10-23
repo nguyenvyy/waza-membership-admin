@@ -4,7 +4,8 @@ const initStateVoucher = {
     items: [],
     detailVouchers: [],
     isFetching: false,
-    page: -1
+    page: -1,
+    maxPage: 0
 }
 
 
@@ -16,6 +17,7 @@ export const voucherxReducer = (state = initStateVoucher, action) => {
             return { ...state, isFetching: false }
         case RECEIVE_VOUCHER:
             return {
+                maxPage: state.maxPage,
                 page: 9999,
                 isFetching: false,
                 items: action.vouchers,
