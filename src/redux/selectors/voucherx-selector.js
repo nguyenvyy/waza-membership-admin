@@ -10,6 +10,6 @@ const checkVoucherValidWithIds = (id, ids) => {
 export const getVouchersDetailByIds = createSelector(
     [getVouchers, getIds],
     (vouchers, ids) => {
-        console.log('re-computed')
         return vouchers.filter(voucher => checkVoucherValidWithIds(voucher._id, ids))}
 )
+
