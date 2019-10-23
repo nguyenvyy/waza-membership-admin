@@ -28,8 +28,8 @@ const ActiveCombo = ({
             featchCombos({ page: 0, limit: 9999 })
     }, [featchCombos, isMaxPageCombo])
     useEffect(() => {
-        if(!isMaxPageVoucher)
-            featchVouchers({page: 0, limit: 9999})
+        if (!isMaxPageVoucher)
+            featchVouchers({ page: 0, limit: 9999 })
     }, [featchVouchers, isMaxPageVoucher])
 
     const [isSearching, setIsSearching] = useState(false);
@@ -64,8 +64,9 @@ const ActiveCombo = ({
             ...combo,
             state: false
         }
+
         stopPatchCombo(newCombo).then(res => {
-            switch (res.status) {
+            switch (res && res.status) {
                 case 200:
                     setTimeout(hide, 50);
                     message.success('Stop combo success', 2)
@@ -81,6 +82,7 @@ const ActiveCombo = ({
                     message.warning(`${res.data.message}`, 3);
                     break;
                 default:
+                    message.error('Unknown Error', 2);
                     setTimeout(hide, 50);
                     break;
             }
