@@ -3,10 +3,9 @@ import { Link } from 'react-router-dom'
 import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInCombo'
 import { Divider } from 'antd'
 
-const VouchersDetail = ({voucher_array = [], isFetchingVoucher}) => {
+const VouchersDetail = ({voucher_array = [], isFetchingVoucher = true}) => {
     const vouchers =  useVouchersDetailInCombo(voucher_array)
     const discountDetail = (value, maxValue, persent) => {
-        console.log(value, maxValue, persent)
         const discountValue = value > 0 ? `${value} ` : ''
         const discountPersent = (persent > 0 && maxValue === 0) ? `${persent}% ` : ''
         const discountCombine = (persent > 0 && maxValue > 0) ? `${persent}% - max: ${maxValue} ` : ''

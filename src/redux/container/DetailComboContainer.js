@@ -1,14 +1,23 @@
 import { connect } from 'react-redux'
 import { featchDetailCombo } from '../actions/combo-actions/actions'
 import DetailCombo from '../../components/Combo/DetailCombo/DetailCombo'
+import { featchVouchers } from '../actions/voucherx-actions/actions'
 
-const mapStateToProps = (state, ownProps) => {
-    return {combo: state.combo.detailCombo, isFetching: state.combo.isFetching}
+const mapStateToProps = ({combo, voucherx}, ownProps) => {
+    
+    const isMaxPageVoucher = (voucherx.page >= voucherx.maxPage) ? true : false
+    return {
+        combo: combo.detailCombo, 
+        isFetching: combo.isFetching,
+        isFetchingVoucher: voucherx.isFetching,
+        isMaxPageVoucher
+    }
 }
 
 
 const mapDispatchToProps = {
-    featchDetailCombo
+    featchDetailCombo,
+    featchVouchers
 }
 
 const DetailComboContainer = connect(mapStateToProps, mapDispatchToProps)(DetailCombo)
