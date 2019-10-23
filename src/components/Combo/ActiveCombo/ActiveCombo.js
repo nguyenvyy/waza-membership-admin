@@ -4,22 +4,33 @@ import { Link } from 'react-router-dom'
 import { Table, Divider, Input, Form, message } from 'antd';
 
 import './ActiveCombo.scss'
-import { debounce } from '../../../utils';
+import { debounce, formatVND } from '../../../utils';
 import { Header } from '../Header/Header';
+import moment from 'moment';
+import { formatOfDateFromDB, dateFormat } from '../../../constant';
+import VouchersShort from '../VouchersInCombo/VouchersShort';
+import VouchersDetail from '../VouchersInCombo/VouchersDetail';
 
-const VouchersDetail = ({ voucher_array }) => (
-    <>
-        <ul>
-            {voucher_array.map((item, index) =>  <li key={index}>{item.voucher_id} x {item.count}, detail....</li>)}
-        </ul>
-    </>
-)
 
-const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo, page, stopPatchCombo }) => {
-    useEffect(() =>{
-        if(page !== 9999)
-        featchCombos({page: 0, limit: 9999})
-    }, [featchCombos, page])
+const ActiveCombo = ({
+    combos,
+    isFetchingCombo,
+    isMaxPageCombo,
+    isFetchingVoucher,
+    isMaxPageVoucher,
+    featchCombos,
+    receiveDetailCombo,
+    stopPatchCombo,
+    featchVouchers
+}) => {
+    useEffect(() => {
+        if (!isMaxPageCombo)
+            featchCombos({ page: 0, limit: 9999 })
+    }, [featchCombos, isMaxPageCombo])
+    useEffect(() => {
+        if(!isMaxPageVoucher)
+            featchVouchers({page: 0, limit: 9999})
+    }, [featchVouchers, isMaxPageVoucher])
 
     const [isSearching, setIsSearching] = useState(false);
 
@@ -34,10 +45,9 @@ const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo, pag
 
     const searchCombo = useCallback(
         debounce(str => {
-            setDisplayCombos(combos.filter(combo => combo.combo_name.includes(str)))
+            setDisplayCombos(combos.filter(combo => combo.combo_name.toUpperCase().includes(str.toUpperCase())))
         }, 300), [combos]
     )
-
     const [search, setSearch] = useState('');
     useEffect(() => {
         searchCombo(search)
@@ -80,7 +90,7 @@ const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo, pag
     const tableConfig = {
         pagination: { position: 'top' },
         size: 'small',
-        expandedRowRender: VouchersDetail,
+        expandedRowRender: record => <VouchersDetail isFetchingVoucher={isFetchingVoucher} voucher_array={record.voucher_array} />,
         scroll: { y: 450 },
         rowKey: () => uuid()
     }
@@ -92,35 +102,43 @@ const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo, pag
             width: 100
         },
         {
+            key: 'price',
+            title: 'Price',
+            dataIndex: 'value',
+            render: price => formatVND(price),
+            sorter: (a, b) => a.value - b.value,
+            width: 100
+        },
+        {
             key: 'duration',
             title: 'Duration',
             dataIndex: 'days',
             render: days => `${days} Ngày`,
+            sorter: (a, b) => a.days - b.days,
             width: 100
         },
         {
             key: 'fromDate',
             title: 'From',
             dataIndex: 'from_date',
+            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
             width: 150,
-            sorter: (a, b) => new Date(a.id) - new Date(b.id)
+            sorter: (a, b) => new Date(a.from_date) - new Date(b.from_date)
         },
         {
             key: 'toDate',
             title: 'To',
             dataIndex: 'to_date',
+            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
             width: 150,
-            sorter: (a, b) => new Date(a.id) - new Date(b.id)
+            sorter: (a, b) => new Date(a.from_date) - new Date(b.from_date)
         },
         {
             key: 'voucherArray',
             title: 'Vouchers',
             dataIndex: 'voucher_array',
-            render: vouchers => (
-                <ul className="voucher-list">
-                    {vouchers.map((item, index) => <li key={index}>{item.voucher_id} x {item.count}</li>)}
-                </ul>
-            ),
+            render: vouchers => <VouchersShort isFetchingVoucher={isFetchingVoucher} voucher_array={vouchers} />,
+            sorter: (a, b) => a.voucher_array.length - b.voucher_array.length,
             width: 150
         },
         {
@@ -146,16 +164,14 @@ const ActiveCombo = ({ combos, isFetching, featchCombos, receiveDetailCombo, pag
                         label="Search"
                         hasFeedback={isSearching}
                         validateStatus="validating"
-                        
                     >
-                        <Input value={search} onChange={searchChange}  placeholder="enter combo name" id="validating" />
+                        <Input value={search} onChange={searchChange} placeholder="enter combo name" id="validating" />
                     </Form.Item>
                 </Form>
-
             </div>
             <div className="combo-list">
                 <Table
-                    loading={isFetching}
+                    loading={isFetchingCombo}
                     {...tableConfig}
                     dataSource={(displayCombos.length > 0 ? displayCombos : null)}
                     columns={columns}
