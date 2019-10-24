@@ -1,0 +1,10 @@
+.detail-combo {
+    width: 100%;
+    & .body {
+        margin: 0 10px;
+        & .panel {
+            padding: 5px 0;
+            
+        }
+    }
+}
