@@ -8,3 +8,8 @@ export const checkStatusCombo = combo => {
     else
         return { text: comboStatus.stop, processing: 'warning' }
 }
+
+export const objectConverttoArr = (selectedVouchers) => {
+    const keys = Object.keys(selectedVouchers);
+    return keys.map(key => selectedVouchers[key])
+}

@@ -1,19 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, memo, useCallback } from 'react'
 import uuid from 'uuid'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
 import ButtonGroup from 'antd/lib/button/button-group'
 import { Button, Icon, Input, Form, DatePicker, Select, Table, Divider, message } from 'antd'
 
+import './EditCombo.scss'
 import { Header } from '../Header/Header'
 import { ComboNotFound } from '../CompoNotFound'
 import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
 import { PageLoading } from '../../common/PageLoading/PageLoading'
+import { formatOfDateFromDB } from '../../../constant'
+import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInCombo'
+import { objectConverttoArr } from '../../../utils/combo'
 
-const VouchersDetail = voucher => <p>voucher</p>
 
-const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, isFetching }) => {
+const EditCombo = ({
+    combo, history, match, featchDetailCombo, editPatchCombo, isFetching,
+    isMaxPageVoucher, featchVouchers
+}) => {
+    useEffect(() => {
+        if (!isMaxPageVoucher)
+            featchVouchers({ page: 0, limit: 9999 })
+    }, [featchVouchers, isMaxPageVoucher])
     const [changedCombo, setChangedCombo] = useState({
         value: 0,
         combo_name: '',
@@ -40,13 +50,12 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
     const onChangeState = value => {
         setChangedCombo({ ...changedCombo, state: value === 'true' ? true : false })
     }
-
-    const dateFormat = 'YYYY/MM/DD'
     const onChangeRangePicker = ([from, to]) => {
-        setChangedCombo({ ...changedCombo, from_date: from.format(dateFormat), to_date: to.format(dateFormat) })
+        setChangedCombo({ ...changedCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
     }
     const disabledDate = current => current && current <= moment().endOf('day')
 
+    const vouchers = useVouchersDetailInCombo(combo.voucher_array)
     // manage selected voucher
     const [selectedVouchers, setSelectedVouchers] = useState({
         move: {
@@ -62,6 +71,22 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
             count: 0
         },
     })
+    // handle transfer vouchersdetail to selectedVouchers
+    useEffect(() => {
+        if (vouchers.length > 0) {
+            const initselectedVouchers = vouchers.reduce((acc, curr) => {
+                acc[curr.value.subcategory] = {
+                    value: curr.value,
+                    count: curr.count
+                }
+                return acc
+            }, {})
+            setSelectedVouchers({
+                ...selectedVouchers,
+                ...initselectedVouchers
+            })
+        }
+    }, [combo.voucher_array, isMaxPageVoucher])
 
     // handle close/open  SelectVoucherModal
     const [isOpenSelectVoucherModal, setIsOpenSelectVoucherModal] = useState(false);
@@ -97,7 +122,19 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
         }
     }
     // handle edit selected voucher 
-    const onChangeCount = (e, subcategory) => {
+    const onChangeCount = (e, subcategory, directive) => {
+        if(directive) {
+            const newCount = selectedVouchers[subcategory].count + directive
+            const count = newCount > 50 ? 50 : newCount
+            setSelectedVouchers({
+                ...selectedVouchers,
+                [subcategory]: {
+                    ...selectedVouchers[subcategory],
+                    count
+                }
+            })
+            return
+        }
         const count = +e.target.value > 50 ? 50 : +e.target.value
         setSelectedVouchers({
             ...selectedVouchers,
@@ -107,7 +144,7 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
             }
         })
     }
-    const handleDeleteVoucher = (e, subcategory) => {
+    const handleDeleteVoucher = (_, subcategory) => {
         setSelectedVouchers({
             ...selectedVouchers,
             [subcategory]: {
@@ -119,17 +156,12 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
 
 
     // handle to display voucher in table selected voucher
-    const objectConverttoArr = (selectedVouchers) => {
-        const keys = Object.keys(selectedVouchers);
-        return keys.map(key => selectedVouchers[key])
-    }
     const selectedVouchersArr = useMemo(() => {
         return objectConverttoArr(selectedVouchers).filter(voucher => voucher.value !== null && voucher.count > 0)
     }, [selectedVouchers])
     const tableConfig = {
         pagination: false,
         size: 'small',
-        expandedRowRender: VouchersDetail,
         rowKey: () => uuid()
     }
     const columns = [
@@ -157,9 +189,11 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
             title: 'Action',
             render: (_, record) => (
                 <span>
-                    <Link className="fake-link" to={`/a/voucher/detail/${record.value._id}`}>ViewDetal</Link>
+                    <Icon type="plus-circle" className="pointer fake-link" onClick={(e) => onChangeCount(e, record.value.subcategory, 1)} />
                     <Divider type="vertical" />
-                    <span className="fake-link" onClick={(e) => handleDeleteVoucher(e, record.value.subcategory)}>Delete</span>
+                    <Icon type="minus-circle" className="pointer fake-link" onClick={(e) => onChangeCount(e, record.value.subcategory, -1)} />
+                    <Divider type="vertical" />
+                    <span className="fake-link" onClick={(e) => handleDeleteVoucher(e, record.value.subcategory)}>delete</span>
                 </span>
             ),
             width: 200
@@ -168,11 +202,6 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
 
 
 
-
-    const onSubmit = e => {
-        e.preventDefault();
-
-    }
     const goBack = () => history.goBack()
     const saveChangedCombo = () => {
         const hide = message.loading('Edit combo....', 0);
@@ -182,7 +211,7 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
             voucher_array
         }
         editPatchCombo(combo).then(res => {
-            switch (res.status) {
+            switch (res && res.status) {
                 case 200:
                     setTimeout(hide, 100);
                     message.success('Edit combo success', 2)
@@ -204,16 +233,17 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
         })
     }
 
+
     return (
         <div className="edit-combo">
             <Header title="Edit Combo" />
             {
                 (combo._id === undefined) ? (
-                    isFetching ?  <PageLoading /> : <ComboNotFound />
+                    isFetching ? <PageLoading /> : <ComboNotFound />
                 ) : (
-                        <>
+                        <div className="body">
                             <div className="edit-from">
-                                <Form layout="horizontal" labelAlign="left" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onSubmit={onSubmit}>
+                                <Form layout="horizontal" labelAlign="left" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} >
                                     <Form.Item label="Name" wrapperCol={{ span: 4 }}>
                                         <Input id="combo_name" onChange={onChange} value={changedCombo.combo_name} />
                                     </Form.Item>
@@ -229,7 +259,7 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
                                             disabledDate={disabledDate}
                                             value={
                                                 changedCombo.to_date !== null ?
-                                                    [moment(changedCombo.from_date, dateFormat), moment(changedCombo.to_date, dateFormat)] :
+                                                    [moment(changedCombo.from_date, formatOfDateFromDB), moment(changedCombo.to_date, formatOfDateFromDB)] :
                                                     null
                                             }
                                             format={'DD/MM/YYYY'}
@@ -247,8 +277,8 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
                                             onChange={onChangeState}
                                             value={`${changedCombo.state}`}
                                         >
-                                            <Select.Option value={`true`}>Đang hoạt động</Select.Option>
-                                            <Select.Option value={`false`}>Dừng</Select.Option>
+                                            <Select.Option value={`true`}>true</Select.Option>
+                                            <Select.Option value={`false`}>false</Select.Option>
                                         </Select>
                                     </Form.Item>
                                     <Form.Item label="Description" wrapperCol={{ span: 18 }}>
@@ -271,7 +301,7 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
                                     </Form.Item>
                                 </Form>
                             </div>
-                            <div className="d-flex-center">
+                            <div className="d-flex-center panel">
                                 <ButtonGroup>
                                     <Button onClick={goBack} className="go-back" type="primary">
                                         Go back
@@ -283,7 +313,7 @@ const EditCombo = ({ combo, history, match, featchDetailCombo, editPatchCombo, i
                                     </Button>
                                 </ButtonGroup>
                             </div>
-                        </>
+                        </div>
                     )
             }
         </div>
