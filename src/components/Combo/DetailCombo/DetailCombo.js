@@ -6,14 +6,16 @@ import './DetailCombo.scss'
 import { Header } from '../Header/Header'
 import { PageLoading } from '../../common/PageLoading/PageLoading'
 import { ComboNotFound } from '../CompoNotFound'
+import { checkStatusCombo } from '../../../utils/combo'
 import VouchersDetail from '../VouchersInCombo/VouchersDetail'
+
 
 
 
 const DetailCombo = ({
     combo, history, match, isFetching, isFetchingVoucher, featchDetailCombo,
     isMaxPageVoucher, featchVouchers }) => {
-    const { _id, combo_name, description, value, state, from_date, to_date, voucher_array, isDeleted, days } = combo
+    const { _id, combo_name, description, value, from_date, to_date, voucher_array, days } = combo
     useEffect(() => {
         if (_id === undefined) featchDetailCombo(match.params.id)
     }, [_id, featchDetailCombo, match.params.id])
@@ -23,16 +25,7 @@ const DetailCombo = ({
         if (!isMaxPageVoucher)
             featchVouchers({ page: 0, limit: 9999 })
     }, [featchVouchers, isMaxPageVoucher])
-    const status = useMemo(
-        _ => {
-            if (isDeleted) return { text: 'Đã xóa', processing: 'error' }
-            if (state)
-                return { text: 'Đang hoạt động', processing: 'processing' }
-            else
-                return { text: 'Đã dừng', processing: 'warning' }
-
-        }, [isDeleted, state]
-    )
+    const status = checkStatusCombo(combo)
 
     return (
         <div className="detail-combo">
