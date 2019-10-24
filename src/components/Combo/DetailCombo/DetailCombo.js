@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Button, Icon, Descriptions, Badge } from 'antd'
 import ButtonGroup from 'antd/lib/button/button-group'
 
