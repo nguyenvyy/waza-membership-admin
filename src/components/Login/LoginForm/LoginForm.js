@@ -36,7 +36,7 @@ export const LoginForm = () => {
     const handleLogin = _ => {
 
         dispath(requestLogin(user)).then(res => {
-            switch (res.status) {
+            switch (res && res.status) {
                 case 200:
                     message.success('Login success')
                     if (isRemember) {

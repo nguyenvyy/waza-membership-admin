@@ -13,7 +13,7 @@ export const UserInfo = memo(
         const handleLogout = () => {
             const hiden = message.loading('Logout...', 0)
             dispatch(requestLogout()).then(res => {
-                switch (res.status) {
+                switch (res && res.status) {
                     case 200:
                         message.success('Logout success',1)
                         break;

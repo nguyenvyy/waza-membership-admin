@@ -130,7 +130,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             ...newCombo
         }
         addPostCombo(combo).then(res => {
-            switch (res.status) {
+            switch (res && res.status) {
                 case 201:
                     setTimeout(hide, 100);
                     message.success('Add commo success',2)
