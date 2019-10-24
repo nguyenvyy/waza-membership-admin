@@ -1,16 +1,10 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import uuid from 'uuid'
 import moment from 'moment'
-import { Modal, Form, Input, DatePicker, Select, Button, Table, Divider, message } from 'antd'
-import { Link } from 'react-router-dom'
+import { Modal, Form, Input, DatePicker, Select, Button, Table, Divider, message, Icon } from 'antd'
 
 import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
 
-const VouchersDetail = ({ value: voucher }) => (
-    <p>
-        value: {voucher.value}, max value: {voucher.max_value}, persent: {voucher.discount}
-    </p>
-)
 
 export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, addPostCombo }) => {
     // data new combo
@@ -62,7 +56,19 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         }
     }
 
-    const onChangeCount = (e, subcategory) => {
+    const onChangeCount = (e, subcategory, directive) => {
+        if(directive) {
+            const newCount = selectedVouchers[subcategory].count + directive
+            const count = newCount > 50 ? 50 : newCount
+            setSelectedVouchers({
+                ...selectedVouchers,
+                [subcategory]: {
+                    ...selectedVouchers[subcategory],
+                    count
+                }
+            })
+            return
+        }
         const count = +e.target.value > 50 ? 50 : +e.target.value
         setSelectedVouchers({
             ...selectedVouchers,
@@ -72,7 +78,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             }
         })
     }
-    const deleteVoucher = (e, subcategory) => {
+    const handleDeleteVoucher = (e, subcategory) => {
         setSelectedVouchers({
             ...selectedVouchers,
             [subcategory]: {
@@ -153,7 +159,6 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     const tableConfig = {
         pagination: false,
         size: 'small',
-        expandedRowRender: VouchersDetail,
         rowKey: () => uuid()
     }
     const columns = [
@@ -181,9 +186,11 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             title: 'Action',
             render: (_, record) => (
                 <span>
-                    <Link className="fake-link" to={`/a/voucher/detail/${record.value._id}`}>ViewDetal</Link>
+                    <Icon type="plus-circle" className="pointer fake-link" onClick={(e) => onChangeCount(e, record.value.subcategory, 1)} />
                     <Divider type="vertical" />
-                    <span className="fake-link" onClick={(e) => deleteVoucher(e, record.value.subcategory)}>Delete</span>
+                    <Icon type="minus-circle" className="pointer fake-link" onClick={(e) => onChangeCount(e, record.value.subcategory, -1)} />
+                    <Divider type="vertical" />
+                    <span className="fake-link" onClick={(e) => handleDeleteVoucher(e, record.value.subcategory)}>delete</span>
                 </span>
             ),
             width: 200
