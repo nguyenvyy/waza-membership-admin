@@ -14,7 +14,7 @@ const VouchersDetail = ({voucher_array = [], isFetchingVoucher = true}) => {
     return  isFetchingVoucher ? (
         'loading...'
     ) : (
-        <ul>
+        <ul className="voucher-in-combo">
             {vouchers.map(({value, count}, index) => (
                 <li key={index}>
                     {`${count} x name:  ${value.voucher_name}, type: ${value.category}, service: ${value.subcategory}, discount: ${discountDetail(value.value, value.max_value, value.discount)}`}

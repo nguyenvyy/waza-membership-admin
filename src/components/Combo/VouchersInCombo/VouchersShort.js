@@ -6,7 +6,7 @@ const VouchersShort = ({voucher_array = [], isFetchingVoucher}) => {
     return  isFetchingVoucher ? (
         'loading...'
     ) : (
-        <ul>
+        <ul className="voucher-in-combo">
             {vouchers.map((voucher, index) => (
                 <li key={index}>
                     {voucher.value.voucher_name} x {voucher.count}

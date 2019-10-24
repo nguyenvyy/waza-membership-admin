@@ -1,0 +1,5 @@
+@for $i from 0 through 10 {
+    m-#{i}-#{i} {
+        margin: #{i}*10px #{i}*10px;
+    }
+}
