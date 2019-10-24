@@ -214,7 +214,7 @@ const EditCombo = ({
             switch (res && res.status) {
                 case 200:
                     setTimeout(hide, 100);
-                    message.success('Edit combo success', 2)
+                    message.success(`${combo.combo_name} edited`, 2)
                     break;
                 case 400:
                     setTimeout(hide, 100);
@@ -227,6 +227,7 @@ const EditCombo = ({
                     message.warning(`${res.data.message}`, 5);
                     break;
                 default:
+                    message.error('Unknown Error', 2);
                     setTimeout(hide, 100);
                     break;
             }

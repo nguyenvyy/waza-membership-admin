@@ -115,7 +115,7 @@ const ManageCombo = ({
                     message.warning(`${res.data.message}`, 3);
                     break;
                 default:
-                    message.error('Error', 2);
+                    message.error('Unknown Error', 2);
                     setTimeout(hide, 50);
                     break;
             }

@@ -35,9 +35,9 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     })
 
     const resetNewCombo = useCallback(() => {
-        setNewCombo({...newCombo})
-        setSelectedVouchers({...selectedVouchers})
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        setNewCombo({ ...newCombo })
+        setSelectedVouchers({ ...selectedVouchers })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     //handle change select voucher with select in table
@@ -57,7 +57,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     }
 
     const onChangeCount = (e, subcategory, directive) => {
-        if(directive) {
+        if (directive) {
             const newCount = selectedVouchers[subcategory].count + directive
             const count = newCount > 50 ? 50 : newCount
             setSelectedVouchers({
@@ -130,7 +130,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
 
     const handleAddCombo = () => {
         const hide = message.loading('Add combo....', 0);
-        let voucher_array = selectedVouchersArr.map(({count, value}) => ({count, voucher_id: value._id}));
+        let voucher_array = selectedVouchersArr.map(({ count, value }) => ({ count, voucher_id: value._id }));
         let combo = {
             voucher_array,
             ...newCombo
@@ -139,19 +139,21 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             switch (res && res.status) {
                 case 201:
                     setTimeout(hide, 100);
-                    message.success('Add commo success',2)
+                    message.success(`${combo.combo_name} added`, 2)
                     resetNewCombo();
                     break;
                 case 400:
                     setTimeout(hide, 100);
-                    message.error('Add combo fail',2);
-                    message.warning(`${res.data.message}`,3);
+                    message.error('Add combo fail', 2);
+                    message.warning(`${res.data.message}`, 3);
                     break;
                 default:
+                    message.error('Unknown Error', 2);
+                    setTimeout(hide, 50);
                     break;
             }
         })
-        
+
     }
 
 
