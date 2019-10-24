@@ -31,10 +31,10 @@ const ActiveCombo = ({
         if (!isMaxPageVoucher)
             featchVouchers({ page: 0, limit: 9999 })
     }, [featchVouchers, isMaxPageVoucher])
-
-    const [isSearching, setIsSearching] = useState(false);
-
     const [displayCombos, setDisplayCombos] = useState([]);
+    const [search, setSearch] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+    //handle search
     useEffect(() => {
         setDisplayCombos(combos)
         setSearch('')
@@ -48,7 +48,6 @@ const ActiveCombo = ({
             setDisplayCombos(combos.filter(combo => combo.combo_name.toUpperCase().includes(str.toUpperCase())))
         }, 300), [combos]
     )
-    const [search, setSearch] = useState('');
     useEffect(() => {
         searchCombo(search)
     }, [search, searchCombo])
@@ -69,7 +68,7 @@ const ActiveCombo = ({
             switch (res && res.status) {
                 case 200:
                     setTimeout(hide, 50);
-                    message.success('Stop combo success', 2)
+                    message.success(`${combo.combo_name} stopped`, 2)
                     break;
                 case 400:
                     setTimeout(hide, 50);
@@ -90,8 +89,7 @@ const ActiveCombo = ({
     }
 
     const tableConfig = {
-        pagination: { position: 'top' },
-        size: 'small',
+        pagination: { position: 'bottom' },
         expandedRowRender: record => <VouchersDetail isFetchingVoucher={isFetchingVoucher} voucher_array={record.voucher_array} />,
         scroll: { y: 450 },
         rowKey: () => uuid()
@@ -148,9 +146,9 @@ const ActiveCombo = ({
             title: 'Action',
             render: (record) => (
                 <span>
-                    <Link to={`/a/combo/detail/${record._id}`} onClick={() => receiveDetailCombo(record)}>View Detail</Link>
+                    <Link to={`/a/combo/detail/${record._id}`} onClick={() => receiveDetailCombo(record)}>view</Link>
                     <Divider type="vertical" />
-                    <span onClick={() => stopCombo(record)} className="fake-link">Stop</span>
+                    <span onClick={() => stopCombo(record)} className="fake-link">stop</span>
                 </span>
             ),
             width: 200
@@ -158,20 +156,20 @@ const ActiveCombo = ({
     ]
 
     return (
-        <div className="active-combos">
+        <div className="active-combo">
             <Header title="Active Combos" />
-            <div>
-                <Form layout="inline">
-                    <Form.Item
-                        label="Search"
-                        hasFeedback={isSearching}
-                        validateStatus="validating"
-                    >
-                        <Input value={search} onChange={searchChange} placeholder="enter combo name" id="validating" />
-                    </Form.Item>
-                </Form>
-            </div>
-            <div className="combo-list">
+            <div className="body">
+                <div className="panel">
+                    <Form layout="inline">
+                        <Form.Item
+                            label="Search"
+                            hasFeedback={isSearching}
+                            validateStatus="validating"
+                        >
+                            <Input value={search} onChange={searchChange} placeholder="enter combo name" id="validating" />
+                        </Form.Item>
+                    </Form>
+                </div>
                 <Table
                     loading={isFetchingCombo}
                     {...tableConfig}
