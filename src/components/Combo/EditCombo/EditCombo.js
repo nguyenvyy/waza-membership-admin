@@ -10,7 +10,7 @@ import { Header } from '../Header/Header'
 import { ComboNotFound } from '../CompoNotFound'
 import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
 import { PageLoading } from '../../common/PageLoading/PageLoading'
-import { formatOfDateFromDB } from '../../../constant'
+import { formatOfDateFromDB, dateFormat } from '../../../constant'
 import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInCombo'
 import { objectConverttoArr } from '../../../utils/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
@@ -33,9 +33,11 @@ const EditCombo = ({
         value: true,
         description: true,
         voucher_array: true,
-        days: true,
-        formValid: false
+        days: true
     })
+    const formValid = useMemo(() => {
+        return Object.values(formErrors).every(item => item === true)
+    }, [formErrors])
 
     const handleValidate = (name, value) => {
         let isValid = false
@@ -56,18 +58,11 @@ const EditCombo = ({
             case 'value':
                 isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkDivideBy(+value, 1000) && checkMinMax(+value, comboLimitValue.value.min, comboLimitValue.value.max)
                 break
-            case 'formValid':
-                let formErrosValue = Object.values(formErrors)
-                formErrosValue.splice(formErrosValue.length - 1, 1)
-                isValid = formErrosValue.every(item => item === true)
-                break
             default:
                 break;
         }
-        setFormErrors({ ...formErrors, [name]: isValid })
+        setFormErrors(formErrors => ({ ...formErrors, [name]: isValid }))
     }
-
-
 
     const [changedCombo, setChangedCombo] = useState({
         value: 0,
@@ -87,10 +82,6 @@ const EditCombo = ({
             featchDetailCombo(match.params.id)
         }
     }, [combo])
-
-    useEffect(() => {
-        handleValidate('formValid')
-    }, [changedCombo])
     const onChange = ({ target: { name, value } }) => {
         value = value.trimStart()
         if (name === 'value') {
@@ -109,11 +100,6 @@ const EditCombo = ({
     const onCalendarChange = ([to]) => {
         setChangedCombo({ ...changedCombo, from_date: moment().format(formatOfDateFromDB), to_date:  to.format(formatOfDateFromDB) })
     }
-
-    //handle validate
-
-
-
     const disabledDate = current => {
         return current && current <= moment().endOf('day')
     }
@@ -219,7 +205,6 @@ const EditCombo = ({
             }
         })
     }
-
 
     // handle to display voucher in table selected voucher
     const selectedVouchersArr = useMemo(() => {
@@ -334,7 +319,7 @@ const EditCombo = ({
                                                     [moment(changedCombo.from_date, formatOfDateFromDB), moment(changedCombo.to_date, formatOfDateFromDB)] :
                                                     null
                                             }
-                                            format={'DD/MM/YYYY'}
+                                            format={dateFormat}
                                         />
                                     </Form.Item>
                                     <Form.Item label="Price" >
@@ -362,7 +347,7 @@ const EditCombo = ({
                                     </Form.Item>
                                     <Form.Item label="Vouchers" >
                                         <div>
-                                            <Button onClick={handleAddVoucher}>Add Voucher</Button> {'  '}
+                                            <Button onClick={handleAddVoucher}>Add Voucher</Button> 
                                             <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array} />
                                         </div>
                                         <SelectVoucherContainer
@@ -384,7 +369,7 @@ const EditCombo = ({
                                         Go back
                                         <Icon type="left" />
                                     </Button>
-                                    <Button onClick={saveChangedCombo} disabled={!formErrors.formValid} className="go-back" type="primary">
+                                    <Button onClick={saveChangedCombo} disabled={!formValid} className="go-back" type="primary">
                                         Save
                                         <Icon type="save" />
                                     </Button>
