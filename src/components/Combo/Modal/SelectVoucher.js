@@ -69,12 +69,13 @@ export const SelectVoucherModal = ({
     ]
     const rowSelection = {
         selectedRowKeys: selectedVouchers[filter].value === null ? [] : [selectedVouchers[filter].value._id],
-        onChange: onChangeSelectedVouchers,
+        onChange: (selectedRowKeys, selectedRows) => onChangeSelectedVouchers(selectedRowKeys, selectedRows, filter),
 
     }
 
     return (
         <Modal
+            className="select-voucher"
             style={{ top: 20 }}
             title="Select Voucher"
             width={800}

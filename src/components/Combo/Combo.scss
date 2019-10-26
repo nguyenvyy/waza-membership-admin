@@ -10,3 +10,9 @@
         color: #40a9ff;
     }
 }
+
+.select-voucher {
+    & .ant-table-selection {
+        display: none;
+    }
+}

@@ -13,6 +13,10 @@ import { PageLoading } from '../../common/PageLoading/PageLoading'
 import { formatOfDateFromDB } from '../../../constant'
 import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInCombo'
 import { objectConverttoArr } from '../../../utils/combo'
+import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
+import { errorMessage, comboLimitValue } from '../../../constant/combo'
+import { checkNoSymbolsOrSpecialChars, checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
+import { formatVND, deleteformatVND } from '../../../utils'
 
 
 const EditCombo = ({
@@ -23,6 +27,48 @@ const EditCombo = ({
         if (!isMaxPageVoucher)
             featchVouchers({ page: 0, limit: 9999 })
     }, [featchVouchers, isMaxPageVoucher])
+
+    const [formErrors, setFormErrors] = useState({
+        combo_name: true,
+        value: true,
+        description: true,
+        voucher_array: true,
+        days: true,
+        formValid: true
+    })
+
+    const handleValidate = (name, value) => {
+        let isValid = false
+        switch (name) {
+            case 'combo_name':
+                isValid = checkNoSymbolsOrSpecialChars(value) && checkMinMax(value.length, comboLimitValue.combo_name.min, comboLimitValue.combo_name.max)
+                break;
+            case 'days':
+                isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkMinMax(+value, comboLimitValue.days.min, comboLimitValue.days.max)
+                break;
+            case 'description':
+                isValid = checkMinMax(value.length, comboLimitValue.description.min, comboLimitValue.description.max)
+                break;
+            case 'voucher_array':
+                // value = length 
+                isValid = checkMinMax(value, comboLimitValue.voucher_array.min, 10)
+                break;
+            case 'value':
+                isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkDivideBy(+value, 1000) && checkMinMax(+value, comboLimitValue.value.min, comboLimitValue.value.max)
+                break
+            case 'formValid':
+                let formErrosValue = Object.values(formErrors)
+                formErrosValue.splice(formErrosValue.length -1, 1)
+                isValid = formErrosValue.every(item => item === true)
+                break
+            default:
+                break;
+        }
+        setFormErrors({ ...formErrors, [name]: isValid })
+    }
+
+
+
     const [changedCombo, setChangedCombo] = useState({
         value: 0,
         combo_name: '',
@@ -41,10 +87,13 @@ const EditCombo = ({
             featchDetailCombo(match.params.id)
         }
     }, [combo])
-
-    const onChange = ({ target: { id, value } }) => {
-
-        setChangedCombo({ ...changedCombo, [id]: value })
+    const onChange = ({ target: { name, value } }) => {
+        value = value.trimStart()
+        if(name === 'value') {
+            value = deleteformatVND(value)
+        }
+        setChangedCombo({ ...changedCombo, [name]: value })
+        handleValidate(name, value)
     }
     const onChangeState = value => {
         setChangedCombo({ ...changedCombo, state: value === 'true' ? true : false })
@@ -52,8 +101,12 @@ const EditCombo = ({
     const onChangeRangePicker = ([from, to]) => {
         setChangedCombo({ ...changedCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
     }
-    const disabledDate = current => current && current <= moment().endOf('day')
 
+    //handle validate
+
+
+
+    const disabledDate = current => current && current <= moment().endOf('day')
     const vouchers = useVouchersDetailInCombo(combo.voucher_array)
     // manage selected voucher
     const [selectedVouchers, setSelectedVouchers] = useState({
@@ -106,35 +159,39 @@ const EditCombo = ({
     }
 
     //handle change select voucher with select in table
-    const onChangeSelectedVouchers = (selectedRowKeys, selectedRows) => {
+    const onChangeSelectedVouchers = (selectedRowKeys, selectedRows, filter) => {
         let length = selectedRows.length;
         if (length > 0) {
-            let subcategory = selectedRows[0].subcategory
             const index = selectedRows.findIndex(row => row._id === selectedRowKeys[length - 1])
             setSelectedVouchers({
                 ...selectedVouchers,
-                [subcategory]: {
+                [filter]: {
                     count: 1,
                     value: selectedRows[index]
+                }
+            })
+        } else {
+            setSelectedVouchers({
+                ...selectedVouchers,
+                [filter]: {
+                    count: 0,
+                    value: null
                 }
             })
         }
     }
     // handle edit selected voucher 
     const onChangeCount = (e, subcategory, directive) => {
-        if(directive) {
+        let count
+        count = +e.target.value > 50 ? 50 : +e.target.value
+        if (directive) {
             const newCount = selectedVouchers[subcategory].count + directive
-            const count = newCount > 50 ? 50 : newCount
-            setSelectedVouchers({
-                ...selectedVouchers,
-                [subcategory]: {
-                    ...selectedVouchers[subcategory],
-                    count
-                }
-            })
-            return
+            count = newCount > 50 ? 50 : newCount
         }
-        const count = +e.target.value > 50 ? 50 : +e.target.value
+        if (count < 1) {
+            count = 1
+            message.warning('number of vouchers must be greater than 1', 1)
+        }
         setSelectedVouchers({
             ...selectedVouchers,
             [subcategory]: {
@@ -158,11 +215,16 @@ const EditCombo = ({
     const selectedVouchersArr = useMemo(() => {
         return objectConverttoArr(selectedVouchers).filter(voucher => voucher.value !== null && voucher.count > 0)
     }, [selectedVouchers])
+    useEffect(() => {
+        handleValidate('voucher_array',selectedVouchersArr.length)
+    }, [selectedVouchersArr.length])
+
     const tableConfig = {
         pagination: false,
         size: 'small',
         rowKey: () => uuid()
     }
+
     const columns = [
         {
             key: 'name',
@@ -198,8 +260,6 @@ const EditCombo = ({
             width: 200
         }
     ]
-
-
 
     const goBack = () => history.goBack()
     const saveChangedCombo = () => {
@@ -243,12 +303,16 @@ const EditCombo = ({
                 ) : (
                         <div className="body">
                             <div className="edit-from">
-                                <Form layout="horizontal" labelAlign="left" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} >
-                                    <Form.Item label="Name" wrapperCol={{ span: 4 }}>
-                                        <Input id="combo_name" onChange={onChange} value={changedCombo.combo_name} />
+                                <Form layout="horizontal" labelAlign="left" labelCol={{ span: 2 }} wrapperCol={{ span: 20 }} >
+                                    <Form.Item label="Name" >
+                                        <Input name="combo_name" onChange={onChange} value={changedCombo.combo_name} />
+                                        <ErrorMessage hasError={!formErrors.combo_name} message={errorMessage.combo_name} />
                                     </Form.Item>
-                                    <Form.Item label="Using duration" wrapperCol={{ span: 4 }}>
-                                        <Input id="days" onChange={onChange} value={`${changedCombo.days}`} suffix="Ngày" />
+                                    <Form.Item label="Using duration">
+                                        <Form.Item wrapperCol={{ span: 5 }}  >
+                                            <Input name="days" onChange={onChange} value={`${changedCombo.days}`} suffix="Ngày" />
+                                        </Form.Item>
+                                        <ErrorMessage hasError={!formErrors.days} message={errorMessage.days} />
                                     </Form.Item>
                                     <Form.Item label="Sell duration" wrapperCol={{ span: 15 }}  >
                                         <DatePicker.RangePicker
@@ -265,12 +329,15 @@ const EditCombo = ({
                                             format={'DD/MM/YYYY'}
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Price" wrapperCol={{ span: 5 }}>
-                                        <Input
-                                            id="value"
-                                            value={changedCombo.value}
-                                            onChange={onChange}
-                                            suffix="VNĐ" />
+                                    <Form.Item label="Price" >
+                                        <Form.Item wrapperCol={{ span: 10 }}>
+                                            <Input
+                                                name="value"
+                                                value={formatVND(changedCombo.value)}
+                                                onChange={onChange}
+                                                suffix="VNĐ" />
+                                        </Form.Item>
+                                        <ErrorMessage hasError={!formErrors.value} message={errorMessage.value} />
                                     </Form.Item>
                                     <Form.Item label="Status" wrapperCol={{ span: 5 }}>
                                         <Select
@@ -281,12 +348,14 @@ const EditCombo = ({
                                             <Select.Option value={`false`}>false</Select.Option>
                                         </Select>
                                     </Form.Item>
-                                    <Form.Item label="Description" wrapperCol={{ span: 18 }}>
-                                        <Input.TextArea id="description" onChange={onChange} value={changedCombo.description} rows={3} />
+                                    <Form.Item label="Description" >
+                                        <Input.TextArea name="description" onChange={onChange} value={changedCombo.description} rows={4} />
+                                        <ErrorMessage hasError={!formErrors.description} message={errorMessage.description} />
                                     </Form.Item>
-                                    <Form.Item label="Vouchers" wrapperCol={{ span: 20 }}>
+                                    <Form.Item label="Vouchers" >
                                         <div>
-                                            <Button onClick={handleAddVoucher}>Add Voucher</Button>
+                                            <Button onClick={handleAddVoucher}>Add Voucher</Button> {'  '}
+                                            <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array} />
                                         </div>
                                         <SelectVoucherContainer
                                             selectedVouchers={selectedVouchers}
@@ -307,7 +376,7 @@ const EditCombo = ({
                                         Go back
                                         <Icon type="left" />
                                     </Button>
-                                    <Button onClick={saveChangedCombo} className="go-back" type="primary">
+                                    <Button onClick={saveChangedCombo} disabled={false} className="go-back" type="primary">
                                         Save
                                         <Icon type="save" />
                                     </Button>
