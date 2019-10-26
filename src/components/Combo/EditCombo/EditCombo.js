@@ -34,7 +34,7 @@ const EditCombo = ({
         description: true,
         voucher_array: true,
         days: true,
-        formValid: true
+        formValid: false
     })
 
     const handleValidate = (name, value) => {
@@ -51,14 +51,14 @@ const EditCombo = ({
                 break;
             case 'voucher_array':
                 // value = length 
-                isValid = checkMinMax(value, comboLimitValue.voucher_array.min, 10)
+                isValid = checkMinMax(value, comboLimitValue.voucher_array.min, 4)
                 break;
             case 'value':
                 isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkDivideBy(+value, 1000) && checkMinMax(+value, comboLimitValue.value.min, comboLimitValue.value.max)
                 break
             case 'formValid':
                 let formErrosValue = Object.values(formErrors)
-                formErrosValue.splice(formErrosValue.length -1, 1)
+                formErrosValue.splice(formErrosValue.length - 1, 1)
                 isValid = formErrosValue.every(item => item === true)
                 break
             default:
@@ -87,9 +87,13 @@ const EditCombo = ({
             featchDetailCombo(match.params.id)
         }
     }, [combo])
+
+    useEffect(() => {
+        handleValidate('formValid')
+    }, [changedCombo])
     const onChange = ({ target: { name, value } }) => {
         value = value.trimStart()
-        if(name === 'value') {
+        if (name === 'value') {
             value = deleteformatVND(value)
         }
         setChangedCombo({ ...changedCombo, [name]: value })
@@ -97,16 +101,22 @@ const EditCombo = ({
     }
     const onChangeState = value => {
         setChangedCombo({ ...changedCombo, state: value === 'true' ? true : false })
+
     }
     const onChangeRangePicker = ([from, to]) => {
         setChangedCombo({ ...changedCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
+    }
+    const onCalendarChange = ([to]) => {
+        setChangedCombo({ ...changedCombo, from_date: moment().format(formatOfDateFromDB), to_date:  to.format(formatOfDateFromDB) })
     }
 
     //handle validate
 
 
 
-    const disabledDate = current => current && current <= moment().endOf('day')
+    const disabledDate = current => {
+        return current && current <= moment().endOf('day')
+    }
     const vouchers = useVouchersDetailInCombo(combo.voucher_array)
     // manage selected voucher
     const [selectedVouchers, setSelectedVouchers] = useState({
@@ -216,7 +226,7 @@ const EditCombo = ({
         return objectConverttoArr(selectedVouchers).filter(voucher => voucher.value !== null && voucher.count > 0)
     }, [selectedVouchers])
     useEffect(() => {
-        handleValidate('voucher_array',selectedVouchersArr.length)
+        handleValidate('voucher_array', selectedVouchersArr.length)
     }, [selectedVouchersArr.length])
 
     const tableConfig = {
@@ -316,11 +326,9 @@ const EditCombo = ({
                                     </Form.Item>
                                     <Form.Item label="Sell duration" wrapperCol={{ span: 15 }}  >
                                         <DatePicker.RangePicker
-                                            showTime={{
-                                                hideDisabledOptions: true
-                                            }}
                                             onChange={onChangeRangePicker}
                                             disabledDate={disabledDate}
+                                            onCalendarChange={onCalendarChange}
                                             value={
                                                 changedCombo.to_date !== null ?
                                                     [moment(changedCombo.from_date, formatOfDateFromDB), moment(changedCombo.to_date, formatOfDateFromDB)] :
@@ -376,7 +384,7 @@ const EditCombo = ({
                                         Go back
                                         <Icon type="left" />
                                     </Button>
-                                    <Button onClick={saveChangedCombo} disabled={false} className="go-back" type="primary">
+                                    <Button onClick={saveChangedCombo} disabled={!formErrors.formValid} className="go-back" type="primary">
                                         Save
                                         <Icon type="save" />
                                     </Button>
