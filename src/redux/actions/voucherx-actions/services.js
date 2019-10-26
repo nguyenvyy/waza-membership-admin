@@ -14,6 +14,5 @@ export const getVouchersFromAPI = (params, token) => Axios(
         params
     }
 ).then(res => {
-    console.log(res)
     return res.data
 })

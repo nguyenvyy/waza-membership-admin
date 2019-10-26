@@ -117,7 +117,7 @@ export const deletePatchCombo = _id => (dispatch, getState) => {
             return res
         })
         .catch(err => {
-            debugger
+            // debugger
             dispatch(stopRequestCombos())
             return err.response
         })
