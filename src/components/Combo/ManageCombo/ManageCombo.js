@@ -8,10 +8,11 @@ import { Header } from '../Header/Header'
 import { Button, Divider, Table, message, Badge, Form, Input } from 'antd'
 import { NewComboModal } from '../Modal/NewComboModal';
 import { formatVND, debounce } from '../../../utils'
-import { formatOfDateFromDB, dateFormat, comboStatus } from '../../../constant'
+import { formatOfDateFromDB, dateFormat } from '../../../constant'
 import VouchersShort from '../VouchersInCombo/VouchersShort'
 import VouchersDetail from '../VouchersInCombo/VouchersDetail'
 import { checkStatusCombo } from '../../../utils/combo'
+import { comboStatus } from '../../../constant/combo'
 
 const ManageCombo = ({
     combos, isFetchingCombo, isMaxPageCombo,
