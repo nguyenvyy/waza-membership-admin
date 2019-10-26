@@ -1,5 +1,5 @@
 import { checkIsActiveCombo } from "../redux/selectors/combo-selector"
-import { comboStatus } from "../constant"
+import { comboStatus } from "../constant/combo"
 
 export const checkStatusCombo = combo => {
     if (combo.isDeleted) return { text: comboStatus.deleted, processing: 'error' }
