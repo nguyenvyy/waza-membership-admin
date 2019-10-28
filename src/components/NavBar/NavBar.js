@@ -25,20 +25,22 @@ export const NavBar = ({
 	};
 	const realWidth = collapsed ? minWidth : maxWidth;
 	return (
-		<nav className="d-flex-col nav-bar" style={{ ...realWidth }}>
-			<UserInfo collapsed={collapsed} />
-			<div className="menu">
-				<MenuItems collapsed={collapsed} items={navItems} />
-			</div>
-			<div className="nav-bar-trigger d-flex-center" style={{ ...realWidth }} onClick={onCollapse}>
-				<span>
-					{collapsed ? (
-						<Icon style={{ fontSize: '24px' }} type="caret-left" />
-					) : (
-						<Icon style={{ fontSize: '24px' }} type="caret-right" />
-					)}
-				</span>
-			</div>
-		</nav>
+		<div className="nav-layout" style={{ ...realWidth }} >
+			<nav className="d-flex-col nav-bar" style={{ ...realWidth }}>
+				<UserInfo collapsed={collapsed} />
+				<div className="menu">
+					<MenuItems collapsed={collapsed} items={navItems} />
+				</div>
+				<div className="nav-bar-trigger d-flex-center" style={{ ...realWidth }} onClick={onCollapse}>
+					<span>
+						{collapsed ? (
+							<Icon style={{ fontSize: '24px' }} type="caret-left" />
+						) : (
+							<Icon style={{ fontSize: '24px' }} type="caret-right" />
+						)}
+					</span>
+				</div>
+			</nav>
+		</div>
 	);
 };

@@ -1,13 +1,22 @@
 .nav-bar {
-	position: relative;
+	position: fixed;
 	background: #001529;
 	transition: all ease-in-out 200ms;
+	height: 100vh;
+	z-index: 10;
 }
 
+.nav-layout {
+	transition: all ease-in-out 200ms;
+}
+.menu {
+	max-height: 84vh;
+	overflow-y: auto;
+}
 .nav-bar-trigger {
 	position: fixed;
 	bottom: 0;
-	z-index: 1;
+	z-index: 11;
 	height: 45px;
 	color: #fff;
 	background: #002140;
@@ -15,4 +24,21 @@
 	transition: all ease-in-out 200ms;
 }
 
+.menu::-webkit-scrollbar {
+	width: 10px;
+}
 
+/* Track */
+.menu::-webkit-scrollbar-track {
+	background: #001529;
+}
+
+/* Handle */
+.menu::-webkit-scrollbar-thumb {
+	background: #888;
+}
+
+/* Handle on hover */
+.menu::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
