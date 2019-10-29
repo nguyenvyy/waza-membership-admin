@@ -4,7 +4,8 @@ import { Radio, Modal, Table } from 'antd'
 const filters = {
     food: 'food',
     move: 'move',
-    shopping: 'shopping'
+    shopping: 'shopping',
+    bike: 'bike'
 }
 export const SelectVoucherModal = ({ 
     vouchers, isFetching, page, featchVouchers,
@@ -87,7 +88,10 @@ export const SelectVoucherModal = ({
                 <Radio value={filters.food}>Food</Radio>
                 <Radio value={filters.move}>Move</Radio>
                 <Radio value={filters.shopping}>Shopping</Radio>
+                <Radio value={filters.bike}>Bike</Radio>
+
             </Radio.Group>
+
 
             <Table
                 loading={isFetching}
