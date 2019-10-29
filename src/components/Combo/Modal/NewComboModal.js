@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import uuid from 'uuid'
 import moment from 'moment'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { Modal, Form, Input, DatePicker, Select, Button, Table, Divider, message, Icon } from 'antd'
 
 import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
@@ -10,52 +11,66 @@ import { comboLimitValue, errorMessage } from '../../../constant/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { deleteformatVND, formatVND } from '../../../utils'
 import { formatOfDateFromDB, dateFormat } from '../../../constant'
+import { checkErrorSuccess } from '../../../utils/combo'
 
 
 export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, addPostCombo }) => {
+    const { voucherProprotions, priceProprotions } = useSelector(state => state.policy.combo)
+    const [voucherProprotion, setVoucherProprotion] = useState(0)
+    const onChangeVoucherProprotion = e => {
+        setVoucherProprotion(e)
+    }
+    const valueVoucherProprotion = useMemo(() => voucherProprotions[voucherProprotion], [voucherProprotion])
+    const [priceProprotion, setPriceProprotion] = useState(0)
+    const onChangePriceProprotion = e => {
+        setPriceProprotion(e)
+    }
+    const valuePriceProprotion = useMemo(() => priceProprotions[priceProprotion], [priceProprotion])
+        //validate
+        const [formErrors, setFormErrors] = useState({
+            combo_name: false,
+            value: false,
+            description: false,
+            voucher_array: false,
+            days: false
+        })
+        const formValid = useMemo(() => {
+            return Object.values(formErrors).every(item => item === true)
+        }, [formErrors])
+    
+        const handleValidate = useCallback((name, value) => {
+            let isValid = false
+            switch (name) {
+                case 'combo_name':
+                    isValid = checkNoSymbolsOrSpecialChars(value) && checkMinMax(value.length, comboLimitValue.combo_name.min, comboLimitValue.combo_name.max)
+                    break;
+                case 'days':
+                    isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkMinMax(+value, comboLimitValue.days.min, comboLimitValue.days.max)
+                    break;
+                case 'description':
+                    isValid = checkMinMax(value.length, comboLimitValue.description.min, comboLimitValue.description.max)
+                    break;
+                case 'voucher_array':
+                    isValid = checkMinMax(value, valueVoucherProprotion.value.length, valueVoucherProprotion.value.length)
+                    break;
+                case 'value':
+                    isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkDivideBy(+value, 1000) && checkMinMax(+value, comboLimitValue.value.min, comboLimitValue.value.max)
+                    break
+                default:
+                    break;
+            }
+            setFormErrors(formErrors => ({ ...formErrors, [name]: isValid }))
+        }, [formErrors, valueVoucherProprotion])
+    //policy
 
-    const [formErrors, setFormErrors] = useState({
-        combo_name: false,
-        value: false,
-        description: false,
-        voucher_array: false,
-        days: false
-    })
-    const formValid = useMemo(() => {
-        return Object.values(formErrors).every(item => item === true)
-    }, [formErrors])
 
-    const handleValidate = useCallback((name, value) => {
-        let isValid = false
-        switch (name) {
-            case 'combo_name':
-                isValid = checkNoSymbolsOrSpecialChars(value) && checkMinMax(value.length, comboLimitValue.combo_name.min, comboLimitValue.combo_name.max)
-                break;
-            case 'days':
-                isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkMinMax(+value, comboLimitValue.days.min, comboLimitValue.days.max)
-                break;
-            case 'description':
-                isValid = checkMinMax(value.length, comboLimitValue.description.min, comboLimitValue.description.max)
-                break;
-            case 'voucher_array':
-                // value = length 
-                isValid = checkMinMax(value, comboLimitValue.voucher_array.min, 4)
-                break;
-            case 'value':
-                isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkDivideBy(+value, 1000) && checkMinMax(+value, comboLimitValue.value.min, comboLimitValue.value.max)
-                break
-            default:
-                break;
-        }
-        setFormErrors(formErrors => ({ ...formErrors, [name]: isValid }))
-    }, [formErrors])
     // data new combo
     const [newCombo, setNewCombo] = useState({
         value: 0,
         combo_name: '',
         state: true,
         from_date: moment(),
-        to_date: moment().add(1,"month"),
+        to_date: moment().add(1, "month"),
         isDeleted: false,
         description: '',
         days: 0
@@ -71,6 +86,10 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             count: 0
         },
         shopping: {
+            value: null,
+            count: 0
+        },
+        bike: {
             value: null,
             count: 0
         },
@@ -146,7 +165,8 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     }, [selectedVouchers])
     useEffect(() => {
         handleValidate('voucher_array', selectedVouchersArr.length)
-    }, [selectedVouchersArr.length])
+    }, [selectedVouchersArr.length, valueVoucherProprotion, voucherProprotion])
+
     // handle close/open  SelectVoucherModal
     const [isOpenSelectVoucherModal, setIsOpenSelectVoucherModal] = useState(false);
     const handleOpenSelectVoucherModal = () => {
@@ -174,14 +194,11 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         setNewCombo({ ...newCombo, [name]: value })
         handleValidate(name, value)
     }
-    const onChangeState = value => {
-        setNewCombo({ ...newCombo, state: value === 'true' ? true : false })
-    }
     const onChangeRangePicker = ([from, to]) => {
         setNewCombo({ ...newCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
     }
     const onCalendarChange = ([to]) => {
-        setNewCombo({ ...newCombo, from_date: moment().format(formatOfDateFromDB), to_date:  to.format(formatOfDateFromDB) })
+        setNewCombo({ ...newCombo, from_date: moment().format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
     }
     const disabledDate = current => current && current <= moment().endOf('day')
 
@@ -234,6 +251,18 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             width: 100
         },
         {
+            key: 'service2',
+            title: 'Value',
+            dataIndex: 'value.subcategory',
+            width: 100
+        },
+        {
+            key: 'service3',
+            title: 'Value total',
+            dataIndex: 'value.subcategory',
+            width: 100
+        },
+        {
             key: 'count',
             title: 'Count',
             dataIndex: 'count',
@@ -262,7 +291,8 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             title="Add new combo"
             width={800}
             centered
-            visible={isOpenNewComboModal}
+            visible={!isOpenNewComboModal}
+            onCancel={handleCloseNewComboModal}
             footer={[
                 <Button key="cancel" onClick={handleCloseNewComboModal} className="go-back" type="primary">
                     Cancel
@@ -275,15 +305,17 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         >
             <div className="edit-from">
                 <Form layout="horizontal" labelAlign="left" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
-                    <Form.Item label="Name" wrapperCol={{ span: 15 }}>
+                    <Form.Item label="Name" wrapperCol={{ span: 15 }}
+                        validateStatus={checkErrorSuccess(formErrors.combo_name)}
+                        help={!formErrors.combo_name && errorMessage.combo_name}
+                    >
                         <Input name="combo_name" onChange={onChange} value={`${newCombo.combo_name}`} />
-                        <ErrorMessage hasError={!formErrors.combo_name} message={errorMessage.combo_name} />
                     </Form.Item>
-                    <Form.Item label="Using duration" >
-                        <Form.Item wrapperCol={{ span: 4 }}  >
-                            <Input name="days" onChange={onChange} value={`${newCombo.days}`} suffix="Ngày" />
-                        </Form.Item>
-                        <ErrorMessage hasError={!formErrors.days} message={errorMessage.days} />
+                    <Form.Item label="Using duration" wrapperCol={{ span: 4 }}
+                        validateStatus={checkErrorSuccess(formErrors.days)}
+                        help={!formErrors.days && errorMessage.days}
+                    >
+                        <Input name="days" onChange={onChange} value={`${newCombo.days}`} suffix={'Ngày'} />
                     </Form.Item>
                     <Form.Item label="Sell duration" wrapperCol={{ span: 15 }}  >
                         <DatePicker.RangePicker
@@ -298,33 +330,60 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             format={dateFormat}
                         />
                     </Form.Item>
-                    <Form.Item label="Price">
-                        <Form.Item wrapperCol={{ span: 8 }}  >
+                    <Form.Item label="Price" wrapperCol={{ span: 5 }}
+                        validateStatus={checkErrorSuccess(formErrors.value)}
+                        help={!formErrors.value && errorMessage.value}
+                    >
                         <Input
                             name="value"
                             value={formatVND(newCombo.value)}
                             onChange={onChange}
                             suffix="VNĐ" />
-                        </Form.Item>
-                        <ErrorMessage hasError={!formErrors.value} message={errorMessage.value} />
                     </Form.Item>
-                    <Form.Item label="Status" wrapperCol={{ span: 5 }}>
+                    <Form.Item label="Voucher proprotion" wrapperCol={{ span: 5 }}
+                        help={`detail: ${valueVoucherProprotion && valueVoucherProprotion.value.join('%, ')}%`}>
                         <Select
-                            onChange={onChangeState}
-                            value="true"
+                            value={voucherProprotion}
+                            onChange={onChangeVoucherProprotion}
+
                         >
-                            <Select.Option value={`true`}>Đang hoạt động</Select.Option>
-                            <Select.Option value={`false`}>Dừng</Select.Option>
+                            {voucherProprotions.map((item, index) => (
+                                <Select.Option key={index} value={index}>{item.name}</Select.Option>
+                            ))}
                         </Select>
                     </Form.Item>
-                    <Form.Item label="Description"   >
-                        <Input.TextArea name="description" onChange={onChange} value={newCombo.description} rows={4}/>
-                        <ErrorMessage hasError={!formErrors.description} message={errorMessage.description} />
+                    <Form.Item label="Price Proprotion" wrapperCol={{ span: 5 }}
+                        help={`detail: ${valuePriceProprotion && valuePriceProprotion.value}%`}>
+                        <Select
+                            value={priceProprotion}
+                            onChange={onChangePriceProprotion}
+                        >
+                            {priceProprotions.map((item, index) => (
+                                <Select.Option key={index} value={index}>{item.name}</Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item label="Is stop" wrapperCol={{ span: 5 }}>
+                        <Select
+                            value={`${newCombo.state}`}
+                        >
+                            <Select.Option value={`true`}>No</Select.Option>
+                            <Select.Option value={`false`}>Yes</Select.Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item label="Description"
+                        validateStatus={checkErrorSuccess(formErrors.description)}
+                        help={!formErrors.description && errorMessage.description}
+                    >
+                        <Input.TextArea name="description" onChange={onChange} value={newCombo.description} rows={4} />
                     </Form.Item>
                     <Form.Item label="Vouchers" wrapperCol={{ span: 20 }}>
                         <div>
-                            <Button onClick={handleAddVoucher} >Add Voucher</Button> {'  '}
-                            <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array} />
+                            <Button onClick={handleAddVoucher}
+                                disabled={selectedVouchersArr.length >= valueVoucherProprotion.value.length ? true : false}>
+                                Add Voucher
+                                </Button> {'  '}
+                            <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array(valueVoucherProprotion.value.length)} />
                         </div>
                         <SelectVoucherContainer
                             selectedVouchers={selectedVouchers}
@@ -332,6 +391,8 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             handleCloseSelectVoucherModal={handleCloseSelectVoucherModal}
                             isOpenSelectVoucherModal={isOpenSelectVoucherModal}
                         />
+                    </Form.Item>
+                    <Form.Item wrapperCol={{ span: 25 }}>
                         <Table
                             {...tableConfig}
                             dataSource={selectedVouchersArr.length > 0 ? selectedVouchersArr : null}

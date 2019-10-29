@@ -13,3 +13,5 @@ export const objectConverttoArr = (selectedVouchers) => {
     const keys = Object.keys(selectedVouchers);
     return keys.map(key => selectedVouchers[key])
 }
+
+export const checkErrorSuccess = value => value ? 'success' : 'error'
