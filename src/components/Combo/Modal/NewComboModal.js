@@ -16,17 +16,9 @@ import { checkErrorSuccess, calValueTotal } from '../../../utils/combo'
 
 export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, addPostCombo }) => {
     // handle policy
-    const { voucherProprotions, priceProprotions } = useSelector(state => state.policy.combo)
-    const [voucherProprotion, setVoucherProprotion] = useState(0)
-    const onChangeVoucherProprotion = e => {
-        setVoucherProprotion(e)
-    }
-    const valueVoucherProprotion = useMemo(() => voucherProprotions[voucherProprotion], [voucherProprotion, voucherProprotions])
-    const [priceProprotion, setPriceProprotion] = useState(0)
-    const onChangePriceProprotion = e => {
-        setPriceProprotion(e)
-    }
-    const valuePriceProprotion = useMemo(() => priceProprotions[priceProprotion], [priceProprotion, priceProprotions])
+    const policies = useSelector(state => state.policy.combo)
+    const [selectedPolicy, setSelectedPolicy] = useState(0)
+    const onChangeSelectedPolicy = value => setSelectedPolicy(value)
     //validate
     const [formErrors, setFormErrors] = useState({
         combo_name: false,
@@ -40,7 +32,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         return Object.values(formErrors).every(item => item === true)
     }, [formErrors])
 
-    const handleValidate = useCallback((name, value) => {
+    const handleValidate = useCallback((name, value, minmax = 0) => {
         let isValid = false
         switch (name) {
             case 'combo_name':
@@ -53,7 +45,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 isValid = checkMinMax(value.length, comboLimitValue.description.min, comboLimitValue.description.max)
                 break;
             case 'voucher_array':
-                isValid = checkMinMax(value, valueVoucherProprotion.value.length, valueVoucherProprotion.value.length)
+                isValid = checkMinMax(value, minmax, minmax)
                 break;
             case 'count':
                 // receive array is count + extra of voucher 
@@ -66,7 +58,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 break;
         }
         setFormErrors(formErrors => ({ ...formErrors, [name]: isValid }))
-    }, [valueVoucherProprotion])
+    }, [])
     //policy
 
 
@@ -115,7 +107,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     const onChangeSelectedVouchers = (selectedRowKeys, selectedRows, filter) => {
         let length = selectedRows.length;
         if (formErrors.voucher_array && selectedVouchers[filter].value === null) {
-            message.warn("Vouchers is maximun", 1)
+            message.warn("Vouchers is maximun", 0.5)
             return
         }
         if (length > 0) {
@@ -162,14 +154,17 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         // return result
     }, [selectedVouchers])
     useEffect(() => {
-        handleValidate('voucher_array', selectedVouchersArr.length)
-    }, [handleValidate, selectedVouchersArr.length, valueVoucherProprotion, voucherProprotion])
+        handleValidate('voucher_array', selectedVouchersArr.length, policies[selectedPolicy].voucherProprotion.length)
+    }, [handleValidate, policies, selectedPolicy, selectedVouchersArr.length])
 
     // handle calculate count and totoal value
     const countAndTotalValue = useMemo(() => {
+        const increase = policies[selectedPolicy].increase
+        const voucherProprotion = policies[selectedPolicy].voucherProprotion
         return selectedVouchersArr.map((voucher, index) => {
-            const valueVoucher = voucher.value.value
-            const totalValue = calValueTotal(+newCombo.value, valuePriceProprotion.value, valueVoucherProprotion.value[index])
+            const { value, max_value } = voucher.value
+            const valueVoucher = max_value === 0 ? max_value : value
+            const totalValue = calValueTotal(+newCombo.value, increase, voucherProprotion[index])
             const count = Math.floor(totalValue / valueVoucher)
             const excess = totalValue % valueVoucher
             return {
@@ -178,15 +173,15 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 excess
             }
         })
-    }, [newCombo.value, selectedVouchersArr, valuePriceProprotion.value, valueVoucherProprotion.value])
+    }, [newCombo.value, policies, selectedPolicy, selectedVouchersArr])
 
     // Extra number of vouchers
     const [countExtra, setCountExtra] = useState([0, 0, 0, 0]);
     useEffect(() => {
-        const length = valueVoucherProprotion.value.length
+        const length = policies[selectedPolicy].voucherProprotion.length
         const newCountExtra = Array.from({ length }, () => 0)
         setCountExtra(newCountExtra)
-    }, [valueVoucherProprotion])
+    }, [policies, selectedPolicy])
     // handle validate count of voucher
     useEffect(() => {
         const countArr = selectedVouchersArr.map((_, index) => countAndTotalValue[index].count + countExtra[index])
@@ -243,8 +238,8 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     const handleAddCombo = () => {
         const hide = message.loading('Add combo....', 0);
         let voucher_array = selectedVouchersArr.map((voucher, index) => ({
-                voucher_id: voucher.value._id,
-                count: countAndTotalValue[index].count + countExtra[index]
+            voucher_id: voucher.value._id,
+            count: countAndTotalValue[index].count + countExtra[index]
         }));
         let combo = {
             voucher_array,
@@ -294,7 +289,10 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         {
             key: 'value',
             title: 'Value',
-            dataIndex: 'value.value',
+            render: (_, record) => {
+                const { value, max_value } = record.value
+                return max_value !== 0 ? max_value : value
+            },
             width: 100
         },
         {
@@ -392,24 +390,17 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             onChange={onChange}
                             suffix="VNĐ" />
                     </Form.Item>
-                    <Form.Item label="Value roprotion of Vouchers" wrapperCol={{ span: 5 }}
-                        help={`detail: ${valueVoucherProprotion && valueVoucherProprotion.value.join('%, ')}%`}>
+                    <Form.Item label="Policy" wrapperCol={{ span: 5 }}
+                        help={`
+                            increase: ${policies[selectedPolicy].increase}%,
+                            voucher proportion: ${policies[selectedPolicy].voucherProprotion.join('%, ')}%
+                        `}
+                    >
                         <Select
-                            value={voucherProprotion}
-                            onChange={onChangeVoucherProprotion}
+                            value={selectedPolicy}
+                            onChange={onChangeSelectedPolicy}
                         >
-                            {voucherProprotions.map((item, index) => (
-                                <Select.Option key={index} value={index}>{item.name}</Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item label="Price Proprotion" wrapperCol={{ span: 5 }}
-                        help={`detail: ${valuePriceProprotion && valuePriceProprotion.value}%`}>
-                        <Select
-                            value={priceProprotion}
-                            onChange={onChangePriceProprotion}
-                        >
-                            {priceProprotions.map((item, index) => (
+                            {policies.map((item, index) => (
                                 <Select.Option key={index} value={index}>{item.name}</Select.Option>
                             ))}
                         </Select>
@@ -434,10 +425,10 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                     >
                         <div>
                             <Button onClick={handleAddVoucher}
-                                disabled={selectedVouchersArr.length >= valueVoucherProprotion.value.length ? true : false}>
+                                disabled={selectedVouchersArr.length >= policies[selectedPolicy].voucherProprotion.length ? true : false}>
                                 Add Voucher
                                 </Button> {'  '}
-                            <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array(valueVoucherProprotion.value.length)} />
+                            <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array(policies[selectedPolicy].voucherProprotion.length)} />
                         </div>
                         <SelectVoucherContainer
                             selectedVouchers={selectedVouchers}
