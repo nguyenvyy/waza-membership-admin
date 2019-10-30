@@ -36,4 +36,6 @@ export const errorMessage = {
     value: `The input must be an integer, division by 1000 and from ${formatVND(comboLimitValue.value.min)} to ${formatVND(comboLimitValue.value.max)}`,
     voucher_array: max => `Number of vouchers must be ${max}`,
     description: `The input must be from ${comboLimitValue.description.min} to ${comboLimitValue.description.max} character and without special character`,
+    countVoucher: `Count of voucher must be larger than 0`
+
 }

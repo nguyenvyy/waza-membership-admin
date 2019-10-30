@@ -15,3 +15,11 @@ export const objectConverttoArr = (selectedVouchers) => {
 }
 
 export const checkErrorSuccess = value => value ? 'success' : 'error'
+
+
+export const calValueTotal = (comboValue, increasePersent, voucherPersent) => {
+    const realValue = comboValue + (comboValue * increasePersent)/100
+    const result = (realValue * voucherPersent)/100
+    // debugger
+    return result
+}
