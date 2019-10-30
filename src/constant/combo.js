@@ -3,7 +3,8 @@ import { formatVND } from "../utils"
 export const comboStatus = {
     deleted:  'Đã xóa',
     active: 'Đang hoạt động',
-    stop: 'Đã dừng'
+    stop: 'Đã dừng',
+    wait: 'Chưa đến'
 
 }
 

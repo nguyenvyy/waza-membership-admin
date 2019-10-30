@@ -15,6 +15,7 @@ import { checkErrorSuccess, calValueTotal } from '../../../utils/combo'
 
 
 export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, addPostCombo }) => {
+    // handle policy
     const { voucherProprotions, priceProprotions } = useSelector(state => state.policy.combo)
     const [voucherProprotion, setVoucherProprotion] = useState(0)
     const onChangeVoucherProprotion = e => {

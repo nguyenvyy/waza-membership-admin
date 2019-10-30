@@ -182,7 +182,8 @@ const ManageCombo = ({
             filters: [
                 { text: comboStatus.active, value: comboStatus.active },
                 { text: comboStatus.stop, value: comboStatus.stop },
-                { text: comboStatus.deleted, value: comboStatus.deleted }
+                { text: comboStatus.deleted, value: comboStatus.deleted },
+                {text: comboStatus.wait, value: comboStatus.wait}
             ],
             onFilter: (value, record) => checkStatusCombo(record).text === value,
         },

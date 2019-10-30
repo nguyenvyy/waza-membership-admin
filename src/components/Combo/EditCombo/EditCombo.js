@@ -348,7 +348,7 @@ const EditCombo = ({
                                     <Form.Item label="Vouchers" >
                                         <div>
                                             <Button onClick={handleAddVoucher}>Add Voucher</Button> 
-                                            <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array} />
+                                            <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array(4)} />
                                         </div>
                                         <SelectVoucherContainer
                                             selectedVouchers={selectedVouchers}

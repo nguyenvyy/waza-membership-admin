@@ -50,7 +50,9 @@ const DetailCombo = ({
                                         <VouchersDetail voucher_array={voucher_array} isFetchingVoucher={isFetchingVoucher} />
                                     </Descriptions.Item>
                                     <Descriptions.Item label="Description" span={3}>
+                                        <p className="description">
                                         {description}
+                                        </p>
                                     </Descriptions.Item>
 
                                 </Descriptions>
