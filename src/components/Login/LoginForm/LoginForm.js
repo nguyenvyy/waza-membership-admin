@@ -5,6 +5,7 @@ import './LoginForm.scss'
 import { Input } from '../../common/Input';
 import { Button, message } from 'antd';
 import { requestLogin } from '../../../redux/actions/auth-actions/actions';
+import { ErrorMessage } from '../../Combo/ErrorMessage/ErrorMessage';
 
 
 export const LoginForm = () => {
@@ -67,6 +68,7 @@ export const LoginForm = () => {
                     onKeyUp={onEnter}
                 />
             </div>
+                <ErrorMessage hasError={user.username === "" ? true : false} message="username is not null " />
             <div className="wrap-input">
                 <Input className="input" name="password" type="password" placeholder="Password"
                     value={user.password}
@@ -74,16 +76,20 @@ export const LoginForm = () => {
                     onKeyUp={onEnter}
                 />
             </div>
+                <ErrorMessage hasError={user.password === "" ? true : false} message="username is not null " />
             <div className="d-flex justify-content-between form-group ">
                 <div className="remember-user">
                     <Input id="remember" type="checkbox" checked={isRemember} onChange={onChangeRemember} />
+
                     <label htmlFor="remember">Remember me</label>
                 </div>
                 <div>
                     <Link className="forgot-password" to="/forgot-password">Forgot</Link>
                 </div>
             </div>
-            <Button className="btn-submit" loading={isLogging} onClick={handleLogin}>
+            <Button className="btn-submit" 
+            disabled={user.username === '' && user.password === '' ? true : false}
+            loading={isLogging} onClick={handleLogin}>
                 LOGIN
             </Button>
         </div>
