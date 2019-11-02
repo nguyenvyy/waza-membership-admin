@@ -163,7 +163,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         const voucherProprotion = policies[selectedPolicy].voucherProprotion
         return selectedVouchersArr.map((voucher, index) => {
             const { value, max_value } = voucher.value
-            const valueVoucher = max_value === 0 ? max_value : value
+            const valueVoucher = max_value !== 0 ? max_value : value
             const totalValue = calValueTotal(+newCombo.value, increase, voucherProprotion[index])
             const count = Math.floor(totalValue / valueVoucher)
             const excess = totalValue % valueVoucher
