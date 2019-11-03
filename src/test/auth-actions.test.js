@@ -38,7 +38,7 @@ describe('US22 save user info to store', () => {
     })
 })
 
-describe('US 22stop request', () => {
+describe('US22 stop request', () => {
     it('UTCID01', () => {
         const expectAction = {
             type: types.STOP_LOGIN
@@ -88,11 +88,11 @@ describe('US22 send request login', () => {
 
         const expectedActions = [
             { type: types.LOGIN },
+            { type: types.STOP_LOGIN },
             {
                 type: types.AUTHENTICATION_SUCCEEDED,
                 user: dataMock
             },
-            { type: types.STOP_LOGIN }
         ]
 
 
