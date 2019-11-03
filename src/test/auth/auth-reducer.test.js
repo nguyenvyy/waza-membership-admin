@@ -1,5 +1,5 @@
-import { authReducer } from "../redux/reducers/authen-reducer";
-import * as types from '../redux/actions/auth-actions/types'
+import { authReducer } from "../../redux/reducers/authen-reducer";
+import * as types from '../../redux/actions/auth-actions/types'
 
 describe('US22, US24 change store of auth object', () => {
     let initState
