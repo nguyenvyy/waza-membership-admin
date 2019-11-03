@@ -12,16 +12,16 @@ export const UserInfo = memo(
         const username = useSelector(state => state.user.info &&  state.user.info.username) || "anonymous"
         const handleLogout = () => {
             const hiden = message.loading('Logout...', 0)
-            dispatch(requestLogout()).then(res => {
-                switch (res && res.status) {
+            dispatch(requestLogout()).then(status => {
+                switch (status) {
                     case 200:
                         message.success('Logout success',1)
                         break;
-                    case 401: 
-                        message.warning('Your login session has expired ',1)
+                    case 500: 
+                        message.error('Logout fail',1)
                         break;
                     default:
-                        message.error('Error', 1)
+                        message.error('Network Error', 1)
                         break;
                 }
                 setTimeout(hiden, 100)

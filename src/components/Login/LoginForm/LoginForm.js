@@ -35,9 +35,8 @@ export const LoginForm = () => {
     }
 
     const handleLogin = _ => {
-
-        dispath(requestLogin(user)).then(res => {
-            switch (res && res.status) {
+        dispath(requestLogin(user)).then(status => {
+            switch (status) {
                 case 200:
                     message.success('Login success')
                     if (isRemember) {
@@ -45,7 +44,7 @@ export const LoginForm = () => {
                     }
                     break;
                 case 400:
-                    message.error('username or password is incorrect')
+                    message.error('Username or password is incorrect')
                     break;
                 default:
                     message.error('Login failed')
