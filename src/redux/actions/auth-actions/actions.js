@@ -1,10 +1,10 @@
 import { LOGIN, AUTHENTICATION_SUCCEEDED, STOP_LOGIN, LOGOUT } from "./types";
 import { loginRequest, logoutRequest } from "./services";
 
-export const login = () => ({type: LOGIN})
-export const saveUser = user => ({type: AUTHENTICATION_SUCCEEDED, user})
-export const stopLogin = () => ({type: STOP_LOGIN})
-export const logout = () => ({type: LOGOUT})
+export const login = () => ({ type: LOGIN })
+export const saveUser = user => ({ type: AUTHENTICATION_SUCCEEDED, user })
+export const stopLogin = () => ({ type: STOP_LOGIN })
+export const logout = () => ({ type: LOGOUT })
 
 export const requestLogin = user => dispatch => {
     dispatch(login())
@@ -12,11 +12,14 @@ export const requestLogin = user => dispatch => {
         .then(res => {
             dispatch(saveUser(res.data))
             dispatch(stopLogin())
-            return res
+            return res.status
         })
         .catch(err => {
             dispatch(stopLogin())
-            return err.response
+            if (err.response !== undefined) {
+                return err.response.status
+            }
+            return undefined
         })
 }
 
@@ -26,10 +29,13 @@ export const requestLogout = () => (dispatch, getState) => {
     return logoutRequest(token)
         .then(res => {
             dispatch(logout())
-            return res
+            return res.status
         })
         .catch(err => {
             dispatch(logout())
-            return err
+            if (err.response !== undefined) {
+                return err.response.status
+            }
+            return undefined
         })
 }
