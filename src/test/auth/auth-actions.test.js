@@ -6,7 +6,7 @@ import thunk from 'redux-thunk'
 import { serverURL } from '../../constant';
 
 const middlewares = [thunk]
-const mockStore = configureMockStore(middlewares)
+const mockStore = configureMockStore(middlewares)   
 
 describe('US22 login', () => {
     it('UTCID01', () => {
