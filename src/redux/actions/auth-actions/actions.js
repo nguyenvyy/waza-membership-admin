@@ -10,8 +10,8 @@ export const requestLogin = user => dispatch => {
     dispatch(login())
     return loginRequest(user)
         .then(res => {
-            dispatch(saveUser(res.data))
             dispatch(stopLogin())
+            dispatch(saveUser(res.data))
             return res.status
         })
         .catch(err => {
@@ -24,8 +24,7 @@ export const requestLogin = user => dispatch => {
 }
 
 export const requestLogout = () => (dispatch, getState) => {
-    const user = getState().user.info;
-    const token = user && user.token
+    const token = getState().user.info.token;
     return logoutRequest(token)
         .then(res => {
             dispatch(logout())
