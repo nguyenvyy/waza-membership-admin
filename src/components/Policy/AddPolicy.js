@@ -49,8 +49,8 @@ export const AddPolicy = ({
     const [voucherCount, setVoucherCount] = useState(1);
     const onChangeCount = value => {
         setVoucherCount(value)
-        const newVoucherPersent = Array.from({ length: value }, () => 0)
-        newVoucherPersent[newVoucherPersent.length - 1] = 100
+        const newVoucherPersent = Array.from({ length: value }, () => 10)
+        newVoucherPersent[newVoucherPersent.length - 1] = 100 - newVoucherPersent.slice(0, value - 1).reduce((acc, curr) => acc + curr)
         setPolicy({
             ...policy,
             voucher_percent: newVoucherPersent
@@ -65,13 +65,12 @@ export const AddPolicy = ({
 
     const onChangeVoucherPersent = ({ target: { value, name } }) => {
         const persent = +value
-        if (persent < 0 || persent > 100) return
         const newVoucherPersent = policy.voucher_percent.slice()
         const length = newVoucherPersent.length;
         newVoucherPersent[name] = Math.ceil(persent)
         const inputTotal = newVoucherPersent.slice(0, length - 1).reduce((acc, curr) => acc + curr)
-        if (inputTotal > 100) {
-            message.error("Voucher persent total must be  <= 100", 2)
+        if (persent < 10 || inputTotal > 100) {
+            message.error("Voucher persent total must be from 10 to 100", 2)
             return
         }
         newVoucherPersent[length - 1] = 100 - inputTotal
@@ -129,7 +128,7 @@ export const AddPolicy = ({
                     <Form.Item label="Vouchers persent">
                         {policy.voucher_percent.map((item, index) => (
                             <Form.Item key={index} label={`Voucher type ${index + 1}`}>
-                                <Input value={item} name={index} onChange={onChangeVoucherPersent} disabled={index === policy.voucher_percent.length - 1 ? true : false} />
+                                <Input type="number" value={item} name={index} onChange={onChangeVoucherPersent} disabled={index === policy.voucher_percent.length - 1 ? true : false} />
                             </Form.Item>
                         ))}
                     </Form.Item>

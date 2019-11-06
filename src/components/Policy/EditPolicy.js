@@ -72,11 +72,12 @@ export const EditPolicy = ({
 
     const onChangeVoucherPersent = ({ target: { value, name } }) => {
         const persent = +value
-        if (persent < 0 || persent > 100) return
+        if (persent < 0) return
         const newVoucherPersent = editedPolicy.voucher_percent.slice()
         const length = newVoucherPersent.length;
         newVoucherPersent[name] = Math.ceil(persent)
         const inputTotal = newVoucherPersent.slice(0, length - 1).reduce((acc, curr) => acc + curr)
+        console.log(inputTotal)
         if (inputTotal > 100) {
             message.error("Voucher persent total must be  <= 100", 2)
             return
@@ -134,7 +135,7 @@ export const EditPolicy = ({
                         <Form.Item label="Vouchers persent">
                             {editedPolicy.voucher_percent.map((item, index) => (
                                 <Form.Item key={index} label={`Voucher type ${index + 1}`}>
-                                    <Input value={item} name={index} onChange={onChangeVoucherPersent} disabled={index === editedPolicy.voucher_percent.length - 1 ? true : false} />
+                                    <Input type="number" value={item} name={index} onChange={onChangeVoucherPersent} disabled={index === editedPolicy.voucher_percent.length - 1 ? true : false} />
                                 </Form.Item>
                             ))}
                         </Form.Item>
