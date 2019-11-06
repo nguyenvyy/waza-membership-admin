@@ -67,6 +67,12 @@ export const navItems = [
         ]
     },
     {
+        title: 'Policy',
+        shortHand: 'P',
+        Component: MenuItem,
+        to: '/a/policy'
+    },
+    {
         title: 'Report',
         shortHand: 'R',
         Component: MenuItem,
