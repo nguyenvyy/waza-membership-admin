@@ -132,7 +132,7 @@ export const AddPolicy = ({
                         </Select>
                     </Form.Item>
                     <Form.Item label="Count">
-                        <Select style={{ width: "100px" }} value={voucherCount} onChange={onChangeCount}>
+                        <Select style={{ width: "100px" }} value={policy.voucher_percent.length} onChange={onChangeCount}>
                             {countArray.map(item => <Select.Option key={item} value={item}>{`${item}`}</Select.Option>)}
                         </Select>
                     </Form.Item>
