@@ -13,6 +13,7 @@ const DetailComboContainer = lazy(() => import('../redux/container/DetailComboCo
 const EditComboContainer = lazy(() => import('../redux/container/EditComboContainer'))
 const Voucher = lazy(() => import('../components/Voucher/Voucher'))
 const ManageComboContainer = lazy(() => import('../redux/container/ManageComboContainer'))
+const Policy = lazy(() => import('../components/Policy/Policy'))
 
 export const routes = [
     {
@@ -71,8 +72,11 @@ export const routes = [
                         component: CreateVoucher
                     }
                 ]
+            },
+            {
+                path: '/a/policy',
+                component: Policy
             }
-        
         ]
     },
     {
