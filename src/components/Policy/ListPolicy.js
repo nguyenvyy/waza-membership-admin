@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { Badge, Divider, Table } from 'antd';
+import { Badge, Divider, Table, message } from 'antd';
 import moment from 'moment';
 import { dateFormat, formatOfDateFromDB } from '../../constant';
 export const ListPolicy = ({
@@ -12,7 +12,16 @@ export const ListPolicy = ({
 
     const handleDeletePolicy = id => {
         dispatch(requestDeleteComboPolicy(id)).then(res => {
-            console.log(res)
+            switch (res) {
+                case 201:
+                    message.success(`Delete success`)
+                    break;
+                case 400:
+                    message.error(`Delete failed`)
+                    break;
+                default:
+                    break;
+            }
         })
     }
 
