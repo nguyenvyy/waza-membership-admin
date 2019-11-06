@@ -55,7 +55,7 @@ export const AddPolicy = ({
         return [1, 2, 3, 4]
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-    const [voucherCount, setVoucherCount] = useState(1);
+    const [, setVoucherCount] = useState(1);
     const onChangeCount = value => {
         setVoucherCount(value)
         const newVoucherPersent = Array.from({ length: value }, () => 10)
