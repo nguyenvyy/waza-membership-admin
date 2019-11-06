@@ -7,7 +7,7 @@ export const stopRequestComboPolicy = () => ({type: STOP_REQUEST_COMBO_POLICY})
 export const receiveFullComboPolicy = policies => ({type: RECEIVE_FULL_COMBO_POLICY, policies})
 export const receiveExtraComboPolicy = policies => ({type: RECEIVE_EXTRA_COMBO_POLICY, extraPolicies: policies})
 export const addComboPolicy = policy => ({type: ADD_COMBO_POLICY, policy})
-export const deleteComboPolicy = policyId => ({type: ADD_COMBO_POLICY, policyId})
+export const deleteComboPolicy = policy => ({type: ADD_COMBO_POLICY, policy})
 export const editComboPolicy = policy => ({type: EDIT_COMBO_POLICY, policy})
 
 export const featchFullComboPolicy = () => (dispatch, getState) => {
