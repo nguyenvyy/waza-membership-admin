@@ -24,7 +24,8 @@ export const requestLogin = user => dispatch => {
 }
 
 export const requestLogout = () => (dispatch, getState) => {
-    const token = getState().user.info.token;
+    const user = getState().user.info;
+    const token = user && user.token
     return logoutRequest(token)
         .then(res => {
             dispatch(logout())
