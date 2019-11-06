@@ -47,7 +47,6 @@ const Policy = () => {
                             <AddPolicy
                                 {...props}
                                 dispatch={dispatch}
-                                isFetching={isFetching}
                                 requestAddComboPolicy={requestAddComboPolicy}
                             />
                         )} />
@@ -58,7 +57,6 @@ const Policy = () => {
                                 <EditPolicy
                                     {...props}
                                     dispatch={dispatch}
-                                    isFetching={isFetching}
                                     policy={policy ? policy : false}
                                     requestEditComboPolicy={requestEditComboPolicy}
                                 />)

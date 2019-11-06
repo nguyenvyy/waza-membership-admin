@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { Header } from '../common/Header/Header'
 import { Form, Input, Select, message, Button } from 'antd'
 export const AddPolicy = ({
     requestAddComboPolicy,
-    isFetching,
     dispatch
 }) => {
     const [policy, setPolicy] = useState({
@@ -12,11 +11,13 @@ export const AddPolicy = ({
         extra_percent: 30,
         voucher_percent: [100]
     })
+    const  [isFetching, setIsFetching] = useState(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const resetPolicy = useMemo(() => policy, [])
     const [formValid, setFormValid] = useState({
         policy_name: false,
         description: false,
+        voucher_percent: false
     })
     const noError = useMemo(() => {
         return Object.values(formValid).every(i => i === true)
@@ -31,11 +32,19 @@ export const AddPolicy = ({
             case 'description':
                 isValid = value !== '' ? true : false
                 break;
+            case 'voucher_percent':
+                isValid = value
+                break;
             default:
                 break;
         }
-        setFormValid({ ...formValid, [name]: isValid })
+        setFormValid(formValid => ({ ...formValid, [name]: isValid }))
     }
+
+    useEffect(() => {
+        const valid = policy.voucher_percent.every(item => item >= 10)
+        handleValidate('voucher_percent', valid)
+    }, [policy.voucher_percent])
     let extraArray = useMemo(() => {
         let arr = []
         for (let i = policy.extra_percent; i <= 100; i += 5)  arr.push(i)
@@ -69,7 +78,7 @@ export const AddPolicy = ({
         const length = newVoucherPersent.length;
         newVoucherPersent[name] = Math.ceil(persent)
         const inputTotal = newVoucherPersent.slice(0, length - 1).reduce((acc, curr) => acc + curr)
-        if (persent < 10 || inputTotal > 100) {
+        if (inputTotal > 100) {
             message.error("Voucher persent total must be from 10 to 100", 2)
             return
         }
@@ -89,11 +98,13 @@ export const AddPolicy = ({
     }
 
     const handleAddPolicy = () => {
+        setIsFetching(true)
         dispatch(requestAddComboPolicy(policy)).then(res => {
+            setIsFetching(false)
             switch (res) {
                 case 201:
                     message.success(`Add success`)
-                    setPolicy({...resetPolicy})
+                    setPolicy({ ...resetPolicy })
                     break;
                 case 400:
                     message.error(`Add failed`)
@@ -125,9 +136,14 @@ export const AddPolicy = ({
                             {countArray.map(item => <Select.Option key={item} value={item}>{`${item}`}</Select.Option>)}
                         </Select>
                     </Form.Item>
-                    <Form.Item label="Vouchers persent">
+                    <Form.Item label="Vouchers persent"
+                    >
                         {policy.voucher_percent.map((item, index) => (
-                            <Form.Item key={index} label={`Voucher type ${index + 1}`}>
+                            <Form.Item
+                                help={item < 10 && "Persent must be greater than 10"}
+                                hasFeedback
+                                validateStatus={item >= 10 ? "success" : "error"}
+                                key={index} label={`Voucher type ${index + 1}`}>
                                 <Input type="number" value={item} name={index} onChange={onChangeVoucherPersent} disabled={index === policy.voucher_percent.length - 1 ? true : false} />
                             </Form.Item>
                         ))}

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { Header } from '../common/Header/Header'
 import { Spin, Form, message, Input, Select, Button } from 'antd'
 export const EditPolicy = ({
-    isFetching,
     dispatch,
     policy,
     requestEditComboPolicy
@@ -13,7 +12,7 @@ export const EditPolicy = ({
         extra_percent: 30,
         voucher_percent: [100]
     })
-
+    const [isFetching, setIsFetching] = useState(false)
     useEffect(() => {
         if (policy !== false) {
             setEditedPolicy({ ...policy })
@@ -23,6 +22,7 @@ export const EditPolicy = ({
     const [formValid, setFormValid] = useState({
         policy_name: true,
         description: true,
+        voucher_percent: true
     })
     const noError = useMemo(() => {
         return Object.values(formValid).every(i => i === true)
@@ -37,11 +37,20 @@ export const EditPolicy = ({
             case 'description':
                 isValid = value !== '' ? true : false
                 break;
+            case 'voucher_percent':
+                isValid = value
+                break;
             default:
                 break;
         }
-        setFormValid({ ...formValid, [name]: isValid })
+        setFormValid(formValid => ({ ...formValid, [name]: isValid }))
     }
+    useEffect(() => {
+        if(policy !== false) {
+            const valid = editedPolicy.voucher_percent.every(item => item >= 10)
+            handleValidate('voucher_percent', valid)
+        }
+    }, [policy, editedPolicy.voucher_percent])
     let extraArray = useMemo(() => {
         let arr = []
         for (let i = editedPolicy.extra_percent; i <= 100; i += 5)  arr.push(i)
@@ -56,8 +65,8 @@ export const EditPolicy = ({
     const [voucherCount, setVoucherCount] = useState(1);
     const onChangeCount = value => {
         setVoucherCount(value)
-        const newVoucherPersent = Array.from({ length: value }, () => 0)
-        newVoucherPersent[newVoucherPersent.length - 1] = 100
+        const newVoucherPersent = Array.from({ length: value }, () => 10)
+        newVoucherPersent[newVoucherPersent.length - 1] = 100 - newVoucherPersent.slice(0, value - 1).reduce((acc, curr) => acc + curr)
         setEditedPolicy({
             ...editedPolicy,
             voucher_percent: newVoucherPersent
@@ -72,14 +81,12 @@ export const EditPolicy = ({
 
     const onChangeVoucherPersent = ({ target: { value, name } }) => {
         const persent = +value
-        if (persent < 0) return
         const newVoucherPersent = editedPolicy.voucher_percent.slice()
         const length = newVoucherPersent.length;
         newVoucherPersent[name] = Math.ceil(persent)
         const inputTotal = newVoucherPersent.slice(0, length - 1).reduce((acc, curr) => acc + curr)
-        console.log(inputTotal)
         if (inputTotal > 100) {
-            message.error("Voucher persent total must be  <= 100", 2)
+            message.error("Voucher persent total must be from 10 to 100", 2)
             return
         }
         newVoucherPersent[length - 1] = 100 - inputTotal
@@ -98,7 +105,9 @@ export const EditPolicy = ({
     }
 
     const handleAddPolicy = () => {
+        setIsFetching(true)
         dispatch(requestEditComboPolicy(editedPolicy)).then(res => {
+            setIsFetching(false)
             switch (res) {
                 case 201:
                     message.success(`Edit success`)
@@ -134,7 +143,11 @@ export const EditPolicy = ({
                         </Form.Item>
                         <Form.Item label="Vouchers persent">
                             {editedPolicy.voucher_percent.map((item, index) => (
-                                <Form.Item key={index} label={`Voucher type ${index + 1}`}>
+                                <Form.Item 
+                                help={item < 10 && "Persent must be greater than 10"}
+                                hasFeedback
+                                validateStatus={item >= 10 ? "success" : "error"}
+                                key={index} label={`Voucher type ${index + 1}`}>
                                     <Input type="number" value={item} name={index} onChange={onChangeVoucherPersent} disabled={index === editedPolicy.voucher_percent.length - 1 ? true : false} />
                                 </Form.Item>
                             ))}
