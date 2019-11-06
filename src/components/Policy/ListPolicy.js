@@ -35,13 +35,16 @@ export const ListPolicy = ({
             title: 'Extra',
             dataIndex: 'extra_percent',
             key: 'extra_percent',
-            render: extra_percent => extra_percent + '%'
+            render: extra_percent => extra_percent + '%',
+            sorter: (a, b) => a.extra_percent - b.extra_percent
+            
         },
         {
             title: 'Vouchers percent',
             dataIndex: 'voucher_percent',
             key: 'voucher_percent',
-            render: (voucher_percent = []) => voucher_percent.join('%, ') + '%'
+            render: (voucher_percent = []) => voucher_percent.join('%, ') + '%',
+            sorter: (a, b) => a.voucher_percent.length - b.voucher_percent.length
         },
         {
             title: 'Status',
@@ -51,23 +54,29 @@ export const ListPolicy = ({
                 <>
                     {!isDeleted ?
                         <Badge status="success" text="active" /> :
-                        <Badge status="error" text="stop" />
+                        <Badge status="error" text="deleted" />
                     }
                 </>
-            )
+            ),
+            filters: [
+                { text: 'active', value: false },
+                { text: 'deleted', value: true },
+            ],
+            onFilter: (value, record) => record.isDeleted === value,
         },
         {
             title: 'Create',
             key: 'createAt',
             dataIndex: 'createdAt',
-            render: createAt => {
-                return moment(createAt, formatOfDateFromDB).format(dateFormat)}
+            render: createAt => moment(createAt, formatOfDateFromDB).format(dateFormat),
+            sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         },
         {
             title: 'Update',
             key: 'updateAt',
             dataIndex: 'createdAt',
-            render: updateAt => moment(updateAt, formatOfDateFromDB).format(dateFormat)
+            render: updateAt => moment(updateAt, formatOfDateFromDB).format(dateFormat),
+            sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         },
         {
             title: 'Action',
