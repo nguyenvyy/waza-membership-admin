@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import ActiveCombo from '../../components/Combo/ActiveCombo/ActiveCombo'
 
 import { getActiveCombos } from '../selectors/combo-selector'
-import { fetchCombos, receiveDetailCombo,stopPatchCombo } from '../actions/combo-actions/actions'
+import { fetchExtraCombos, receiveDetailCombo,stopPatchCombo } from '../actions/combo-actions/actions'
 import { fetchVouchers } from '../actions/voucherx-actions/actions'
 
 const mapStateToProps = ({combo, voucherx}) => {
@@ -21,7 +21,7 @@ const mapStateToProps = ({combo, voucherx}) => {
 
 
 const mapDispatchToProps = {
-    fetchCombos,
+    fetchExtraCombos,
     receiveDetailCombo,
     stopPatchCombo,
     fetchVouchers

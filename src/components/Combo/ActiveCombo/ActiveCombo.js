@@ -18,15 +18,15 @@ const ActiveCombo = ({
     isMaxPageCombo,
     isFetchingVoucher,
     isMaxPageVoucher,
-    fetchCombos,
+    fetchExtraCombos,
     receiveDetailCombo,
     stopPatchCombo,
     fetchVouchers
 }) => {
     useEffect(() => {
         if (!isMaxPageCombo)
-            fetchCombos({ page: 0, limit: 9999 })
-    }, [fetchCombos, isMaxPageCombo])
+            fetchExtraCombos({}, true)
+    }, [fetchExtraCombos, isMaxPageCombo])
     useEffect(() => {
         if (!isMaxPageVoucher)
             fetchVouchers({ page: 0, limit: 9999 })

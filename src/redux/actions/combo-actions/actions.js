@@ -8,7 +8,7 @@ export const receiveCombos = (combos) => ({ type: RECEIVE_COMBOS, combos, receiv
 export const receiveExtraCombos = (combos) => ({ type: RECEIVE_EXTRA_COMBOS, combos, receiveAt: Date.now() })
 export const receiveDetailCombo = combo => ({ type: RECEIVE_DETAIL_COMBO, combo, receiveAt: Date.now() })
 
-export const fetchCombos = (params) => async (dispatch, getState) => {
+export const fetchCombos = (params, ) => async (dispatch, getState) => {
     dispatch(requestCombos())
     try {
         const user = getState().user.info;
@@ -22,12 +22,12 @@ export const fetchCombos = (params) => async (dispatch, getState) => {
     }
 }
 
-export const fetchExtraCombos = (params) => async (dispatch, getState) => {
+export const fetchExtraCombos = (params, isActive) => async (dispatch, getState) => {
     dispatch(requestCombos())
     try {
         const user = getState().user.info;
         const token = user && user.token
-        const res = await getComboFromAPI(params, token);
+        const res = await getComboFromAPI(params, token, isActive);
         dispatch(receiveExtraCombos(res.data));
     }
     catch (err) {
@@ -92,7 +92,7 @@ export const editPatchCombo = (combo) => (dispatch, getState) => {
 export const stopPatchCombo = (combo) => (dispatch, getState) => {
     const user = getState().user.info;
     const token = user && user.token
-    const allowedUpdates = ['state']
+    const allowedUpdates = ['state', 'to_date']
     const updates = allowedUpdates.reduce((acc, curr) => {
         acc[curr] = combo[curr]
         return acc

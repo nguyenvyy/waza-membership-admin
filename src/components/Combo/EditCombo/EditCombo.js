@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import uuid from 'uuid'
 import moment from 'moment'
 import ButtonGroup from 'antd/lib/button/button-group'
@@ -12,7 +11,7 @@ import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherCo
 import { PageLoading } from '../../common/PageLoading/PageLoading'
 import { formatOfDateFromDB, dateFormat } from '../../../constant'
 import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInCombo'
-import { objectConverttoArr } from '../../../utils/combo'
+import { objectConverttoArr, calValueTotal, checkErrorSuccess } from '../../../utils/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { errorMessage, comboLimitValue } from '../../../constant/combo'
 import { checkNoSymbolsOrSpecialChars, checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
@@ -29,9 +28,16 @@ const EditCombo = ({
             fetchFullComboPolicy()
         if (!isMaxPageVoucher)
             fetchVouchers({ page: 0, limit: 9999 })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchVouchers, isMaxPageVoucher])
 
     const [selectedPolicy, setSelectedPolicy] = useState(0)
+    useEffect(() => {
+        if (combo.policy_id !== undefined && policies.length > 0) {
+            const index = policies.findIndex(item => item._id === combo.policy_id)
+            setSelectedPolicy(index)
+        }
+    }, [combo, policies])
     const onChangeSelectedPolicy = value => setSelectedPolicy(value)
 
     const [formErrors, setFormErrors] = useState({
@@ -46,7 +52,7 @@ const EditCombo = ({
         return Object.values(formErrors).every(item => item === true)
     }, [formErrors])
 
-    const handleValidate = (name, value) => {
+    const handleValidate = useCallback((name, value, minmax = 0) => {
         let isValid = false
         switch (name) {
             case 'combo_name':
@@ -60,9 +66,9 @@ const EditCombo = ({
                 break;
             case 'voucher_array':
                 // value = length 
-                isValid = checkMinMax(value, comboLimitValue.voucher_array.min, 4)
+                isValid = checkMinMax(value, minmax, minmax)
                 break;
-                case 'count':
+            case 'count':
                 // receive array is count + extra of voucher 
                 isValid = value.every(ele => ele > 0)
                 break
@@ -73,13 +79,11 @@ const EditCombo = ({
                 break;
         }
         setFormErrors(formErrors => ({ ...formErrors, [name]: isValid }))
-    }
+    }, [])
 
     const [changedCombo, setChangedCombo] = useState({
         value: 0,
         combo_name: '',
-        state: true,
-        from_date: null,
         to_date: null,
         isDeleted: false,
         description: '',
@@ -92,6 +96,7 @@ const EditCombo = ({
         } else {
             fetchDetailCombo(match.params.id)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [combo])
     const onChange = ({ target: { name, value } }) => {
         value = value.trimStart()
@@ -101,50 +106,53 @@ const EditCombo = ({
         setChangedCombo({ ...changedCombo, [name]: value })
         handleValidate(name, value)
     }
-    const onChangeState = value => {
-        setChangedCombo({ ...changedCombo, state: value === 'true' ? true : false })
 
+    const onChangeToDate = (to) => {
+        if (to.valueOf() !== null && to.valueOf() >= Date.now()) {
+            setChangedCombo({ ...changedCombo, to_date: to.format(formatOfDateFromDB) })
+        } else {
+            message.error("To date mus be greater than present")
+        }
     }
-    const onChangeRangePicker = ([from, to]) => {
-        setChangedCombo({ ...changedCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
-    }
-    const onCalendarChange = ([to]) => {
-        setChangedCombo({ ...changedCombo, from_date: moment().format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
-    }
-    const disabledDate = current => {
-        return current && current <= moment().endOf('day')
-    }
+
     const vouchers = useVouchersDetailInCombo(combo.voucher_array)
     // manage selected voucher
     const [selectedVouchers, setSelectedVouchers] = useState({
         move: {
             value: null,
-            count: 0
+            index: 0
         },
         food: {
             value: null,
-            count: 0
+            index: 0
         },
         shopping: {
             value: null,
-            count: 0
+            index: 0
         },
+        bike: {
+            value: null,
+            index: 0
+        },
+        index: 0
     })
     // handle transfer vouchersdetail to selectedVouchers
     useEffect(() => {
         if (vouchers.length > 0) {
-            const initselectedVouchers = vouchers.reduce((acc, curr) => {
+            const initselectedVouchers = vouchers.reduce((acc, curr, index) => {
                 acc[curr.value.subcategory] = {
                     value: curr.value,
-                    count: curr.count
+                    index: index
                 }
                 return acc
             }, {})
-            setSelectedVouchers({
+            setSelectedVouchers(selectedVouchers => ({
                 ...selectedVouchers,
-                ...initselectedVouchers
-            })
+                ...initselectedVouchers,
+                index: vouchers.length
+            }))
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [combo.voucher_array, isMaxPageVoucher])
 
     // handle close/open  SelectVoucherModal
@@ -168,62 +176,120 @@ const EditCombo = ({
     //handle change select voucher with select in table
     const onChangeSelectedVouchers = (selectedRowKeys, selectedRows, filter) => {
         let length = selectedRows.length;
+        if (formErrors.voucher_array && selectedVouchers[filter].value === null) {
+            message.warn("Vouchers is maximun", 0.5)
+            return
+        }
         if (length > 0) {
             const index = selectedRows.findIndex(row => row._id === selectedRowKeys[length - 1])
             setSelectedVouchers({
                 ...selectedVouchers,
                 [filter]: {
-                    count: 1,
-                    value: selectedRows[index]
-                }
+                    value: selectedRows[index],
+                    index: selectedVouchers.index
+                },
+                index: selectedVouchers.index + 1
             })
+
         } else {
             setSelectedVouchers({
                 ...selectedVouchers,
                 [filter]: {
-                    count: 0,
-                    value: null
+                    value: null,
+                    index: 0
                 }
             })
         }
-    }
-    // handle edit selected voucher 
-    const onChangeCount = (e, subcategory, directive) => {
-        let count
-        count = +e.target.value > 50 ? 50 : +e.target.value
-        if (directive) {
-            const newCount = selectedVouchers[subcategory].count + directive
-            count = newCount > 50 ? 50 : newCount
-        }
-        if (count < 1) {
-            count = 1
-            message.warning('number of vouchers must be greater than 1', 1)
-        }
-        setSelectedVouchers({
-            ...selectedVouchers,
-            [subcategory]: {
-                ...selectedVouchers[subcategory],
-                count
-            }
-        })
     }
     const handleDeleteVoucher = (_, subcategory) => {
         setSelectedVouchers({
             ...selectedVouchers,
             [subcategory]: {
                 value: null,
-                count: 0
+                index: 0
             }
         })
     }
 
     // handle to display voucher in table selected voucher
     const selectedVouchersArr = useMemo(() => {
-        return objectConverttoArr(selectedVouchers).filter(voucher => voucher.value !== null && voucher.count > 0)
+        const result = objectConverttoArr(selectedVouchers).filter(voucher => voucher.value !== undefined && voucher.value !== null)
+        return result.sort((a, b) => a.index - b.index);
+        // return result
     }, [selectedVouchers])
     useEffect(() => {
-        handleValidate('voucher_array', selectedVouchersArr.length)
-    }, [selectedVouchersArr.length])
+        if (policies.length > 0) {
+            handleValidate('voucher_array', selectedVouchersArr.length, policies[selectedPolicy].voucher_percent.length)
+        }
+    }, [handleValidate, policies, selectedPolicy, selectedVouchersArr.length])
+    const preCounts = useMemo(() => {
+        let newPreCounts = [0, 0, 0, 0]
+        if (combo.voucher_array) {
+            const counts = combo.voucher_array.map(item => item.count);
+            newPreCounts.splice(0, counts.length);
+            newPreCounts = [...counts, ...newPreCounts]
+        }
+        return newPreCounts
+    }, [combo.voucher_array])
+    // handle calculate count and totoal value
+    const countAndTotalValue = useMemo(() => {
+        if (policies.length > 0) {
+            const increase = policies[selectedPolicy].extra_percent
+            const voucherProprotion = policies[selectedPolicy].voucher_percent
+            return selectedVouchersArr.map((voucher, index) => {
+                const { value, max_value } = voucher.value
+                const valueVoucher = max_value !== 0 ? max_value : value
+                const totalValue = calValueTotal(+changedCombo.value, increase, voucherProprotion[index])
+                const count = Math.floor(totalValue / valueVoucher)
+                const excess = totalValue % valueVoucher
+                return {
+                    count,
+                    totalValue,
+                    excess
+                }
+            })
+        }
+    }, [changedCombo.value, policies, selectedPolicy, selectedVouchersArr])
+
+    const [countExtra, setCountExtra] = useState([0, 0, 0, 0]);
+    useEffect(() => {
+        if (countAndTotalValue !== undefined && combo.voucher_array !== undefined) {
+            let canChange = false
+            if(selectedVouchersArr.length === combo.voucher_array.length) 
+                canChange = selectedVouchersArr.every((item, index) => item.value._id === combo.voucher_array[index].voucher_id)
+            let canChangePolicy = false
+            if (policies.length > 0) {
+                canChangePolicy = combo.policy_id === policies[selectedPolicy]._id
+            }
+            if (canChange && canChangePolicy) {
+                const newCountExtra = countAndTotalValue.map((item, index) => preCounts[index] - item.count)
+                let counts  = countExtra.map((item, index) => {
+                    if(newCountExtra[index]) {
+                        return newCountExtra[index]
+                    }
+                    return 0
+                })
+                setCountExtra(counts)
+            }
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [countAndTotalValue, preCounts, combo, policies, selectedVouchersArr, selectedPolicy])
+
+    const onChangeCountExtra = (index, value) => {
+        const newValue = countExtra[index] + value
+        if (newValue >= 0 && newValue <= 5) {
+            const newCountExtra = countExtra.slice();
+            newCountExtra.splice(index, 1, newValue);
+            setCountExtra(newCountExtra)
+        } else {
+            message.warn("Extra must be from 0 to 5")
+        }
+    }
+
+    useEffect(() => {
+        const countArr = selectedVouchersArr.map((_, index) => countAndTotalValue[index].count + countExtra[index])
+        handleValidate('count', countArr)
+    }, [countAndTotalValue, countExtra, handleValidate, selectedVouchersArr])
 
     const tableConfig = {
         pagination: false,
@@ -245,20 +311,46 @@ const EditCombo = ({
             width: 100
         },
         {
+            key: 'value',
+            title: 'Value',
+            render: (_, record) => {
+                const { value, max_value } = record.value
+                return max_value !== 0 ? max_value : value
+            },
+            width: 100
+        },
+        {
+            key: 'valueTotal',
+            title: 'Total Value',
+            render: (_, record, index) => countAndTotalValue[index].totalValue,
+            width: 100
+        },
+        {
+            key: 'excess',
+            title: 'Excess',
+            render: (_, record, index) => countAndTotalValue[index].excess,
+            width: 80
+        },
+        {
             key: 'count',
             title: 'Count',
-            dataIndex: 'count',
-            render: (count, record) => <Input type="number" value={count} onChange={(e) => onChangeCount(e, record.value.subcategory)} />,
+            render: (_, record, index) => countAndTotalValue[index].count,
+            width: 80
+        },
+        {
+            key: 'extra',
+            title: 'Extra',
+            render: (_, record, index) => countExtra[index],
             width: 80
         },
         {
             key: 'action',
             title: 'Action',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <span>
-                    <Icon type="plus-circle" className="pointer fake-link" onClick={(e) => onChangeCount(e, record.value.subcategory, 1)} />
+                    <Icon type="plus-circle" className="pointer fake-link" onClick={(e) => onChangeCountExtra(index, 1)} />
                     <Divider type="vertical" />
-                    <Icon type="minus-circle" className="pointer fake-link" onClick={(e) => onChangeCount(e, record.value.subcategory, -1)} />
+                    <Icon type="minus-circle" className="pointer fake-link" onClick={(e) => onChangeCountExtra(index, -1)} />
                     <Divider type="vertical" />
                     <span className="fake-link" onClick={(e) => handleDeleteVoucher(e, record.value.subcategory)}>delete</span>
                 </span>
@@ -270,11 +362,15 @@ const EditCombo = ({
     const goBack = () => history.goBack()
     const saveChangedCombo = () => {
         const hide = message.loading('Edit combo....', 0);
-        let voucher_array = selectedVouchersArr.map(({ count, value }) => ({ count, voucher_id: value._id }));
+        let voucher_array = selectedVouchersArr.map(({value}, index) => ({ count: countAndTotalValue[index].count + countExtra[index], voucher_id: value._id }));
         let combo = {
             ...changedCombo,
-            voucher_array
+            voucher_array,
+            policy_id: policies[selectedPolicy]._id
         }
+        delete combo.vouchers
+        delete combo.isDeleted
+        delete combo.from_date
         editPatchCombo(combo).then(res => {
             switch (res && res.status) {
                 case 200:
@@ -320,17 +416,13 @@ const EditCombo = ({
                                         </Form.Item>
                                         <ErrorMessage hasError={!formErrors.days} message={errorMessage.days} />
                                     </Form.Item>
-                                    <Form.Item label="Sell duration" wrapperCol={{ span: 15 }}  >
-                                        <DatePicker.RangePicker
-                                            onChange={onChangeRangePicker}
-                                            disabledDate={disabledDate}
-                                            onCalendarChange={onCalendarChange}
-                                            value={
-                                                changedCombo.to_date !== null ?
-                                                    [moment(changedCombo.from_date, formatOfDateFromDB), moment(changedCombo.to_date, formatOfDateFromDB)] :
-                                                    null
-                                            }
+                                    <Form.Item label="To date" wrapperCol={{ span: 15 }}  >
+                                        <DatePicker
                                             format={dateFormat}
+                                            onChange={onChangeToDate}
+                                            value={
+                                                changedCombo.to_date !== null ? moment(changedCombo.to_date, formatOfDateFromDB) : null
+                                            }
                                         />
                                     </Form.Item>
                                     <Form.Item label="Price" >
@@ -355,30 +447,22 @@ const EditCombo = ({
                                             ))}
                                         </Select>
                                     </Form.Item>
-                                    <Form.Item label="Status" wrapperCol={{ span: 5 }}>
-                                        <Select
-                                            onChange={onChangeState}
-                                            value={`${changedCombo.state}`}
-                                        >
-                                            <Select.Option value={`true`}>true</Select.Option>
-                                            <Select.Option value={`false`}>false</Select.Option>
-                                        </Select>
-                                    </Form.Item>
                                     <Form.Item label="Description" >
                                         <Input.TextArea name="description" onChange={onChange} value={changedCombo.description} rows={4} />
                                         <ErrorMessage hasError={!formErrors.description} message={errorMessage.description} />
                                     </Form.Item>
-                                    <Form.Item label="Vouchers" >
-                                        <div>
-                                            <Button onClick={handleAddVoucher}>Add Voucher</Button>
-                                            <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array(4)} />
-                                        </div>
+                                    <Form.Item label="Vouchers"
+
+                                        validateStatus={checkErrorSuccess(formErrors.count)}
+                                        help={!formErrors.count && errorMessage.countVoucher}>
+                                        <Button onClick={handleAddVoucher}>Add Voucher</Button>
                                         <SelectVoucherContainer
                                             selectedVouchers={selectedVouchers}
                                             onChangeSelectedVouchers={onChangeSelectedVouchers}
                                             handleCloseSelectVoucherModal={handleCloseSelectVoucherModal}
                                             isOpenSelectVoucherModal={isOpenSelectVoucherModal}
                                         />
+                                        <ErrorMessage hasError={!formErrors.voucher_array} message="Voucher list is not valid" />
                                         <Table
                                             {...tableConfig}
                                             dataSource={selectedVouchersArr.length > 0 ? selectedVouchersArr : null}
@@ -398,6 +482,7 @@ const EditCombo = ({
                                     </Button>
                                 </ButtonGroup>
                             </div>
+
                         </div>
                     )
             }

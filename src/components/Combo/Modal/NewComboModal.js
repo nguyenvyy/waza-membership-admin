@@ -10,7 +10,7 @@ import { comboLimitValue, errorMessage } from '../../../constant/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { deleteformatVND, formatVND } from '../../../utils'
 import { formatOfDateFromDB, dateFormat } from '../../../constant'
-import { checkErrorSuccess, calValueTotal } from '../../../utils/combo'
+import { checkErrorSuccess, calValueTotal, objectConverttoArr } from '../../../utils/combo'
 import { fetchFullComboPolicy } from '../../../redux/actions/policy-actions/action'
 import { getActivePolicySelector } from '../../../redux/selectors/policy-selector'
 
@@ -120,7 +120,6 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         }
         if (length > 0) {
             const index = selectedRows.findIndex(row => row._id === selectedRowKeys[length - 1])
-
             setSelectedVouchers({
                 ...selectedVouchers,
                 [filter]: {
@@ -150,11 +149,6 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 index: 0
             }
         })
-    }
-    // handle to display voucher in table selected voucher
-    const objectConverttoArr = (selectedVouchers) => {
-        const keys = Object.keys(selectedVouchers);
-        return keys.map(key => selectedVouchers[key])
     }
     const selectedVouchersArr = useMemo(() => {
         const result = objectConverttoArr(selectedVouchers).filter(voucher => voucher.value !== undefined && voucher.value !== null)
