@@ -61,7 +61,8 @@ const ActiveCombo = ({
         const hide = message.loading('Stop combo....', 0);
         const newCombo = {
             ...combo,
-            state: false
+            state: false,
+            to_date: new Date()
         }
 
         stopPatchCombo(newCombo).then(res => {
