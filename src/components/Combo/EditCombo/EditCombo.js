@@ -20,20 +20,27 @@ import { formatVND, deleteformatVND } from '../../../utils'
 
 
 const EditCombo = ({
-    combo, history, match, featchDetailCombo, editPatchCombo, isFetching,
-    isMaxPageVoucher, featchVouchers
+    policies = [], fetchFullComboPolicy,
+    combo, history, match, fetchDetailCombo, editPatchCombo, isFetching,
+    isMaxPageVoucher, fetchVouchers
 }) => {
     useEffect(() => {
+        if (policies.length === 0)
+            fetchFullComboPolicy()
         if (!isMaxPageVoucher)
-            featchVouchers({ page: 0, limit: 9999 })
-    }, [featchVouchers, isMaxPageVoucher])
+            fetchVouchers({ page: 0, limit: 9999 })
+    }, [fetchVouchers, isMaxPageVoucher])
+
+    const [selectedPolicy, setSelectedPolicy] = useState(0)
+    const onChangeSelectedPolicy = value => setSelectedPolicy(value)
 
     const [formErrors, setFormErrors] = useState({
         combo_name: true,
         value: true,
         description: true,
         voucher_array: true,
-        days: true
+        days: true,
+        count: true,
     })
     const formValid = useMemo(() => {
         return Object.values(formErrors).every(item => item === true)
@@ -55,6 +62,10 @@ const EditCombo = ({
                 // value = length 
                 isValid = checkMinMax(value, comboLimitValue.voucher_array.min, 4)
                 break;
+                case 'count':
+                // receive array is count + extra of voucher 
+                isValid = value.every(ele => ele > 0)
+                break
             case 'value':
                 isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkDivideBy(+value, 1000) && checkMinMax(+value, comboLimitValue.value.min, comboLimitValue.value.max)
                 break
@@ -79,7 +90,7 @@ const EditCombo = ({
         if (combo._id !== undefined) {
             setChangedCombo({ ...combo })
         } else {
-            featchDetailCombo(match.params.id)
+            fetchDetailCombo(match.params.id)
         }
     }, [combo])
     const onChange = ({ target: { name, value } }) => {
@@ -98,7 +109,7 @@ const EditCombo = ({
         setChangedCombo({ ...changedCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
     }
     const onCalendarChange = ([to]) => {
-        setChangedCombo({ ...changedCombo, from_date: moment().format(formatOfDateFromDB), to_date:  to.format(formatOfDateFromDB) })
+        setChangedCombo({ ...changedCombo, from_date: moment().format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
     }
     const disabledDate = current => {
         return current && current <= moment().endOf('day')
@@ -332,6 +343,18 @@ const EditCombo = ({
                                         </Form.Item>
                                         <ErrorMessage hasError={!formErrors.value} message={errorMessage.value} />
                                     </Form.Item>
+                                    <Form.Item label="Policy" wrapperCol={{ span: 10 }}
+                                    >
+                                        <Select
+                                            value={selectedPolicy}
+                                            onChange={onChangeSelectedPolicy}
+                                            loading={policies.length === 0 ? true : false}
+                                        >
+                                            {policies.map((item, index) => (
+                                                <Select.Option key={index} value={index}>{`${item.policy_name}: ${item.extra_percent}% - [${item.voucher_percent.join('%, ')}%]`}</Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
                                     <Form.Item label="Status" wrapperCol={{ span: 5 }}>
                                         <Select
                                             onChange={onChangeState}
@@ -347,7 +370,7 @@ const EditCombo = ({
                                     </Form.Item>
                                     <Form.Item label="Vouchers" >
                                         <div>
-                                            <Button onClick={handleAddVoucher}>Add Voucher</Button> 
+                                            <Button onClick={handleAddVoucher}>Add Voucher</Button>
                                             <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array(4)} />
                                         </div>
                                         <SelectVoucherContainer

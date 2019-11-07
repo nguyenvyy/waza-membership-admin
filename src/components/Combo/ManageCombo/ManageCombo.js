@@ -16,17 +16,17 @@ import { comboStatus } from '../../../constant/combo'
 
 const ManageCombo = ({
     combos, isFetchingCombo, isMaxPageCombo,
-    receiveDetailCombo, featchCombos, addPostCombo, stopPatchCombo, deletePatchCombo,
-    isFetchingVoucher, isMaxPageVoucher, featchVouchers
+    receiveDetailCombo, fetchCombos, addPostCombo, stopPatchCombo, deletePatchCombo,
+    isFetchingVoucher, isMaxPageVoucher, fetchVouchers
 }) => {
     useEffect(() => {
         if (!isMaxPageCombo)
-            featchCombos({ isMaxPageCombo: 0, limit: 9999 })
-    }, [featchCombos, isMaxPageCombo])
+            fetchCombos({ isMaxPageCombo: 0, limit: 9999 })
+    }, [fetchCombos, isMaxPageCombo])
     useEffect(() => {
         if (!isMaxPageVoucher)
-            featchVouchers({ page: 0, limit: 9999 })
-    }, [featchVouchers, isMaxPageVoucher])
+            fetchVouchers({ page: 0, limit: 9999 })
+    }, [fetchVouchers, isMaxPageVoucher])
     //handle display combo
     const [displayCombos, setDisplayCombos] = useState([]);
     const [search, setSearch] = useState('');

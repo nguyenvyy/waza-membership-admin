@@ -8,7 +8,7 @@ const filters = {
     bike: 'bike'
 }
 export const SelectVoucherModal = ({ 
-    vouchers, isFetching, page, featchVouchers,
+    vouchers, isFetching, page, fetchVouchers,
     selectedVouchers, onChangeSelectedVouchers,
     isOpenSelectVoucherModal, handleCloseSelectVoucherModal }) => {
 
@@ -18,9 +18,9 @@ export const SelectVoucherModal = ({
     const [displayVoucher, setDisplayVoucher] = useState([])
     useEffect(() => {
         if (page !== 9999) {
-            featchVouchers({ page: 0, limit: 9999 });
+            fetchVouchers({ page: 0, limit: 9999 });
         }
-    }, [featchVouchers, page])
+    }, [fetchVouchers, page])
 
     const filterVoucher = (vouchers, service) => {
         return vouchers.filter(voucher => voucher.subcategory === service)

@@ -9,7 +9,7 @@ export const addComboPolicy = policy => ({ type: ADD_COMBO_POLICY, policy })
 export const deleteComboPolicy = policy => ({ type: ADD_COMBO_POLICY, policy })
 export const editComboPolicy = policy => ({ type: EDIT_COMBO_POLICY, policy })
 
-export const featchFullComboPolicy = () => (dispatch, getState) => {
+export const fetchFullComboPolicy = () => (dispatch, getState) => {
     dispatch(requestComboPolicy())
     const user = getState().user.info;
     const token = user && user.token

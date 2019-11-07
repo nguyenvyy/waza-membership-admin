@@ -8,7 +8,7 @@ export const receiveCombos = (combos) => ({ type: RECEIVE_COMBOS, combos, receiv
 export const receiveExtraCombos = (combos) => ({ type: RECEIVE_EXTRA_COMBOS, combos, receiveAt: Date.now() })
 export const receiveDetailCombo = combo => ({ type: RECEIVE_DETAIL_COMBO, combo, receiveAt: Date.now() })
 
-export const featchCombos = (params) => async (dispatch, getState) => {
+export const fetchCombos = (params) => async (dispatch, getState) => {
     dispatch(requestCombos())
     try {
         const user = getState().user.info;
@@ -22,7 +22,7 @@ export const featchCombos = (params) => async (dispatch, getState) => {
     }
 }
 
-export const featchExtraCombos = (params) => async (dispatch, getState) => {
+export const fetchExtraCombos = (params) => async (dispatch, getState) => {
     dispatch(requestCombos())
     try {
         const user = getState().user.info;
@@ -36,7 +36,7 @@ export const featchExtraCombos = (params) => async (dispatch, getState) => {
     }
 }
 
-export const featchDetailCombo = (_id) => async (dispatch, getState) => {
+export const fetchDetailCombo = (_id) => async (dispatch, getState) => {
     dispatch(requestCombos())
     try {
         const user = getState().user.info;

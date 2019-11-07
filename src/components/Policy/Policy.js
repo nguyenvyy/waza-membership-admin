@@ -5,7 +5,7 @@ import { Switch, Route } from 'react-router'
 import './Policy.scss'
 import { Header } from '../common/Header/Header'
 import {
-    featchFullComboPolicy,
+    fetchFullComboPolicy,
     requestAddComboPolicy,
     requestEditComboPolicy,
     requestDeleteComboPolicy
@@ -22,7 +22,7 @@ const Policy = () => {
 
     useEffect(() => {
         if (policies.length === 0) {
-            dispatch(featchFullComboPolicy())
+            dispatch(fetchFullComboPolicy())
         }
     }, [dispatch, policies.length])
 

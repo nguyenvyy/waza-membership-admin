@@ -15,18 +15,18 @@ import { formatOfDateFromDB, dateFormat } from '../../../constant'
 
 
 const DetailCombo = ({
-    combo, history, match, isFetching, isFetchingVoucher, featchDetailCombo,
-    isMaxPageVoucher, featchVouchers }) => {
+    combo, history, match, isFetching, isFetchingVoucher, fetchDetailCombo,
+    isMaxPageVoucher, fetchVouchers }) => {
     const { _id, combo_name, description, value, from_date, to_date, voucher_array, days } = combo
     useEffect(() => {
-        if (_id === undefined) featchDetailCombo(match.params.id)
-    }, [_id, featchDetailCombo, match.params.id])
+        if (_id === undefined) fetchDetailCombo(match.params.id)
+    }, [_id, fetchDetailCombo, match.params.id])
     const goBack = () => history.goBack()
     const goEditCombo = () => history.push(`/a/combo/edit/${_id}`)
     useEffect(() => {
         if (!isMaxPageVoucher)
-            featchVouchers({ page: 0, limit: 9999 })
-    }, [featchVouchers, isMaxPageVoucher])
+            fetchVouchers({ page: 0, limit: 9999 })
+    }, [fetchVouchers, isMaxPageVoucher])
     const status = checkStatusCombo(combo)
 
     return (

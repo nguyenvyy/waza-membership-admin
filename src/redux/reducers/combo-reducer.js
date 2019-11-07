@@ -65,7 +65,7 @@ export const comboReducer = (state = initState, action) => {
             }
         case ADD_COMBO:
             return {
-                page: state.page,
+                ...state,
                 isFetching: false,
                 items: [...state.items, action.combo],
                 lastUpdated: action.receivedAt

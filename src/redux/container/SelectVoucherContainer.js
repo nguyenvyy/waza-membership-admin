@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { SelectVoucherModal } from '../../components/Combo/Modal/SelectVoucher'
-import { featchVouchers } from '../actions/voucherx-actions/actions'
+import { fetchVouchers } from '../actions/voucherx-actions/actions'
 
 
 
@@ -19,7 +19,7 @@ const mapStateToProps = (state) => {
 
 
 const mapDispatchToProps = {
-    featchVouchers
+    fetchVouchers
 }
 
 export const SelectVoucherContainer = connect(mapStateToProps, mapDispatchToProps)(SelectVoucherModal)

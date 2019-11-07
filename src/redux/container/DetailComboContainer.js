@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
-import { featchDetailCombo } from '../actions/combo-actions/actions'
+import { fetchDetailCombo } from '../actions/combo-actions/actions'
 import DetailCombo from '../../components/Combo/DetailCombo/DetailCombo'
-import { featchVouchers } from '../actions/voucherx-actions/actions'
+import { fetchVouchers } from '../actions/voucherx-actions/actions'
 
 const mapStateToProps = ({combo, voucherx}, ownProps) => {
     
@@ -16,8 +16,8 @@ const mapStateToProps = ({combo, voucherx}, ownProps) => {
 
 
 const mapDispatchToProps = {
-    featchDetailCombo,
-    featchVouchers
+    fetchDetailCombo,
+    fetchVouchers
 }
 
 const DetailComboContainer = connect(mapStateToProps, mapDispatchToProps)(DetailCombo)
