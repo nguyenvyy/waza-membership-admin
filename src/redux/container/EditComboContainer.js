@@ -1,25 +1,29 @@
 import { connect } from 'react-redux'
 
-import { featchDetailCombo, editPatchCombo } from '../actions/combo-actions/actions'
+import { fetchDetailCombo, editPatchCombo } from '../actions/combo-actions/actions'
 import EditCombo from '../../components/Combo/EditCombo/EditCombo'
-import { featchVouchers } from '../actions/voucherx-actions/actions'
+import { fetchVouchers } from '../actions/voucherx-actions/actions'
 
-const mapStateToProps = ({combo, voucherx}) => {
+import { fetchFullComboPolicy } from '../actions/policy-actions/action'
+
+const mapStateToProps = ({combo, voucherx, policy}) => {
     const isMaxPageVoucher = (voucherx.page >= voucherx.maxPage) ? true : false
 
     return {
         combo: combo.detailCombo, 
         isFetching: combo.isFetching,
         isFetchingVoucher: voucherx.isFetching,
-        isMaxPageVoucher
+        isMaxPageVoucher,
+        policies: policy.combo
     }
 }
 
 
 const mapDispatchToProps = {
-    featchDetailCombo,
+    fetchDetailCombo,
     editPatchCombo,
-    featchVouchers
+    fetchVouchers,
+    fetchFullComboPolicy
 }
 
 const EditComboContainer = connect(mapStateToProps, mapDispatchToProps)(EditCombo)

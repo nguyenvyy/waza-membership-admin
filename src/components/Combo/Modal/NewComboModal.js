@@ -1,7 +1,7 @@
 import uuid from 'uuid'
 import moment from 'moment'
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Modal, Form, Input, DatePicker, Select, Button, Table, message, Icon, Divider } from 'antd'
 
 import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
@@ -10,13 +10,21 @@ import { comboLimitValue, errorMessage } from '../../../constant/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { deleteformatVND, formatVND } from '../../../utils'
 import { formatOfDateFromDB, dateFormat } from '../../../constant'
-import { checkErrorSuccess, calValueTotal } from '../../../utils/combo'
+import { checkErrorSuccess, calValueTotal, objectConverttoArr } from '../../../utils/combo'
+import { fetchFullComboPolicy } from '../../../redux/actions/policy-actions/action'
+import { getActivePolicySelector } from '../../../redux/selectors/policy-selector'
 
 
 
 export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, addPostCombo }) => {
     // handle policy
-    const policies = useSelector(state => state.policy.combo)
+    const dispatch = useDispatch()
+    const policies = useSelector(state => getActivePolicySelector(state.policy.combo))
+    useEffect(() => {
+        if (policies.length === 0)
+            dispatch(fetchFullComboPolicy())
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     const [selectedPolicy, setSelectedPolicy] = useState(0)
     const onChangeSelectedPolicy = value => setSelectedPolicy(value)
     //validate
@@ -112,7 +120,6 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         }
         if (length > 0) {
             const index = selectedRows.findIndex(row => row._id === selectedRowKeys[length - 1])
-
             setSelectedVouchers({
                 ...selectedVouchers,
                 [filter]: {
@@ -143,44 +150,45 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             }
         })
     }
-    // handle to display voucher in table selected voucher
-    const objectConverttoArr = (selectedVouchers) => {
-        const keys = Object.keys(selectedVouchers);
-        return keys.map(key => selectedVouchers[key])
-    }
     const selectedVouchersArr = useMemo(() => {
         const result = objectConverttoArr(selectedVouchers).filter(voucher => voucher.value !== undefined && voucher.value !== null)
         return result.sort((a, b) => a.index - b.index);
         // return result
     }, [selectedVouchers])
     useEffect(() => {
-        handleValidate('voucher_array', selectedVouchersArr.length, policies[selectedPolicy].voucherProprotion.length)
+        if (policies.length > 0) {
+            handleValidate('voucher_array', selectedVouchersArr.length, policies[selectedPolicy].voucher_percent.length)
+        }
     }, [handleValidate, policies, selectedPolicy, selectedVouchersArr.length])
 
     // handle calculate count and totoal value
     const countAndTotalValue = useMemo(() => {
-        const increase = policies[selectedPolicy].increase
-        const voucherProprotion = policies[selectedPolicy].voucherProprotion
-        return selectedVouchersArr.map((voucher, index) => {
-            const { value, max_value } = voucher.value
-            const valueVoucher = max_value !== 0 ? max_value : value
-            const totalValue = calValueTotal(+newCombo.value, increase, voucherProprotion[index])
-            const count = Math.floor(totalValue / valueVoucher)
-            const excess = totalValue % valueVoucher
-            return {
-                count,
-                totalValue,
-                excess
-            }
-        })
+        if (policies.length > 0) {
+            const increase = policies[selectedPolicy].extra_percent
+            const voucherProprotion = policies[selectedPolicy].voucher_percent
+            return selectedVouchersArr.map((voucher, index) => {
+                const { value, max_value } = voucher.value
+                const valueVoucher = max_value !== 0 ? max_value : value
+                const totalValue = calValueTotal(+newCombo.value, increase, voucherProprotion[index])
+                const count = Math.floor(totalValue / valueVoucher)
+                const excess = totalValue % valueVoucher
+                return {
+                    count,
+                    totalValue,
+                    excess
+                }
+            })
+        }
     }, [newCombo.value, policies, selectedPolicy, selectedVouchersArr])
 
     // Extra number of vouchers
     const [countExtra, setCountExtra] = useState([0, 0, 0, 0]);
     useEffect(() => {
-        const length = policies[selectedPolicy].voucherProprotion.length
-        const newCountExtra = Array.from({ length }, () => 0)
-        setCountExtra(newCountExtra)
+        if (policies.length > 0) {
+            const length = policies[selectedPolicy].voucher_percent.length
+            const newCountExtra = Array.from({ length }, () => 0)
+            setCountExtra(newCountExtra)
+        }
     }, [policies, selectedPolicy])
     // handle validate count of voucher
     useEffect(() => {
@@ -243,7 +251,8 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         }));
         let combo = {
             voucher_array,
-            ...newCombo
+            ...newCombo,
+            policy_id: policies[selectedPolicy]._id
         }
         addPostCombo(combo).then(res => {
             switch (res && res.status) {
@@ -390,18 +399,15 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             onChange={onChange}
                             suffix="VNĐ" />
                     </Form.Item>
-                    <Form.Item label="Policy" wrapperCol={{ span: 5 }}
-                        help={`
-                            increase: ${policies[selectedPolicy].increase}%,
-                            voucher proportion: ${policies[selectedPolicy].voucherProprotion.join('%, ')}%
-                        `}
+                    <Form.Item label="Policy" wrapperCol={{ span: 10 }}
                     >
                         <Select
                             value={selectedPolicy}
                             onChange={onChangeSelectedPolicy}
+                            loading={policies.length === 0 ? true : false}
                         >
                             {policies.map((item, index) => (
-                                <Select.Option key={index} value={index}>{item.name}</Select.Option>
+                                <Select.Option key={index} value={index}>{`${item.policy_name}: ${item.extra_percent}% - [${item.voucher_percent.join('%, ')}%]`}</Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
@@ -423,13 +429,9 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                         validateStatus={checkErrorSuccess(formErrors.count)}
                         help={!formErrors.count && errorMessage.countVoucher}
                     >
-                        <div>
-                            <Button onClick={handleAddVoucher}
-                                disabled={selectedVouchersArr.length >= policies[selectedPolicy].voucherProprotion.length ? true : false}>
-                                Add Voucher
-                                </Button> {'  '}
-                            <ErrorMessage hasError={!formErrors.voucher_array} message={errorMessage.voucher_array(policies[selectedPolicy].voucherProprotion.length)} />
-                        </div>
+                        <Button onClick={handleAddVoucher}>
+                            Add Voucher
+                                </Button>
                         <SelectVoucherContainer
                             selectedVouchers={selectedVouchers}
                             onChangeSelectedVouchers={onChangeSelectedVouchers}
@@ -437,7 +439,9 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             isOpenSelectVoucherModal={isOpenSelectVoucherModal}
                         />
                     </Form.Item>
-                    <Form.Item wrapperCol={{ span: 25 }}>
+                    <Form.Item wrapperCol={{ span: 25 }}
+                    >
+                        <ErrorMessage hasError={!formErrors.voucher_array} message="Voucher list is not valid" />
                         <Table
                             {...tableConfig}
                             dataSource={selectedVouchersArr.length > 0 ? selectedVouchersArr : null}

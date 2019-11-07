@@ -18,19 +18,19 @@ const ActiveCombo = ({
     isMaxPageCombo,
     isFetchingVoucher,
     isMaxPageVoucher,
-    featchCombos,
+    fetchExtraCombos,
     receiveDetailCombo,
     stopPatchCombo,
-    featchVouchers
+    fetchVouchers
 }) => {
     useEffect(() => {
         if (!isMaxPageCombo)
-            featchCombos({ page: 0, limit: 9999 })
-    }, [featchCombos, isMaxPageCombo])
+            fetchExtraCombos({}, true)
+    }, [fetchExtraCombos, isMaxPageCombo])
     useEffect(() => {
         if (!isMaxPageVoucher)
-            featchVouchers({ page: 0, limit: 9999 })
-    }, [featchVouchers, isMaxPageVoucher])
+            fetchVouchers({ page: 0, limit: 9999 })
+    }, [fetchVouchers, isMaxPageVoucher])
     const [displayCombos, setDisplayCombos] = useState([]);
     const [search, setSearch] = useState('');
     const [isSearching, setIsSearching] = useState(false);
@@ -61,7 +61,8 @@ const ActiveCombo = ({
         const hide = message.loading('Stop combo....', 0);
         const newCombo = {
             ...combo,
-            state: false
+            state: false,
+            to_date: new Date()
         }
 
         stopPatchCombo(newCombo).then(res => {

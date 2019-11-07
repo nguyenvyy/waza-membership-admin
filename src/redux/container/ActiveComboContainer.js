@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import ActiveCombo from '../../components/Combo/ActiveCombo/ActiveCombo'
 
 import { getActiveCombos } from '../selectors/combo-selector'
-import { featchCombos, receiveDetailCombo,stopPatchCombo } from '../actions/combo-actions/actions'
-import { featchVouchers } from '../actions/voucherx-actions/actions'
+import { fetchExtraCombos, receiveDetailCombo,stopPatchCombo } from '../actions/combo-actions/actions'
+import { fetchVouchers } from '../actions/voucherx-actions/actions'
 
 const mapStateToProps = ({combo, voucherx}) => {
     const combos = getActiveCombos(combo)
@@ -21,10 +21,10 @@ const mapStateToProps = ({combo, voucherx}) => {
 
 
 const mapDispatchToProps = {
-    featchCombos,
+    fetchExtraCombos,
     receiveDetailCombo,
     stopPatchCombo,
-    featchVouchers
+    fetchVouchers
 }
 
 const ActiveComboContainer = connect(mapStateToProps, mapDispatchToProps)(ActiveCombo)

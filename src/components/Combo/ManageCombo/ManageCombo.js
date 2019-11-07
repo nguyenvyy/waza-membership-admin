@@ -16,17 +16,18 @@ import { comboStatus } from '../../../constant/combo'
 
 const ManageCombo = ({
     combos, isFetchingCombo, isMaxPageCombo,
-    receiveDetailCombo, featchCombos, addPostCombo, stopPatchCombo, deletePatchCombo,
-    isFetchingVoucher, isMaxPageVoucher, featchVouchers
+    receiveDetailCombo, fetchCombos, addPostCombo, stopPatchCombo, deletePatchCombo,
+    isFetchingVoucher, isMaxPageVoucher, fetchVouchers
 }) => {
     useEffect(() => {
+
         if (!isMaxPageCombo)
-            featchCombos({ isMaxPageCombo: 0, limit: 9999 })
-    }, [featchCombos, isMaxPageCombo])
+            fetchCombos({ isMaxPageCombo: 0, limit: 9999 })
+    }, [fetchCombos, isMaxPageCombo])
     useEffect(() => {
         if (!isMaxPageVoucher)
-            featchVouchers({ page: 0, limit: 9999 })
-    }, [featchVouchers, isMaxPageVoucher])
+            fetchVouchers({ page: 0, limit: 9999 })
+    }, [fetchVouchers, isMaxPageVoucher])
     //handle display combo
     const [displayCombos, setDisplayCombos] = useState([]);
     const [search, setSearch] = useState('');
@@ -71,7 +72,8 @@ const ManageCombo = ({
         const hide = message.loading('Stop combo....', 0);
         const newCombo = {
             ...combo,
-            state: false
+            state: false,
+            to_date: new Date()
         }
         stopPatchCombo(newCombo).then(res => {
             switch (res && res.status) {
@@ -183,7 +185,7 @@ const ManageCombo = ({
                 { text: comboStatus.active, value: comboStatus.active },
                 { text: comboStatus.stop, value: comboStatus.stop },
                 { text: comboStatus.deleted, value: comboStatus.deleted },
-                {text: comboStatus.wait, value: comboStatus.wait}
+                { text: comboStatus.wait, value: comboStatus.wait }
             ],
             onFilter: (value, record) => checkStatusCombo(record).text === value,
         },
@@ -203,8 +205,12 @@ const ManageCombo = ({
                 return (
                     <span>
                         <Link to={`/a/combo/detail/${record._id}`} onClick={() => receiveDetailCombo(record)}>view</Link>
-                        <Divider type="vertical" />
-                        <Link to={`/a/combo/edit/${record._id}`} onClick={() => receiveDetailCombo(record)}>edit</Link>
+                        {status.text !== comboStatus.deleted && (
+                            <>
+                                <Divider type="vertical" />
+                                <Link to={`/a/combo/edit/${record._id}`} onClick={() => receiveDetailCombo(record)}>edit</Link>
+                            </>)
+                        }
                         {status.text === comboStatus.active ? (
                             <>
                                 <Divider type="vertical" />
@@ -236,7 +242,7 @@ const ManageCombo = ({
                             <Input value={search} onChange={searchChange} placeholder="enter combo name" id="validating" />
                         </Form.Item>
                     </Form>
-                        <Button onClick={handleOpenNewComboModal}>Add Combo</Button>
+                    <Button onClick={handleOpenNewComboModal}>Add Combo</Button>
                 </div>
                 <NewComboModal addPostCombo={addPostCombo} isOpenNewComboModal={isOpenNewComboModal} handleCloseNewComboModal={handleCloseNewComboModal} />
                 <Table

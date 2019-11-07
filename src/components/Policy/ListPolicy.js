@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { Badge, Divider, Table, message } from 'antd';
 import moment from 'moment';
 import { dateFormat, formatOfDateFromDB } from '../../constant';
+import { comboStatus } from '../../constant/combo';
 export const ListPolicy = ({
     isFetching,
     dispatch,
@@ -53,14 +54,14 @@ export const ListPolicy = ({
             render: isDeleted => (
                 <>
                     {!isDeleted ?
-                        <Badge status="success" text="active" /> :
-                        <Badge status="error" text="deleted" />
+                        <Badge status="success" text={comboStatus.active} /> :
+                        <Badge status="error" text={comboStatus.deleted} />
                     }
                 </>
             ),
             filters: [
-                { text: 'active', value: false },
-                { text: 'deleted', value: true },
+                { text: comboStatus.active, value: false },
+                { text: comboStatus.deleted, value: true },
             ],
             onFilter: (value, record) => record.isDeleted === value,
         },
