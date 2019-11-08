@@ -72,7 +72,6 @@ const ManageCombo = ({
         const hide = message.loading('Stop combo....', 0);
         const newCombo = {
             ...combo,
-            state: false,
             to_date: new Date()
         }
         stopPatchCombo(newCombo).then(res => {
@@ -129,7 +128,7 @@ const ManageCombo = ({
     // config combos table
     const tableConfig = {
         pagination: { position: 'bottom' },
-        scroll: { y: 450 },
+        scroll: { y: 500 },
         expandedRowRender: record => <VouchersDetail isFetchingVoucher={isFetchingVoucher} voucher_array={record.voucher_array} />,
         rowKey: () => uuid()
     }

@@ -25,7 +25,7 @@ export const comboLimitValue = {
         min: 1
     },
     description: {
-        min: 200,
+        min: 50,
         max: 1000
     }
     
@@ -33,10 +33,10 @@ export const comboLimitValue = {
 
 export const errorMessage = {
     days: `The input must be an integer and from ${comboLimitValue.days.min} to ${comboLimitValue.days.max} day`,
-    combo_name: `The input must be from ${comboLimitValue.combo_name.min} to ${comboLimitValue.combo_name.max} character and without special character`,
+    combo_name: `The input must be from ${comboLimitValue.combo_name.min} to ${comboLimitValue.combo_name.max} character`,
     value: `The input must be an integer, division by 1000 and from ${formatVND(comboLimitValue.value.min)} to ${formatVND(comboLimitValue.value.max)}`,
     voucher_array: max => `Number of vouchers must be ${max}`,
-    description: `The input must be from ${comboLimitValue.description.min} to ${comboLimitValue.description.max} character and without special character`,
+    description: `The input must be from ${comboLimitValue.description.min} to ${comboLimitValue.description.max} character`,
     countVoucher: `Count of voucher must be larger than 0`
 
 }

@@ -14,7 +14,7 @@ import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInComb
 import { objectConverttoArr, calValueTotal, checkErrorSuccess } from '../../../utils/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { errorMessage, comboLimitValue } from '../../../constant/combo'
-import { checkNoSymbolsOrSpecialChars, checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
+import {checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
 import { formatVND, deleteformatVND } from '../../../utils'
 
 
@@ -56,7 +56,7 @@ const EditCombo = ({
         let isValid = false
         switch (name) {
             case 'combo_name':
-                isValid = checkNoSymbolsOrSpecialChars(value) && checkMinMax(value.length, comboLimitValue.combo_name.min, comboLimitValue.combo_name.max)
+                isValid =checkMinMax(value.length, comboLimitValue.combo_name.min, comboLimitValue.combo_name.max)
                 break;
             case 'days':
                 isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkMinMax(+value, comboLimitValue.days.min, comboLimitValue.days.max)
@@ -108,11 +108,11 @@ const EditCombo = ({
     }
 
     const onChangeToDate = (to) => {
-        if (to.valueOf() !== null && to.valueOf() >= Date.now()) {
-            setChangedCombo({ ...changedCombo, to_date: to.format(formatOfDateFromDB) })
-        } else {
-            message.error("To date mus be greater than present")
-        }
+            if (to && to.valueOf() >= Date.now()) {
+                setChangedCombo({ ...changedCombo, to_date: to.format(formatOfDateFromDB) })
+            } else {
+                message.error("To date mus be greater than present")
+            }
     }
 
     const vouchers = useVouchersDetailInCombo(combo.voucher_array)
