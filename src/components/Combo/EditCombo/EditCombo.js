@@ -14,7 +14,7 @@ import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInComb
 import { objectConverttoArr, calValueTotal, checkErrorSuccess } from '../../../utils/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { errorMessage, comboLimitValue } from '../../../constant/combo'
-import { checkNoSymbolsOrSpecialChars, checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
+import {checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
 import { formatVND, deleteformatVND } from '../../../utils'
 
 

@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Modal, Form, Input, DatePicker, Select, Button, Table, message, Icon, Divider } from 'antd'
 
 import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
-import { checkNoSymbolsOrSpecialChars, checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
+import { checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
 import { comboLimitValue, errorMessage } from '../../../constant/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { deleteformatVND, formatVND } from '../../../utils'
@@ -263,7 +263,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 case 201:
                     setTimeout(hide, 100);
                     message.success(`${combo.combo_name} added`, 2)
-                    // resetNewCombo();
+                    reset`NewCombo();
                     break;
                 case 400:
                     setTimeout(hide, 100);
