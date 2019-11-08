@@ -263,7 +263,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 case 201:
                     setTimeout(hide, 100);
                     message.success(`${combo.combo_name} added`, 2)
-                    reset`NewCombo();
+                    resetNewCombo();
                     break;
                 case 400:
                     setTimeout(hide, 100);
