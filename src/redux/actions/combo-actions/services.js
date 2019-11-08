@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { serverURL } from "../../../constant";
 
-export const getComboFromAPI = (params, token, isActive = false) => Axios(
+export const getComboFromAPI = (params, token, isActive = true) => Axios(
     {
         method: 'GET',
         responseType: "json",

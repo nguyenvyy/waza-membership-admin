@@ -44,7 +44,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         let isValid = false
         switch (name) {
             case 'combo_name':
-                isValid = checkNoSymbolsOrSpecialChars(value) && checkMinMax(value.length, comboLimitValue.combo_name.min, comboLimitValue.combo_name.max)
+                isValid = checkMinMax(value.length, comboLimitValue.combo_name.min, comboLimitValue.combo_name.max)
                 break;
             case 'days':
                 isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkMinMax(+value, comboLimitValue.days.min, comboLimitValue.days.max)
@@ -235,10 +235,14 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         handleValidate(name, value)
     }
     const onChangeRangePicker = ([from, to]) => {
-        setNewCombo({ ...newCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
+        if(from && to) {
+            setNewCombo({ ...newCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
+        }
     }
     const onCalendarChange = ([to]) => {
-        setNewCombo({ ...newCombo, from_date: moment().format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
+        if(to) {
+            setNewCombo({ ...newCombo, from_date: moment().format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
+        }
     }
     const disabledDate = current => current && current <= moment().endOf('day')
 
@@ -259,7 +263,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 case 201:
                     setTimeout(hide, 100);
                     message.success(`${combo.combo_name} added`, 2)
-                    resetNewCombo();
+                    // resetNewCombo();
                     break;
                 case 400:
                     setTimeout(hide, 100);
@@ -411,14 +415,14 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             ))}
                         </Select>
                     </Form.Item>
-                    <Form.Item label="Is stop" wrapperCol={{ span: 5 }}>
+                    {/* <Form.Item label="Is stop" wrapperCol={{ span: 5 }}>
                         <Select
                             value={`${newCombo.state}`}
                         >
                             <Select.Option value={`true`}>No</Select.Option>
                             <Select.Option value={`false`}>Yes</Select.Option>
                         </Select>
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item label="Description"
                         validateStatus={checkErrorSuccess(formErrors.description)}
                         help={!formErrors.description && errorMessage.description}
