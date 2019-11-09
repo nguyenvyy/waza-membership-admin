@@ -51,7 +51,12 @@ export const requestEditComboPolicy = policy => (dispatch, getState) => {
     dispatch(requestComboPolicy())
     const user = getState().user.info;
     const token = user && user.token
-    return editComboPolicyAPI(policy._id, policy, token)
+    const allowedUpdates = ['policy_name', 'description', 'voucher_percent', 'extra_percent']
+    const newPolicy = allowedUpdates.reduce((acc, curr) => {
+        acc[curr] = policy[curr]
+        return acc
+    }, {})
+    return editComboPolicyAPI(policy._id, newPolicy, token)
         .then(res => {
             dispatch(stopRequestComboPolicy())
             dispatch(editComboPolicy(res.data))
@@ -74,7 +79,6 @@ export const requestDeleteComboPolicy = id => (dispatch, getState) => {
     return deleteComboPolicyAPI(id, token)
         .then(res => {
             dispatch(stopRequestComboPolicy())
-            debugger
             dispatch(deleteComboPolicy(res.data))
             return res.status
         })

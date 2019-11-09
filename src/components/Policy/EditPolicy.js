@@ -46,7 +46,7 @@ export const EditPolicy = ({
         setFormValid(formValid => ({ ...formValid, [name]: isValid }))
     }
     useEffect(() => {
-        if(policy !== false) {
+        if (policy !== false) {
             const valid = editedPolicy.voucher_percent.every(item => item >= 10)
             handleValidate('voucher_percent', valid)
         }
@@ -65,13 +65,13 @@ export const EditPolicy = ({
     const onChangeCount = value => {
         setVoucherCount(value)
         let newVoucherPersent
-        if(value === 1) {
+        if (value === 1) {
             newVoucherPersent = [100]
         } else {
             newVoucherPersent = Array.from({ length: value }, () => 10)
             newVoucherPersent[newVoucherPersent.length - 1] = 100 - newVoucherPersent.slice(0, value - 1).reduce((acc, curr) => acc + curr)
         }
-        setEditedPolicy({ 
+        setEditedPolicy({
             ...editedPolicy,
             voucher_percent: newVoucherPersent
         })
@@ -109,14 +109,14 @@ export const EditPolicy = ({
     }
 
     const handleAddPolicy = () => {
-        setIsFetching(true)
         dispatch(requestEditComboPolicy(editedPolicy)).then(res => {
             setIsFetching(false)
             switch (res) {
-                case 201:
+                case 200:
                     message.success(`Edit success`)
                     break;
                 default:
+                    debugger
                     message.error(`Edit failed`)
                     break;
             }
@@ -147,11 +147,11 @@ export const EditPolicy = ({
                         </Form.Item>
                         <Form.Item label="Vouchers persent">
                             {editedPolicy.voucher_percent.map((item, index) => (
-                                <Form.Item 
-                                help={item < 10 && "Persent must be greater than 10"}
-                                hasFeedback
-                                validateStatus={item >= 10 ? "success" : "error"}
-                                key={index} label={`Voucher type ${index + 1}`}>
+                                <Form.Item
+                                    help={item < 10 && "Persent must be greater than 10"}
+                                    hasFeedback
+                                    validateStatus={item >= 10 ? "success" : "error"}
+                                    key={index} label={`Voucher type ${index + 1}`}>
                                     <Input type="number" value={item} name={index} onChange={onChangeVoucherPersent} disabled={index === editedPolicy.voucher_percent.length - 1 ? true : false} />
                                 </Form.Item>
                             ))}
