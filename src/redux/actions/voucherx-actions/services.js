@@ -5,13 +5,13 @@ export const getVouchersFromAPI = (params, token) => Axios(
     {
         method: 'GET',
         responseType: "json",
-        url: `${serverURL}/vouchers`,
+        url: `${serverURL}/vouchers/active`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
             'Authorization': `Bearer ${token}`
         },
-        params
+        params,
     }
 ).then(res => {
     return res.data

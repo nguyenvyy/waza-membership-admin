@@ -1,11 +1,11 @@
 import Axios from "axios";
 import { serverURL } from "../../../constant";
 
-export const getComboFromAPI = (params, token, isActive = true) => Axios(
+export const getComboFromAPI = (params, token, isActive = false) => Axios(
     {
         method: 'GET',
         responseType: "json",
-        url: `${serverURL}/combos${isActive ? '/active': ''}`,
+        url: `${serverURL}/combos${isActive ? '/active' : ''}`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
