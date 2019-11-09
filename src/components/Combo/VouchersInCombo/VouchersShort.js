@@ -1,15 +1,11 @@
 import React from 'react'
-import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInCombo'
 
-const VouchersShort = ({voucher_array = [], isFetchingVoucher}) => {
-    const vouchers =  useVouchersDetailInCombo(voucher_array)
-    return  isFetchingVoucher ? (
-        'loading...'
-    ) : (
+const VouchersShort = ({voucher_array = []}) => {
+    return (
         <ul className="voucher-in-combo">
-            {vouchers.map((voucher, index) => (
+            {voucher_array.map((voucher, index) => (
                 <li key={index}>
-                    {voucher.value.voucher_name} x {voucher.count}
+                    {voucher.voucher_name} x {voucher.count}
                 </li>
             ))}
         </ul>
