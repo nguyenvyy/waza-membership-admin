@@ -8,7 +8,8 @@ const filters = {
     bike: 'bike'
 }
 export const SelectVoucherModal = ({ 
-    vouchers, isFetching, page, fetchVouchers,
+    vouchers, isFetching, 
+    // page, fetchVouchers,
     selectedVouchers, onChangeSelectedVouchers,
     isOpenSelectVoucherModal, handleCloseSelectVoucherModal }) => {
 
@@ -16,11 +17,11 @@ export const SelectVoucherModal = ({
     const memoSelectVouchers = useMemo(() => selectedVouchers, [isOpenSelectVoucherModal])
 
     const [displayVoucher, setDisplayVoucher] = useState([])
-    useEffect(() => {
-        if (page !== 9999) {
-            fetchVouchers({ page: 0, limit: 9999 });
-        }
-    }, [fetchVouchers, page])
+    // useEffect(() => {
+    //     if (page !== 9999) {
+    //         fetchVouchers({ page: 0, limit: 9999 });
+    //     }
+    // }, [fetchVouchers, page])
 
     const filterVoucher = (vouchers, service) => {
         return vouchers.filter(voucher => voucher.subcategory === service)
@@ -37,9 +38,10 @@ export const SelectVoucherModal = ({
 
 
     const tableConfig = {
-        pagination: false,
+        pagination: false ,
         size: 'small',
-        rowKey: (record) => record._id
+        rowKey: (record) => record._id,
+        scroll: { y: 600 },
     }
     const columns = [
         {
@@ -55,11 +57,6 @@ export const SelectVoucherModal = ({
         {
             title: 'Value',
             dataIndex: 'value',
-            width: 100
-        },
-        {
-            title: 'Max Value',
-            dataIndex: 'max_value',
             width: 100
         },
         {
@@ -82,7 +79,7 @@ export const SelectVoucherModal = ({
             width={800}
             visible={isOpenSelectVoucherModal}
             onOk={() => handleCloseSelectVoucherModal(undefined)}
-            onCancel={(e) => handleCloseSelectVoucherModal(e, memoSelectVouchers)}
+            onCancel={(e) => handleCloseSelectVoucherModal(memoSelectVouchers)}
         >
             <Radio.Group onChange={onChangeRadio} value={filter}>
                 <Radio value={filters.food}>Food</Radio>

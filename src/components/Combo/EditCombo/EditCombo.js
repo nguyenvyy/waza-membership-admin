@@ -14,7 +14,7 @@ import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInComb
 import { objectConverttoArr, calValueTotal, checkErrorSuccess } from '../../../utils/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { errorMessage, comboLimitValue } from '../../../constant/combo'
-import {checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
+import { checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
 import { formatVND, deleteformatVND } from '../../../utils'
 
 
@@ -56,7 +56,7 @@ const EditCombo = ({
         let isValid = false
         switch (name) {
             case 'combo_name':
-                isValid =checkMinMax(value.length, comboLimitValue.combo_name.min, comboLimitValue.combo_name.max)
+                isValid = checkMinMax(value.length, comboLimitValue.combo_name.min, comboLimitValue.combo_name.max)
                 break;
             case 'days':
                 isValid = !checkIsNaN(+value) && checkIsInterge(+value) && checkMinMax(+value, comboLimitValue.days.min, comboLimitValue.days.max)
@@ -108,11 +108,11 @@ const EditCombo = ({
     }
 
     const onChangeToDate = (to) => {
-            if (to && to.valueOf() >= Date.now()) {
-                setChangedCombo({ ...changedCombo, to_date: to.format(formatOfDateFromDB) })
-            } else {
-                message.error("To date mus be greater than present")
-            }
+        if (to && to.valueOf() >= Date.now()) {
+            setChangedCombo({ ...changedCombo, to_date: to.format(formatOfDateFromDB) })
+        } else {
+            message.error("To date mus be greater than present")
+        }
     }
 
     const vouchers = useVouchersDetailInCombo(combo.voucher_array)
@@ -237,8 +237,7 @@ const EditCombo = ({
             const increase = policies[selectedPolicy].extra_percent
             const voucherProprotion = policies[selectedPolicy].voucher_percent
             return selectedVouchersArr.map((voucher, index) => {
-                const { value, max_value } = voucher.value
-                const valueVoucher = max_value !== 0 ? max_value : value
+                const valueVoucher = voucher.value.value
                 const totalValue = calValueTotal(+changedCombo.value, increase, voucherProprotion[index])
                 const count = Math.floor(totalValue / valueVoucher)
                 const excess = totalValue % valueVoucher
@@ -255,7 +254,7 @@ const EditCombo = ({
     useEffect(() => {
         if (countAndTotalValue !== undefined && combo.voucher_array !== undefined) {
             let canChange = false
-            if(selectedVouchersArr.length === combo.voucher_array.length) 
+            if (selectedVouchersArr.length === combo.voucher_array.length)
                 canChange = selectedVouchersArr.every((item, index) => item.value._id === combo.voucher_array[index].voucher_id)
             let canChangePolicy = false
             if (policies.length > 0) {
@@ -263,8 +262,8 @@ const EditCombo = ({
             }
             if (canChange && canChangePolicy) {
                 const newCountExtra = countAndTotalValue.map((item, index) => preCounts[index] - item.count)
-                let counts  = countExtra.map((item, index) => {
-                    if(newCountExtra[index]) {
+                let counts = countExtra.map((item, index) => {
+                    if (newCountExtra[index]) {
                         return newCountExtra[index]
                     }
                     return 0
@@ -272,7 +271,7 @@ const EditCombo = ({
                 setCountExtra(counts)
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [countAndTotalValue, preCounts, combo, policies, selectedVouchersArr, selectedPolicy])
 
     const onChangeCountExtra = (index, value) => {
@@ -314,8 +313,8 @@ const EditCombo = ({
             key: 'value',
             title: 'Value',
             render: (_, record) => {
-                const { value, max_value } = record.value
-                return max_value !== 0 ? max_value : value
+                const { value } = record.value
+                return value
             },
             width: 100
         },
@@ -362,7 +361,13 @@ const EditCombo = ({
     const goBack = () => history.goBack()
     const saveChangedCombo = () => {
         const hide = message.loading('Edit combo....', 0);
-        let voucher_array = selectedVouchersArr.map(({value}, index) => ({ count: countAndTotalValue[index].count + countExtra[index], voucher_id: value._id }));
+        let voucher_array = selectedVouchersArr.map(({ value }, index) => ({
+            voucher_id: value._id,
+            count: countAndTotalValue[index].count + countExtra[index],
+            value: value.value,
+            category: value.subcategory,
+            voucher_name: value.voucher_name
+        }));
         let combo = {
             ...changedCombo,
             voucher_array,

@@ -167,8 +167,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             const increase = policies[selectedPolicy].extra_percent
             const voucherProprotion = policies[selectedPolicy].voucher_percent
             return selectedVouchersArr.map((voucher, index) => {
-                const { value, max_value } = voucher.value
-                const valueVoucher = max_value !== 0 ? max_value : value
+                const valueVoucher = voucher.value.value
                 const totalValue = calValueTotal(+newCombo.value, increase, voucherProprotion[index])
                 const count = Math.floor(totalValue / valueVoucher)
                 const excess = totalValue % valueVoucher
@@ -212,8 +211,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     const handleOpenSelectVoucherModal = () => {
         setIsOpenSelectVoucherModal(true);
     }
-    const handleCloseSelectVoucherModal = (event,memoSelectVouchers) => {
-        event.stopPropagation();
+    const handleCloseSelectVoucherModal = (memoSelectVouchers) => {
         if (memoSelectVouchers !== undefined) {
             setSelectedVouchers({
                 ...memoSelectVouchers
@@ -250,10 +248,14 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     // handle add combo
     const handleAddCombo = () => {
         const hide = message.loading('Add combo....', 0);
-        let voucher_array = selectedVouchersArr.map((voucher, index) => ({
-            voucher_id: voucher.value._id,
-            count: countAndTotalValue[index].count + countExtra[index]
+        let voucher_array = selectedVouchersArr.map(({value}, index) => ({
+            voucher_id: value._id,
+            count: countAndTotalValue[index].count + countExtra[index],
+            value: value.value,
+            category: value.subcategory,
+            voucher_name: value.voucher_name
         }));
+
         let combo = {
             voucher_array,
             ...newCombo,
@@ -304,8 +306,8 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             key: 'value',
             title: 'Value',
             render: (_, record) => {
-                const { value, max_value } = record.value
-                return max_value !== 0 ? max_value : value
+                const { value } = record.value
+                return value
             },
             width: 100
         },

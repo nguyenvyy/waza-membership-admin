@@ -20,14 +20,14 @@ const ManageCombo = ({
     isFetchingVoucher, isMaxPageVoucher, fetchVouchers
 }) => {
     useEffect(() => {
-
+        fetchVouchers({ page: 0, limit: 9999 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+    useEffect(() => {
         if (!isMaxPageCombo)
             fetchCombos()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchCombos, isMaxPageCombo])
-    useEffect(() => {
-        if (!isMaxPageVoucher)
-            fetchVouchers({ page: 0, limit: 9999 })
-    }, [fetchVouchers, isMaxPageVoucher])
     //handle display combo
     const [displayCombos, setDisplayCombos] = useState([]);
     const [search, setSearch] = useState('');
