@@ -11,7 +11,7 @@ export const AddPolicy = ({
         extra_percent: 30,
         voucher_percent: [100]
     })
-    const  [isFetching, setIsFetching] = useState(false)
+    const [isFetching, setIsFetching] = useState(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const resetPolicy = useMemo(() => policy, [])
     const [formValid, setFormValid] = useState({
@@ -58,8 +58,13 @@ export const AddPolicy = ({
     const [, setVoucherCount] = useState(1);
     const onChangeCount = value => {
         setVoucherCount(value)
-        const newVoucherPersent = Array.from({ length: value }, () => 10)
-        newVoucherPersent[newVoucherPersent.length - 1] = 100 - newVoucherPersent.slice(0, value - 1).reduce((acc, curr) => acc + curr)
+        let newVoucherPersent
+        if (value === 1) {
+            newVoucherPersent = [100]
+        } else {
+            newVoucherPersent = Array.from({ length: value }, () => 10)
+            newVoucherPersent[newVoucherPersent.length - 1] = 100 - newVoucherPersent.slice(0, value - 1).reduce((acc, curr) => acc + curr)
+        }
         setPolicy({
             ...policy,
             voucher_percent: newVoucherPersent

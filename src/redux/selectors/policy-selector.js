@@ -16,6 +16,10 @@ export const sortPolicies = (policies = []) => {
     return result
 }
 
+export const sortPoliciesByIsDeleted = (policies = []) => {
+    return policies.sort((a, b) => a.isDeleted - b.isDeleted)
+}
+
 export const getActivePolicy = (policies = []) => policies.filter(policy => policy.isDeleted === false)
 
 export const getActivePolicySelector = createSelector(

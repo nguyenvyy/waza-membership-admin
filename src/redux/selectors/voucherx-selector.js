@@ -7,6 +7,7 @@ const checkVoucherValidWithIds = (id, ids) => {
     return ids.includes(id)
 }
 
+    
 export const getVouchersDetailByIds = createSelector(
     [getVouchers, getIds],
     (vouchers, ids) => {

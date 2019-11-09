@@ -82,7 +82,7 @@ export const SelectVoucherModal = ({
             width={800}
             visible={isOpenSelectVoucherModal}
             onOk={() => handleCloseSelectVoucherModal(undefined)}
-            onCancel={() => handleCloseSelectVoucherModal(memoSelectVouchers)}
+            onCancel={(e) => handleCloseSelectVoucherModal(e, memoSelectVouchers)}
         >
             <Radio.Group onChange={onChangeRadio} value={filter}>
                 <Radio value={filters.food}>Food</Radio>
