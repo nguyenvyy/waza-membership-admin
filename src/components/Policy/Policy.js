@@ -15,9 +15,10 @@ import { ListPolicy } from './ListPolicy'
 import { Empty } from 'antd'
 import { AddPolicy } from './AddPolicy'
 import { EditPolicy } from './EditPolicy'
+import { sortPoliciesByIsDeleted } from '../../redux/selectors/policy-selector'
 const Policy = () => {
     const dispatch = useDispatch()
-    const policies = useSelector(state => state.policy.combo)
+    const policies = useSelector(state => sortPoliciesByIsDeleted(state.policy.combo))
     const isFetching = useSelector(state => state.policy.isFetching)
 
     useEffect(() => {

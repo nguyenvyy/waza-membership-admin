@@ -212,7 +212,8 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     const handleOpenSelectVoucherModal = () => {
         setIsOpenSelectVoucherModal(true);
     }
-    const handleCloseSelectVoucherModal = (memoSelectVouchers) => {
+    const handleCloseSelectVoucherModal = (event,memoSelectVouchers) => {
+        event.stopPropagation();
         if (memoSelectVouchers !== undefined) {
             setSelectedVouchers({
                 ...memoSelectVouchers

@@ -64,9 +64,14 @@ export const EditPolicy = ({
     const [, setVoucherCount] = useState(1);
     const onChangeCount = value => {
         setVoucherCount(value)
-        const newVoucherPersent = Array.from({ length: value }, () => 10)
-        newVoucherPersent[newVoucherPersent.length - 1] = 100 - newVoucherPersent.slice(0, value - 1).reduce((acc, curr) => acc + curr)
-        setEditedPolicy({
+        let newVoucherPersent
+        if(value === 1) {
+            newVoucherPersent = [100]
+        } else {
+            newVoucherPersent = Array.from({ length: value }, () => 10)
+            newVoucherPersent[newVoucherPersent.length - 1] = 100 - newVoucherPersent.slice(0, value - 1).reduce((acc, curr) => acc + curr)
+        }
+        setEditedPolicy({ 
             ...editedPolicy,
             voucher_percent: newVoucherPersent
         })

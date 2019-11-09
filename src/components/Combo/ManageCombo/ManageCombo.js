@@ -22,7 +22,7 @@ const ManageCombo = ({
     useEffect(() => {
 
         if (!isMaxPageCombo)
-            fetchCombos({ isMaxPageCombo: 0, limit: 9999 })
+            fetchCombos()
     }, [fetchCombos, isMaxPageCombo])
     useEffect(() => {
         if (!isMaxPageVoucher)

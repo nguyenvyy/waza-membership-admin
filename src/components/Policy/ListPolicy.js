@@ -92,11 +92,11 @@ export const ListPolicy = ({
                                 onClick={() => handleDeletePolicy(record._id)}
                                 >delete</span>
                                 <Divider type="vertical" />
+                                <NavLink
+                                    activeClassName="action--active"
+                                    to={`/a/policy/edit/${record._id}`}>edit</NavLink>
                             </>
                         )}
-                        <NavLink
-                            activeClassName="action--active"
-                            to={`/a/policy/edit/${record._id}`}>edit</NavLink>
                     </div>
                 )
             }
