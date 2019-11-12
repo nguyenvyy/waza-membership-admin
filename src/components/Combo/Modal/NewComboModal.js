@@ -253,7 +253,8 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             count: countAndTotalValue[index].count + countExtra[index],
             value: value.value,
             category: value.subcategory,
-            voucher_name: value.voucher_name
+            voucher_name: value.voucher_name,
+            discount: value.discount
         }));
 
         let combo = {
