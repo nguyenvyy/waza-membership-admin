@@ -9,11 +9,12 @@ export const configStore = (preloadedState) => {
     ]
 
     const middlwareEnhancer = applyMiddleware(...middlware);
-    
-    const enhancer = [
+    let enhancer = [
         middlwareEnhancer,
-        // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     ]
+    if(window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()) {
+        enhancer.push(window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
+    }
 
     const composEnhancer = compose(...enhancer);
     const store = createStore(rootReducer, composEnhancer);

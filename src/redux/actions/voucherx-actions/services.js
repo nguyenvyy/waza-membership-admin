@@ -5,7 +5,7 @@ export const getVouchersFromAPI = (params, token) => Axios(
     {
         method: 'GET',
         responseType: "json",
-        url: `${serverURL}/vouchers/active`,
+        url: `${serverURL}/vouchers/active?search=category:buy`,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
