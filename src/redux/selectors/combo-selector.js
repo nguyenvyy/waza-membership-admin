@@ -49,7 +49,6 @@ export const getComboById = createSelector(
 export const getComboIndexById = createSelector(
     [getCombos, getComboIdFromProps],
     (combos, id) => {
-        console.log(combos.findIndex(combo => checkValidComboById(combo, id)))
         return combos.findIndex(combo => checkValidComboById(combo, id))
     }
 )

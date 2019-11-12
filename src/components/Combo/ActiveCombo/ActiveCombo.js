@@ -25,7 +25,7 @@ const ActiveCombo = ({
 }) => {
     useEffect(() => {
         if (!isMaxPageCombo)
-            fetchExtraCombos({}, true)
+            fetchExtraCombos({page: 0, limit: 9999}, true)
     }, [fetchExtraCombos, isMaxPageCombo])
     useEffect(() => {
         if (!isMaxPageVoucher)
