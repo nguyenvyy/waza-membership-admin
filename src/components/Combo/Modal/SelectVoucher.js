@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Radio, Modal, Table } from 'antd'
+import { Radio, Modal, Table, Icon, Button, Input } from 'antd'
 
 const filters = {
     food: 'food',
@@ -7,8 +7,8 @@ const filters = {
     shopping: 'shopping',
     bike: 'bike'
 }
-export const SelectVoucherModal = ({ 
-    vouchers, isFetching, 
+export const SelectVoucherModal = ({
+    vouchers, isFetching,
     // page, fetchVouchers,
     selectedVouchers, onChangeSelectedVouchers,
     isOpenSelectVoucherModal, handleCloseSelectVoucherModal }) => {
@@ -17,11 +17,6 @@ export const SelectVoucherModal = ({
     const memoSelectVouchers = useMemo(() => selectedVouchers, [isOpenSelectVoucherModal])
 
     const [displayVoucher, setDisplayVoucher] = useState([])
-    // useEffect(() => {
-    //     if (page !== 9999) {
-    //         fetchVouchers({ page: 0, limit: 9999 });
-    //     }
-    // }, [fetchVouchers, page])
 
     const filterVoucher = (vouchers, service) => {
         return vouchers.filter(voucher => voucher.subcategory === service)
@@ -35,34 +30,83 @@ export const SelectVoucherModal = ({
     const onChangeRadio = e => {
         setFilter(e.target.value)
     }
+    const [search, setSearch] = useState('');
+    const handleSearch = (selectedKeys, confirm) => {
+        confirm();
+        setSearch({ searchText: selectedKeys[0] });
+    };
 
+    const handleReset = clearFilters => {
+        clearFilters();
+        setSearch({ searchText: '' });
+    };
+    // handle search
+    const getColumnSearchProps = dataIndex => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+            <div style={{ padding: 8 }}>
+                <Input
+                    ref={node => {
+                        setSearch(node);
+                    }}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm)}
+                    style={{ width: 188, marginBottom: 8, display: 'block' }}
+                />
+                <Button
+                    type="primary"
+                    onClick={() => handleSearch(selectedKeys, confirm)}
+                    icon="search"
+                    size="small"
+                    style={{ width: 90, marginRight: 8 }}
+                >
+                    Search
+            </Button>
+                <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+                    Reset
+            </Button>
+            </div>
+        ),
+        filterIcon: filtered => (
+            <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
+        ),
+        onFilter: (value, record) =>
+            record[dataIndex]
+                .toString()
+                .toLowerCase()
+                .includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+            if (visible) {
+                setTimeout(() => search.select());
+            }
+        }
+    });
 
     const tableConfig = {
-        pagination: false ,
+        pagination: false,
         size: 'small',
         rowKey: (record) => record._id,
-        scroll: { y: 600 },
+        scroll: { y: 450 },
     }
     const columns = [
         {
             title: 'Name',
             dataIndex: 'voucher_name',
-            width: 100
-        },
-        {
-            title: 'Type',
-            dataIndex: 'category',
-            width: 100
+            width: 100,
+            ...getColumnSearchProps('voucher_name')
         },
         {
             title: 'Value',
             dataIndex: 'value',
-            width: 100
+            width: 100,
+            sorter: (a, b) => a.value - b.value
         },
         {
             title: 'Persent',
             dataIndex: 'discount',
-            width: 100
+            width: 100,
+            sorter: (a, b) => a.discount - b.discount
         }
     ]
     const rowSelection = {
@@ -76,7 +120,7 @@ export const SelectVoucherModal = ({
             className="select-voucher"
             style={{ top: 20 }}
             title="Select Voucher"
-            width={800}
+            width={600}
             visible={isOpenSelectVoucherModal}
             onOk={() => handleCloseSelectVoucherModal(undefined)}
             onCancel={(e) => handleCloseSelectVoucherModal(memoSelectVouchers)}
@@ -86,9 +130,7 @@ export const SelectVoucherModal = ({
                 <Radio value={filters.move}>Move</Radio>
                 <Radio value={filters.shopping}>Shopping</Radio>
                 <Radio value={filters.bike}>Bike</Radio>
-
             </Radio.Group>
-
 
             <Table
                 loading={isFetching}

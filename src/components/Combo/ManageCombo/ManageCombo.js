@@ -25,7 +25,7 @@ const ManageCombo = ({
     }, [])
     useEffect(() => {
         if (!isMaxPageCombo)
-            fetchCombos()
+            fetchCombos({ page: 0, limit: 9999 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchCombos, isMaxPageCombo])
     //handle display combo

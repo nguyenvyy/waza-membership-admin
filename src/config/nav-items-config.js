@@ -4,13 +4,6 @@ import { LetterIcon } from '../components/NavBar/LetterIcon/LetterIcon';
 
 export const navItems = [
     {
-        title: 'Profile',
-        shortHand: 'P',
-        Component: MenuItem,
-        to: '/a/user-profile',
-        CollapsedIcon: LetterIcon,
-    },
-    {
         title: 'Voucher',
         shortHand: 'V',
         Component: SubMenu,

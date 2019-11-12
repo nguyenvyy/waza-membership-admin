@@ -8,7 +8,7 @@ export const checkStatusCombo = combo => {
         case comboStatus.active:
             return { text: comboStatus.active, processing: 'processing' }
         case comboStatus.stop:
-            return { text: comboStatus.stop, processing: 'warning' }
+            return { text: comboStatus.stop, processing: 'default' }
         case comboStatus.wait:
             return { text: comboStatus.wait, processing: 'warning' }
         default:
