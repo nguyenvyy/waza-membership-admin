@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Tabs, Button, Table } from 'antd';
 import './ManageVoucher.scss'
-import {getVoucher, deleteVoucherByID} from '../../../redux/actions/voucherx-actions/services'
+import { getVoucher, deleteVoucherByID } from '../../../redux/actions/voucherx-actions/services'
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
     Link
 } from "react-router-dom";
 
-import EditVoucher from '../EditVoucher/EditVoucher'
 const { TabPane } = Tabs;
 
 
@@ -47,7 +43,7 @@ const ManageVoucher = () => {
             key: 'value',
             title: 'Value',
             dataIndex: 'value'
-        }, 
+        },
         {
             key: 'discount',
             title: 'Discount',
@@ -69,18 +65,18 @@ const ManageVoucher = () => {
             key: 'subcategoty',
             title: 'Sub Type',
             dataIndex: 'subcategory'
-        },    
+        },
         {
             title: 'Action',
             dataIndex: '',
             key: 'x',
-            render: (_,record) => (
+            render: (_, record) => (
                 <div className="action-acvoucher">
                     {/* <p className="text"><Link to={`/a/voucher/edit/${record._id}`}>
                         Edit
                     </Link></p>
                     <p className="text">Delete</p>
-                    <p className="text">Active</p> */} 
+                    <p className="text">Active</p> */}
                     {/* <Route path={`/a/voucher/edit/${record._id}`} render={props => {
                         const id = props.match.params.id;
                         return (
@@ -89,36 +85,36 @@ const ManageVoucher = () => {
                     <p className="text"><Link to={`/a/voucher/edit/${record._id}`}>
                         Edit
                     </Link></p>
-                    <p className="text" onClick={()=>deleteVoucher(record._id)} >Delete</p>
+                    <p className="text" onClick={() => deleteVoucher(record._id)} >Delete</p>
 
                 </div>
             )
-          }
+        }
     ]
 
     const deleteVoucher = id => {
         deleteVoucherByID(id)
-        .then(() => {
-            console.log('success')
-        })
+            .then(() => {
+                console.log('success')
+            })
     }
 
     const [toggle, setToggle] = useState(intitalState)
 
     useEffect(() => {
         getVoucher()
-        .then(res => {
-            setToggle({
-                dataVoucher: res.data.filter((item)=> {
-                    return item.isDeleted == false
+            .then(res => {
+                setToggle({
+                    dataVoucher: res.data.filter((item) => {
+                        return item.isDeleted === false
+                    })
                 })
             })
-        })
     }, [])
-    
-    
+
+
     const filterData = (key) => {
-        if(key === "1") {
+        if (key === "1") {
             setToggle({
                 ...toggle,
                 dataFilter: toggle.dataVoucher.filter((item) => {
@@ -126,7 +122,7 @@ const ManageVoucher = () => {
                 })
             })
         }
-        else if(key === "2") {
+        else if (key === "2") {
             setToggle({
                 ...toggle,
                 dataFilter: toggle.dataVoucher.filter((item) => {
@@ -154,7 +150,7 @@ const ManageVoucher = () => {
                     <Table columns={column} dataSource={toggle.dataFilter} ></Table>
                 </TabPane>
             </Tabs>
-        </div>   
+        </div>
     )
 }
 export default ManageVoucher

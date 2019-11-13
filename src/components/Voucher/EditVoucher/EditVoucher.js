@@ -9,7 +9,7 @@ import { formatOfDateFromDB, dateFormat } from '../../../constant/index'
 const Option = Select.Option;
 const EditVoucher = ({match}) => {
     const id = match.params.id;
-    console.log('id')
+    // console.log('id')
     const intialState = {
         currentButton: 'gift',
         currentType: 'Value',
@@ -106,11 +106,12 @@ const EditVoucher = ({match}) => {
                 dataCreate: res.data
             })
         })  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    useEffect(() => {
-        console.log('data', toggle.dataCreate)
-    })
+    // useEffect(() => {
+    //     console.log('data', toggle.dataCreate)
+    // })
 
     const upDateVoucher = () => {
         editVoucherByID(toggle.dataCreate, id)

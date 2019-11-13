@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Table } from 'antd';
-import {getVoucherActive} from '../../../redux/actions/voucherx-actions/services'
+import { getVoucherActive } from '../../../redux/actions/voucherx-actions/services'
 
 const ActiveVoucher = () => {
     const column = [
@@ -31,7 +31,7 @@ const ActiveVoucher = () => {
             key: 'value',
             title: 'Value',
             dataIndex: 'value'
-        }, 
+        },
         {
             key: 'discount',
             title: 'Discount',
@@ -53,7 +53,7 @@ const ActiveVoucher = () => {
             key: 'subcategoty',
             title: 'Sub Type',
             dataIndex: 'subcategory'
-        },    
+        },
         {
             title: 'Action',
             dataIndex: '',
@@ -63,33 +63,34 @@ const ActiveVoucher = () => {
                     <p className="text">Disable</p>
                 </div>
             )
-          }
+        }
     ]
-    
+
     const intitalState = {
         dataActiveVoucher: []
     }
 
     const [toggle, setToggle] = useState(intitalState)
 
-    useEffect(()=> {
+    useEffect(() => {
         getVoucherActive()
-        .then(res => {
-            setToggle({
-                ...toggle,
-                dataActiveVoucher: res.data
+            .then(res => {
+                setToggle({
+                    ...toggle,
+                    dataActiveVoucher: res.data
+                })
             })
-        })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
     return (
         <div>
             <h1>
-              Active Voucher
+                Active Voucher
             </h1>
             <Table columns={column} dataSource={toggle.dataActiveVoucher}></Table>
-        </div>      
+        </div>
     )
 }
 export default ActiveVoucher
