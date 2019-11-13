@@ -1,33 +1,26 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Table } from 'antd';
+import { getVoucherActive } from '../../../redux/actions/voucherx-actions/services'
 
 const ActiveVoucher = () => {
     const column = [
         {
-            key: 'STT',
-            title: 'STT',
-            dataIndex: 'stt',
-            width: 80
+            key: 'ID',
+            title: 'ID',
+            dataIndex: '_id',
+            width: 150
         },
         {
-            key: 'id',
-            title: 'VoucherID',
-            dataIndex: 'id'
-        },
-        {
-            key: 'name',
+            key: 'voucher_name',
             title: 'Voucher Name',
-            dataIndex: 'name'
+            dataIndex: 'voucher_name',
+            width: 100
         },
         {
-            key: 'fromDate',
-            title: 'From Date',
-            dataIndex: 'fromDate'
-        },
-        {
-            key: 'toDate',
-            title: 'To Date',
-            dataIndex: 'toDate',
+            key: 'category',
+            title: 'Category',
+            dataIndex: 'category',
+            width: 100
         },
         {
             key: 'description',
@@ -35,36 +28,69 @@ const ActiveVoucher = () => {
             dataIndex: 'description'
         },
         {
+            key: 'value',
+            title: 'Value',
+            dataIndex: 'value'
+        },
+        {
+            key: 'discount',
+            title: 'Discount',
+            dataIndex: 'discount'
+        },
+        {
+            key: 'from_date',
+            title: 'From Date',
+            dataIndex: 'from_date',
+            width: 250
+        },
+        {
+            key: 'to_date',
+            title: 'To Date',
+            dataIndex: 'to_date',
+            width: 250
+        },
+        {
+            key: 'subcategoty',
+            title: 'Sub Type',
+            dataIndex: 'subcategory'
+        },
+        {
             title: 'Action',
             dataIndex: '',
             key: 'x',
             render: () => (
                 <div className="action-acvoucher">
-                    <p className="text">View</p>
-                    <p className="text">Details</p>
                     <p className="text">Disable</p>
                 </div>
             )
-          }
-    ]
-    const dataVoucher = [
-        {
-            stt: '1',
-            id: 'A1',
-            name: 'Voucher 1',
-            fromDate: '5/10/2019',
-            toDate: '8/10/2019',
-            description: 'This is Voucher 1',
-            key: '1'
         }
     ]
+
+    const intitalState = {
+        dataActiveVoucher: []
+    }
+
+    const [toggle, setToggle] = useState(intitalState)
+
+    useEffect(() => {
+        getVoucherActive()
+            .then(res => {
+                setToggle({
+                    ...toggle,
+                    dataActiveVoucher: res.data
+                })
+            })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+
     return (
         <div>
             <h1>
-              Active Voucher
+                Active Voucher
             </h1>
-            <Table columns={column} dataSource={dataVoucher}></Table>
-        </div>      
+            <Table columns={column} dataSource={toggle.dataActiveVoucher}></Table>
+        </div>
     )
 }
 export default ActiveVoucher

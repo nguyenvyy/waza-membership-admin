@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { Button, Radio } from 'antd';
 import { DatePicker, Select } from 'antd';
 import { Link } from 'react-router-dom'
-import { createVoucherToAPI } from '../../../redux/actions/voucherx-actions/services'
+import { getVoucherById, editVoucherByID } from '../../../redux/actions/voucherx-actions/services'
 import moment from 'moment';
 import { formatOfDateFromDB, dateFormat } from '../../../constant/index'
 
 const Option = Select.Option;
-const CreateVoucher = () => {
+const EditVoucher = ({match}) => {
+    const id = match.params.id;
+    // console.log('id')
     const intialState = {
         currentButton: 'gift',
         currentType: 'Value',
@@ -47,11 +49,6 @@ const CreateVoucher = () => {
             }
         })
     }
- 
-
-    useEffect(() => {
-        console.log('change', toggle.dataCreate)
-    }, [toggle.dataCreate])
 
     const selectType = value => {
         setToggle((toggle) => ({
@@ -90,10 +87,7 @@ const CreateVoucher = () => {
     }
     
     const resetDiscount = () => {
-        console.log('run')
         setToggle(toggle => {
-            
-            console.log('run2')
             return ({
             ...toggle,
             dataCreate: {
@@ -104,23 +98,31 @@ const CreateVoucher = () => {
         })})
     }
 
-    const CreateVoucher = () => {
-        createVoucherToAPI(toggle.dataCreate)
-        .then(()=>{
-            console.log('success')
-        })
-    }
-
     useEffect(() => {
-        console.log(toggle.dataCreate.from_date)
-    }, [toggle.dataCreate.from_date])
+        getVoucherById(id)
+        .then(res => {
+            setToggle({
+                ...toggle,
+                dataCreate: res.data
+            })
+        })  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    // useEffect(() => {
+    //     console.log('data', toggle.dataCreate)
+    // })
+
+    const upDateVoucher = () => {
+        editVoucherByID(toggle.dataCreate, id)
+    }
 
     return (
         <div className="main-crvoucher">
             <h1>
                 Voucher:
             </h1>
-            <Radio.Group defaultValue="gift" buttonStyle="solid">
+            <Radio.Group value={toggle.dataCreate.category} buttonStyle="solid">
                 <Radio.Button onClick={changeCurrentButton} value="gift">Gift</Radio.Button>
                 <Radio.Button onClick={changeCurrentButton} value="buy">Buy</Radio.Button>
             </Radio.Group>
@@ -129,7 +131,7 @@ const CreateVoucher = () => {
                 <div className="create1">
                     <div className="content-create">
                         <label>Voucher Name:</label>
-                        <input onChange={onChangeData} name="voucher_name"></input>
+                        <input value={toggle.dataCreate.voucher_name} onChange={onChangeData} name="voucher_name"></input>
                     </div>
                     <div className="content-create">
                         {toggle.currentButton === 'gift' ? <label>Rank:</label> : ''}
@@ -154,7 +156,7 @@ const CreateVoucher = () => {
                     </div>
                     <div className="content-create">
                         <label>Description:</label>
-                        <textarea onChange={onChangeData} name="description"></textarea>
+                        <textarea value={toggle.dataCreate.description} onChange={onChangeData} name="description"></textarea>
                     </div>
                 </div>
                 <div className="create1">
@@ -164,22 +166,22 @@ const CreateVoucher = () => {
                     </div>
                     <div className="content-create">
                         <label>Conditions Type:</label>
-                        <Select onChange={selectType} style={{ width: 120 }} defaultValue={toggle.currentType} >
+                        <Select onChange={selectType} style={{ width: 120 }} value={toggle.dataCreate.discount > 0 ?'Combine' : toggle.currentType} >
                             <Option onClick={resetDiscount} value="Value">Value</Option>
                             <Option value="Combine">Combine</Option>
                         </Select>
                     </div>
                     <div className="content-create">
                         <label>Value:</label>
-                        <input onChange={onChangeData} name="value"></input>
+                        <input onChange={onChangeData} value={toggle.dataCreate.value} name="value"></input>
                     </div>
                     <div className="content-create">
                         <label>Percent:</label>
-                        {toggle.currentType === 'Value' ? <input disabled ></input> : <input onChange={onChangeData} value={toggle.dataCreate.discount} name="discount"></input>}
+                        {toggle.dataCreate.discount > 0 ? <input onChange={onChangeData} value={toggle.dataCreate.discount} name="discount"></input> : <input disabled ></input>  }
                     </div>
                     <div className="content-create">
                         <label>Sub Type:</label>
-                        <Select style={{ width: 120 }} onChange={onChangeSub}  defaultValue={toggle.dataCreate.subcategory} >
+                        <Select style={{ width: 120 }} onChange={onChangeSub}  value={toggle.dataCreate.subcategory} >
                             <Option value="food">Food</Option>
                             <Option value="move">Move</Option>
                             <Option value="shopping">Shopping</Option>
@@ -189,7 +191,7 @@ const CreateVoucher = () => {
 
                     <div className="btn-footer">
                         <Button size='large' type="danger"><Link to='/a/voucher/manage'>Cancel</Link></Button>
-                        <Button size='large' type="primary" onClick={CreateVoucher}>Create</Button>
+                        <Button size='large' type="primary" onClick={upDateVoucher}>Update</Button>
                     </div>
                 </div>
             </div>
@@ -197,4 +199,4 @@ const CreateVoucher = () => {
     )
 }
 
-export default CreateVoucher
+export default EditVoucher
