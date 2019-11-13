@@ -179,7 +179,7 @@ const CreateVoucher = () => {
                     </div>
                     <div className="content-create">
                         <label>Percent:</label>
-                        {toggle.currentType === 'Value' ? <input disabled ></input> : <input onChange={onChangeData} value={toggle.dataCreate.discount} name="discount"></input>}
+                        {toggle.currentType === 'Value' ? <input value={0} disabled ></input> : <input onChange={onChangeData} value={toggle.dataCreate.discount} name="discount"></input>}
                     </div>
                     <div className="content-create">
                         <label>Sub Type:</label>

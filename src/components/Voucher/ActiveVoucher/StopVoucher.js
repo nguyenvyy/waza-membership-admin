@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Table, message, Button } from 'antd'
-import { getVoucherActive } from '../../../redux/actions/voucherx-actions/services'
+import { Table} from 'antd'
+import { getVoucher } from '../../../redux/actions/voucherx-actions/services'
 import moment from 'moment'
 import { formatOfDateFromDB, dateFormat } from '../../../constant'
-import {editVoucherByID} from '../../../redux/actions/voucherx-actions/services'
-import {
-    Link
-} from "react-router-dom";
 
-const ActiveVoucher = () => {
+const StopVoucher = () => {
     const column = [
         {
             key: 'ID',
@@ -63,31 +59,11 @@ const ActiveVoucher = () => {
             title: 'Sub Type',
             dataIndex: 'subcategory'
         },
-        {
-            title: 'Action',
-            dataIndex: '',
-            key: 'x',
-            render: (_, record) => (
-                <div className="action-acvoucher">
-                    <p onClick={() => stopActive(record._id)} className="text">Stop</p>
-                </div>
-            )
-        }
     ]
 
-    const dataStop = {
-        to_date: new Date()
-    }
-    const stopActive = id => {
-        editVoucherByID(dataStop, id)
-        .then(() => {
-            message.success('Voucher is stopped')
-            fetchDataActive()
-        })
-    }
-
     const intitalState = {
-        dataActiveVoucher: []
+        dataActiveVoucher: [],
+        dataStopVoucher: []
     }
 
     const [toggle, setToggle] = useState(intitalState)
@@ -97,28 +73,29 @@ const ActiveVoucher = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+
+    const date = Date.now()
     const fetchDataActive = () => {
-        getVoucherActive()
+        getVoucher()
             .then(res => {
                 setToggle({
                     ...toggle,
-                    dataActiveVoucher: res.data
+                    dataActiveVoucher: res.data.filter(item => {
+                        return moment(item.to_date, formatOfDateFromDB).valueOf() < date
+                    })
                 })
-            })
+            }
+        )
     }
+
 
     return (
         <div>
             <h1>
-                Active Voucher
+                Stop Voucher
             </h1>
-            <Button type="dashed" size='large' className="go-stop-voucher">
-                <Link to='/a/voucher/stop'>
-                    Go to list stop Voucher
-                </Link>
-            </Button>
             <Table columns={column} loading={toggle.dataActiveVoucher.length === 0 ? true: false} dataSource={toggle.dataActiveVoucher}></Table>
         </div>
     )
 }
-export default ActiveVoucher
+export default StopVoucher

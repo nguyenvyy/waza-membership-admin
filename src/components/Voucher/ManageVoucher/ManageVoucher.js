@@ -19,7 +19,6 @@ const ManageVoucher = () => {
         currentFilter: "1",
         modalDelete: false
     }
-  
 
     const column = [
         {
@@ -61,14 +60,14 @@ const ManageVoucher = () => {
             title: 'From Date',
             dataIndex: 'from_date',
             width: 160,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
+            render: date => moment(date, formatOfDateFromDB).format(dateFormat)
         },
         {
             key: 'to_date',
             title: 'To Date',
             dataIndex: 'to_date',
             width: 150,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
+            render: date => moment(date, formatOfDateFromDB).format(dateFormat)
         },
         {
             key: 'subcategoty',
@@ -157,7 +156,6 @@ const ManageVoucher = () => {
             })
     }
     
-
 
     const filterData = (key) => {
         if (key === "1") {
