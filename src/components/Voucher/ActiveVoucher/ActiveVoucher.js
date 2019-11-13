@@ -20,7 +20,7 @@ const ActiveVoucher = () => {
             key: 'category',
             title: 'Category',
             dataIndex: 'category',
-            width: 100
+            width: 120
         },
         {
             key: 'description',
@@ -89,7 +89,7 @@ const ActiveVoucher = () => {
             <h1>
                 Active Voucher
             </h1>
-            <Table columns={column} dataSource={toggle.dataActiveVoucher}></Table>
+            <Table columns={column} loading={toggle.dataActiveVoucher.length === 0 ? true: false} dataSource={toggle.dataActiveVoucher}></Table>
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Radio } from 'antd';
+import { Button, Radio, message } from 'antd';
 import { DatePicker, Select } from 'antd';
 import { Link } from 'react-router-dom'
 import { createVoucherToAPI } from '../../../redux/actions/voucherx-actions/services'
@@ -107,7 +107,11 @@ const CreateVoucher = () => {
     const CreateVoucher = () => {
         createVoucherToAPI(toggle.dataCreate)
         .then(()=>{
-            console.log('success')
+            message.success('Create voucher success')
+            setToggle({
+                ...toggle,
+                dataCreate: intialState.dataCreate
+            })
         })
     }
 
@@ -129,7 +133,7 @@ const CreateVoucher = () => {
                 <div className="create1">
                     <div className="content-create">
                         <label>Voucher Name:</label>
-                        <input onChange={onChangeData} name="voucher_name"></input>
+                        <input onChange={onChangeData} value={toggle.dataCreate.voucher_name} name="voucher_name"></input>
                     </div>
                     <div className="content-create">
                         {toggle.currentButton === 'gift' ? <label>Rank:</label> : ''}
@@ -154,7 +158,7 @@ const CreateVoucher = () => {
                     </div>
                     <div className="content-create">
                         <label>Description:</label>
-                        <textarea onChange={onChangeData} name="description"></textarea>
+                        <textarea value={toggle.dataCreate.description} onChange={onChangeData} name="description"></textarea>
                     </div>
                 </div>
                 <div className="create1">
@@ -171,7 +175,7 @@ const CreateVoucher = () => {
                     </div>
                     <div className="content-create">
                         <label>Value:</label>
-                        <input onChange={onChangeData} name="value"></input>
+                        <input onChange={onChangeData} value={toggle.dataCreate.value} name="value"></input>
                     </div>
                     <div className="content-create">
                         <label>Percent:</label>
@@ -179,7 +183,7 @@ const CreateVoucher = () => {
                     </div>
                     <div className="content-create">
                         <label>Sub Type:</label>
-                        <Select style={{ width: 120 }} onChange={onChangeSub}  defaultValue={toggle.dataCreate.subcategory} >
+                        <Select style={{ width: 120 }} onChange={onChangeSub} value={toggle.dataCreate.subcategory} defaultValue={toggle.dataCreate.subcategory} >
                             <Option value="food">Food</Option>
                             <Option value="move">Move</Option>
                             <Option value="shopping">Shopping</Option>

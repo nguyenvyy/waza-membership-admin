@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Radio } from 'antd';
+import { Button, Radio, message } from 'antd';
 import { DatePicker, Select } from 'antd';
 import { Link } from 'react-router-dom'
 import { getVoucherById, editVoucherByID } from '../../../redux/actions/voucherx-actions/services'
@@ -7,7 +7,7 @@ import moment from 'moment';
 import { formatOfDateFromDB, dateFormat } from '../../../constant/index'
 
 const Option = Select.Option;
-const EditVoucher = ({match}) => {
+const EditVoucher = ({match, history}) => {
     const id = match.params.id;
     // console.log('id')
     const intialState = {
@@ -114,7 +114,15 @@ const EditVoucher = ({match}) => {
     // })
 
     const upDateVoucher = () => {
-        editVoucherByID(toggle.dataCreate, id)
+        delete toggle.dataCreate.__v
+        delete toggle.dataCreate._id
+        delete toggle.dataCreate.updatedAt
+        delete toggle.dataCreate.createdAt
+        delete toggle.dataCreate.isDeleted
+        editVoucherByID(toggle.dataCreate, id).then(res => {
+            message.success('Update Success')
+            history.goBack()
+        })
     }
 
     return (
