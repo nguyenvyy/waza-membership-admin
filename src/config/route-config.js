@@ -4,6 +4,7 @@ import { PrivateRoute } from '../routes/PrivateRoute'
 import ActiveVoucher from '../components/Voucher/ActiveVoucher/ActiveVoucher'
 import ManageVoucher from '../components/Voucher/ManageVoucher/ManageVoucher'
 import CreateVoucher from '../components/Voucher/CreateVoucher/CreateVoucher'
+import StopVoucher from '../components/Voucher/ActiveVoucher/StopVoucher'
 
 const Admin = lazy(() => import('../components/Admin/Admin'))
 const Login = lazy(() => import('../components/Login/Login'))
@@ -74,6 +75,10 @@ export const routes = [
                     {
                         path: '/a/voucher/edit/:id',
                         component: EditVoucher
+                    },
+                    {
+                        path: '/a/voucher/stop',
+                        component: StopVoucher
                     }
                 ]
             },
