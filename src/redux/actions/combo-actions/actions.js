@@ -85,7 +85,6 @@ export const editPatchCombo = (combo) => (dispatch, getState) => {
         })
         .catch(err => {
             dispatch(stopRequestCombos())
-            debugger
             return err.response
         })
 }
