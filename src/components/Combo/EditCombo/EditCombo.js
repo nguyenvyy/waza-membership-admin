@@ -140,7 +140,7 @@ const EditCombo = ({
     useEffect(() => {
         if (vouchers.length > 0) {
             const initselectedVouchers = vouchers.reduce((acc, curr, index) => {
-                acc[curr.value.subcategory] = {
+                acc[curr.value.category] = {
                     value: curr.value,
                     index: index
                 }
@@ -366,7 +366,7 @@ const EditCombo = ({
             voucher_id: value._id,
             count: countAndTotalValue[index].count + countExtra[index],
             value: value.value,
-            category: value.subcategory,
+            category: value.category,
             voucher_name: value.voucher_name,
             discount: value.discount
         }));

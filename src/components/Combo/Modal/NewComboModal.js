@@ -256,7 +256,6 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             voucher_name: value.voucher_name,
             discount: value.discount
         }));
-
         let combo = {
             voucher_array,
             ...newCombo,
