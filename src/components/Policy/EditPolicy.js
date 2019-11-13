@@ -108,15 +108,20 @@ export const EditPolicy = ({
         handleValidate(name, value)
     }
 
-    const handleAddPolicy = () => {
+    const handleEditPolicy = () => {
         dispatch(requestEditComboPolicy(editedPolicy)).then(res => {
             setIsFetching(false)
-            switch (res) {
+            switch (res && res.status) {
                 case 200:
                     message.success(`Edit success`)
                     break;
+                case 400:
+                    message.error(`Edit failed`)
+                    if (res.data.code === 11000) {
+                        message.warn("Policy name is existed", 5);
+                    }
+                    break
                 default:
-                    debugger
                     message.error(`Edit failed`)
                     break;
             }
@@ -168,7 +173,7 @@ export const EditPolicy = ({
                         <Form.Item className="add-policy__form-button">
                             <Button
                                 loading={isFetching}
-                                onClick={handleAddPolicy}
+                                onClick={handleEditPolicy}
                                 disabled={!noError} type="primary" icon="save">Edit</Button>
                         </Form.Item>
                     </Form>

@@ -47,7 +47,7 @@ export const LoginForm = () => {
                     message.error('Username or password is incorrect')
                     break;
                 default:
-                    message.error('Login failed')
+                    message.error('Login faileded')
                     break;
             }
         })

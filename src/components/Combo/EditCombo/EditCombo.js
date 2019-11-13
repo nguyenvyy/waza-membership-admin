@@ -140,8 +140,13 @@ const EditCombo = ({
     useEffect(() => {
         if (vouchers.length > 0) {
             const initselectedVouchers = vouchers.reduce((acc, curr, index) => {
-                acc[curr.value.subcategory] = {
-                    value: curr.value,
+                const newValue = {
+                    ...curr.value,
+                    _id: curr.value.voucher_id,
+                    subcategory: curr.value.category
+                }
+                acc[curr.value.category] = {
+                    value: newValue,
                     index: index
                 }
                 return acc
@@ -180,26 +185,41 @@ const EditCombo = ({
             message.warn("Vouchers is maximun", 0.5)
             return
         }
-        if (length > 0) {
-            const index = selectedRows.findIndex(row => row._id === selectedRowKeys[length - 1])
-            setSelectedVouchers({
-                ...selectedVouchers,
-                [filter]: {
-                    value: selectedRows[index],
-                    index: selectedVouchers.index
-                },
-                index: selectedVouchers.index + 1
-            })
-
-        } else {
-            setSelectedVouchers({
-                ...selectedVouchers,
-                [filter]: {
-                    value: null,
-                    index: 0
-                }
-            })
+        switch (length) {
+            case 1:
+                setSelectedVouchers({
+                    ...selectedVouchers,
+                    [filter]: {
+                        value: selectedRows[0],
+                        index: selectedVouchers.index
+                    },
+                    index: selectedVouchers.index + 1
+                })
+                break;
+            case 0:
+                setSelectedVouchers({
+                    ...selectedVouchers,
+                    [filter]: {
+                        value: null,
+                        index: 0
+                    }
+                })
+                break;
+            default:
+                const index = selectedRows.findIndex(row => {
+                    return row._id === selectedRowKeys[length - 1]
+                })
+                setSelectedVouchers({
+                    ...selectedVouchers,
+                    [filter]: {
+                        value: selectedRows[index],
+                        index: selectedVouchers.index
+                    },
+                    index: selectedVouchers.index + 1
+                })
+                break;
         }
+
     }
     const handleDeleteVoucher = (_, subcategory) => {
         setSelectedVouchers({
@@ -239,6 +259,15 @@ const EditCombo = ({
             return selectedVouchersArr.map((voucher, index) => {
                 const valueVoucher = voucher.value.value
                 const totalValue = calValueTotal(+changedCombo.value, increase, voucherProprotion[index])
+                if(isNaN(totalValue)) {
+                    setSelectedVouchers({
+                        ...selectedVouchers,
+                        [voucher.value.subcategory]: {
+                            value: null,
+                            index: 0
+                        }
+                    })
+                }
                 const count = Math.floor(totalValue / valueVoucher)
                 const excess = totalValue % valueVoucher
                 return {
@@ -248,7 +277,7 @@ const EditCombo = ({
                 }
             })
         }
-    }, [changedCombo.value, policies, selectedPolicy, selectedVouchersArr])
+    }, [changedCombo.value, policies, selectedPolicy, selectedVouchers, selectedVouchersArr])
 
     const [countExtra, setCountExtra] = useState([0, 0, 0, 0]);
     useEffect(() => {
@@ -271,6 +300,7 @@ const EditCombo = ({
                 setCountExtra(counts)
             }
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [countAndTotalValue, preCounts, combo, policies, selectedVouchersArr, selectedPolicy])
 
@@ -306,7 +336,7 @@ const EditCombo = ({
         {
             key: 'service',
             title: 'Service',
-            dataIndex: 'value.subcategory',
+            dataIndex: 'value.category',
             width: 100
         },
         {
@@ -367,7 +397,7 @@ const EditCombo = ({
             value: value.value,
             category: value.subcategory,
             voucher_name: value.voucher_name,
-            discount: value.discount
+            discount: value.discount ? value.discount : 0
         }));
         let combo = {
             ...changedCombo,
@@ -385,12 +415,14 @@ const EditCombo = ({
                     break;
                 case 400:
                     setTimeout(hide, 100);
-                    message.error('edit combo fail', 2);
-                    message.warning(`${res.data.message}`, 5);
+                    message.error('Edit combo failed', 2);
+                    if(res.data.code === 11000) {
+                        message.warning("Combo name is existed", 5);
+                    }
                     break;
                 case 404:
                     setTimeout(hide, 100);
-                    message.error('combo not found', 2);
+                    message.error('Combo not found', 2);
                     message.warning(`${res.data.message}`, 5);
                     break;
                 default:
@@ -468,7 +500,7 @@ const EditCombo = ({
                                             handleCloseSelectVoucherModal={handleCloseSelectVoucherModal}
                                             isOpenSelectVoucherModal={isOpenSelectVoucherModal}
                                         />
-                                        <ErrorMessage hasError={!formErrors.voucher_array} message="Voucher list is not valid" />
+                                        <ErrorMessage hasError={!formErrors.voucher_array} message={`Number of vouchers must be ${ policies[selectedPolicy] ? policies[selectedPolicy].voucher_percent.length : ''}`} />
                                         <Table
                                             {...tableConfig}
                                             dataSource={selectedVouchersArr.length > 0 ? selectedVouchersArr : null}

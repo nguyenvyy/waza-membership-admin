@@ -113,10 +113,15 @@ export const AddPolicy = ({
                     break;
                 case 400:
                     message.error(`Add failed`)
-                    break;
+                    if (res.data.code === 11000) {
+                        message.warn("Policy name is existed", 5);
+                    }
+                    break
                 default:
+                    message.error(`Add failed`)
                     break;
             }
+
         })
     }
 
