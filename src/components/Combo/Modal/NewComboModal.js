@@ -169,6 +169,15 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             return selectedVouchersArr.map((voucher, index) => {
                 const valueVoucher = voucher.value.value
                 const totalValue = calValueTotal(+newCombo.value, increase, voucherProprotion[index])
+                if(isNaN(totalValue)) {
+                    setSelectedVouchers({
+                        ...selectedVouchers,
+                        [voucher.value.subcategory]: {
+                            value: null,
+                            index: 0
+                        }
+                    })
+                }
                 const count = Math.floor(totalValue / valueVoucher)
                 const excess = totalValue % valueVoucher
                 return {
@@ -178,7 +187,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 }
             })
         }
-    }, [newCombo.value, policies, selectedPolicy, selectedVouchersArr])
+    }, [newCombo.value, policies, selectedPolicy, selectedVouchers, selectedVouchersArr])
 
     // Extra number of vouchers
     const [countExtra, setCountExtra] = useState([0, 0, 0, 0]);
@@ -418,14 +427,6 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             ))}
                         </Select>
                     </Form.Item>
-                    {/* <Form.Item label="Is stop" wrapperCol={{ span: 5 }}>
-                        <Select
-                            value={`${newCombo.state}`}
-                        >
-                            <Select.Option value={`true`}>No</Select.Option>
-                            <Select.Option value={`false`}>Yes</Select.Option>
-                        </Select>
-                    </Form.Item> */}
                     <Form.Item label="Description"
                         validateStatus={checkErrorSuccess(formErrors.description)}
                         help={!formErrors.description && errorMessage.description}
@@ -448,7 +449,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                     </Form.Item>
                     <Form.Item wrapperCol={{ span: 25 }}
                     >
-                        <ErrorMessage hasError={!formErrors.voucher_array} message="Voucher list is not valid" />
+                        <ErrorMessage hasError={!formErrors.voucher_array} message={`Number of vouchers must be ${ policies[selectedPolicy] ? policies[selectedPolicy].voucher_percent.length : ''}`} />
                         <Table
                             {...tableConfig}
                             dataSource={selectedVouchersArr.length > 0 ? selectedVouchersArr : null}
