@@ -271,7 +271,8 @@ const EditCombo = ({
                 setCountExtra(counts)
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [countAndTotalValue, preCounts, combo, policies, selectedVouchersArr, selectedPolicy])
 
     const onChangeCountExtra = (index, value) => {
@@ -306,7 +307,7 @@ const EditCombo = ({
         {
             key: 'service',
             title: 'Service',
-            dataIndex: 'value.subcategory',
+            dataIndex: 'value.category',
             width: 100
         },
         {
