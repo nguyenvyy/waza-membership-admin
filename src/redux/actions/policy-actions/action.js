@@ -17,12 +17,12 @@ export const fetchFullComboPolicy = () => (dispatch, getState) => {
         .then(res => {
             dispatch(stopRequestComboPolicy())
             dispatch(receiveFullComboPolicy(res.data))
-            return res.status
+            return res
         })
         .catch(err => {
             dispatch(stopRequestComboPolicy())
             if (err.response !== undefined) {
-                return err.response.status
+                return err.response
             }
             return undefined
         })
@@ -36,12 +36,12 @@ export const requestAddComboPolicy = policy => (dispatch, getState) => {
         .then(res => {
             dispatch(stopRequestComboPolicy())
             dispatch(addComboPolicy(res.data))
-            return res.status
+            return res
         })
         .catch(err => {
             dispatch(stopRequestComboPolicy())
             if (err.response !== undefined) {
-                return err.response.status
+                return err.response
             }
             return undefined
         })
@@ -60,12 +60,12 @@ export const requestEditComboPolicy = policy => (dispatch, getState) => {
         .then(res => {
             dispatch(stopRequestComboPolicy())
             dispatch(editComboPolicy(res.data))
-            return res.status
+            return res
         })
         .catch(err => {
             dispatch(stopRequestComboPolicy())
             if (err.response !== undefined) {
-                return err.response.status
+                return err.response
             }
             return undefined
         })
@@ -80,12 +80,12 @@ export const requestDeleteComboPolicy = id => (dispatch, getState) => {
         .then(res => {
             dispatch(stopRequestComboPolicy())
             dispatch(deleteComboPolicy(res.data))
-            return res.status
+            return res
         })
         .catch(err => {
             dispatch(stopRequestComboPolicy())
             if (err.response !== undefined) {
-                return err.response.status
+                return err.response
             }
             return undefined
         })

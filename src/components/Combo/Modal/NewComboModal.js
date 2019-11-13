@@ -279,8 +279,10 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                     break;
                 case 400:
                     setTimeout(hide, 100);
-                    message.error('Add combo fail', 2);
-                    message.warning(`${res.data.message}`, 3);
+                    message.error('Add combo failed', 2);
+                    if(res.data.code === 11000) {
+                        message.warning("Combo name is existed", 5);
+                    }
                     break;
                 default:
                     message.error('Unknown Error', 2);

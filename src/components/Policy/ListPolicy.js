@@ -13,7 +13,7 @@ export const ListPolicy = ({
 
     const handleDeletePolicy = id => {
         dispatch(requestDeleteComboPolicy(id)).then(res => {
-            switch (res) {
+            switch (res && res.status) {
                 case 201:
                     message.success(`Delete success`)
                     break;
@@ -21,6 +21,7 @@ export const ListPolicy = ({
                     message.error(`Delete failed`)
                     break;
                 default:
+                    message.error(`Delete failed`)
                     break;
             }
         })
@@ -38,7 +39,7 @@ export const ListPolicy = ({
             key: 'extra_percent',
             render: extra_percent => extra_percent + '%',
             sorter: (a, b) => a.extra_percent - b.extra_percent
-            
+
         },
         {
             title: 'Vouchers percent',
@@ -89,7 +90,7 @@ export const ListPolicy = ({
                         {!record.isDeleted && (
                             <>
                                 <span className="action-delete"
-                                onClick={() => handleDeletePolicy(record._id)}
+                                    onClick={() => handleDeletePolicy(record._id)}
                                 >delete</span>
                                 <Divider type="vertical" />
                                 <NavLink

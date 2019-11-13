@@ -82,7 +82,7 @@ const ManageCombo = ({
                     break;
                 case 400:
                     setTimeout(hide, 50);
-                    message.error('Stop fail', 2);
+                    message.error('Stop failed', 2);
                     message.warning(`${res.data.message}`, 3);
                     break;
                 case 404:
@@ -108,7 +108,7 @@ const ManageCombo = ({
                     break;
                 case 400:
                     setTimeout(hide, 50);
-                    message.error('Delete combo fail', 2);
+                    message.error('Delete combo failed', 2);
                     message.warning(`${res.data.message}`, 3);
                     break;
                 case 404:

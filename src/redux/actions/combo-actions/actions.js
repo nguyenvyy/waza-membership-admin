@@ -71,7 +71,7 @@ export const addPostCombo = combo => (dispatch, getState) => {
 }
 
 export const editPatchCombo = (combo) => (dispatch, getState) => {
-    const allowedUpdates = ['combo_name', 'description', 'value', 'state', 'from_date', 'to_date', 'voucher_array', 'days']
+    const allowedUpdates = ['combo_name', 'description', 'value', 'state', 'policy_id', 'from_date', 'to_date', 'voucher_array', 'days']
     const updates = allowedUpdates.reduce((acc, curr) => {
         acc[curr] = combo[curr]
         return acc
