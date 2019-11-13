@@ -140,8 +140,12 @@ const EditCombo = ({
     useEffect(() => {
         if (vouchers.length > 0) {
             const initselectedVouchers = vouchers.reduce((acc, curr, index) => {
-                acc[curr.value.subcategory] = {
-                    value: curr.value,
+                const newValue = {
+                    ...curr.value,
+                    _id: curr.value.voucher_id
+                }
+                acc[curr.value.category] = {
+                    value: newValue,
                     index: index
                 }
                 return acc
@@ -180,26 +184,41 @@ const EditCombo = ({
             message.warn("Vouchers is maximun", 0.5)
             return
         }
-        if (length > 0) {
-            const index = selectedRows.findIndex(row => row._id === selectedRowKeys[length - 1])
-            setSelectedVouchers({
-                ...selectedVouchers,
-                [filter]: {
-                    value: selectedRows[index],
-                    index: selectedVouchers.index
-                },
-                index: selectedVouchers.index + 1
-            })
-
-        } else {
-            setSelectedVouchers({
-                ...selectedVouchers,
-                [filter]: {
-                    value: null,
-                    index: 0
-                }
-            })
+        switch (length) {
+            case 1:
+                setSelectedVouchers({
+                    ...selectedVouchers,
+                    [filter]: {
+                        value: selectedRows[0],
+                        index: selectedVouchers.index
+                    },
+                    index: selectedVouchers.index + 1
+                })
+                break;
+            case 0:
+                setSelectedVouchers({
+                    ...selectedVouchers,
+                    [filter]: {
+                        value: null,
+                        index: 0
+                    }
+                })
+                break;
+            default:
+                const index = selectedRows.findIndex(row => {
+                    return row._id === selectedRowKeys[length - 1]
+                })
+                setSelectedVouchers({
+                    ...selectedVouchers,
+                    [filter]: {
+                        value: selectedRows[index],
+                        index: selectedVouchers.index
+                    },
+                    index: selectedVouchers.index + 1
+                })
+                break;
         }
+
     }
     const handleDeleteVoucher = (_, subcategory) => {
         setSelectedVouchers({
@@ -271,6 +290,7 @@ const EditCombo = ({
                 setCountExtra(counts)
             }
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [countAndTotalValue, preCounts, combo, policies, selectedVouchersArr, selectedPolicy])
 
@@ -306,7 +326,7 @@ const EditCombo = ({
         {
             key: 'service',
             title: 'Service',
-            dataIndex: 'value.subcategory',
+            dataIndex: 'value.category',
             width: 100
         },
         {
@@ -365,7 +385,7 @@ const EditCombo = ({
             voucher_id: value._id,
             count: countAndTotalValue[index].count + countExtra[index],
             value: value.value,
-            category: value.subcategory,
+            category: value.category,
             voucher_name: value.voucher_name,
             discount: value.discount
         }));
