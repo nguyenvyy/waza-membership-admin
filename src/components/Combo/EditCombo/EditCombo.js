@@ -415,8 +415,10 @@ const EditCombo = ({
                     break;
                 case 400:
                     setTimeout(hide, 100);
-                    message.error('edit combo fail', 2);
-                    message.warning(`${res.data.message}`, 5);
+                    message.error('edit combo failed', 2);
+                    if(res.data.code === 11000) {
+                        message.warning("Combo name is existed", 5);
+                    }
                     break;
                 case 404:
                     setTimeout(hide, 100);

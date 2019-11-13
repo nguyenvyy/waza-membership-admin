@@ -18,7 +18,7 @@ export const UserInfo = memo(
                         message.success('Logout success',1)
                         break;
                     case 500: 
-                        message.error('Logout fail',1)
+                        message.error('Logout failed',1)
                         break;
                     default:
                         message.error('Network Error', 1)

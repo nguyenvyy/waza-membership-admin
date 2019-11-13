@@ -73,7 +73,7 @@ const ActiveCombo = ({
                     break;
                 case 400:
                     setTimeout(hide, 50);
-                    message.error('Stop combo fail', 2);
+                    message.error('Stop combo failed', 2);
                     message.warning(`${res.data.message}`, 3);
                     break;
                 case 404:
