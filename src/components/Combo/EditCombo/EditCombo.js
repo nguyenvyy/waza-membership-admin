@@ -387,7 +387,7 @@ const EditCombo = ({
             value: value.value,
             category: value.category,
             voucher_name: value.voucher_name,
-            discount: value.discount
+            discount: value.discount ? value.discount : 0
         }));
         let combo = {
             ...changedCombo,

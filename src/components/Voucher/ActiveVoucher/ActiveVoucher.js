@@ -1,3 +1,4 @@
+import uuid from 'uuid'
 import React, { useState, useEffect } from 'react'
 import { Table } from 'antd';
 import { getVoucherActive } from '../../../redux/actions/voucherx-actions/services'
@@ -89,7 +90,7 @@ const ActiveVoucher = () => {
             <h1>
                 Active Voucher
             </h1>
-            <Table columns={column} loading={toggle.dataActiveVoucher.length === 0 ? true: false} dataSource={toggle.dataActiveVoucher}></Table>
+            <Table rowKey={() => uuid()} columns={column} loading={toggle.dataActiveVoucher.length === 0 ? true: false} dataSource={toggle.dataActiveVoucher}></Table>
         </div>
     )
 }

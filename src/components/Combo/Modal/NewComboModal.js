@@ -263,7 +263,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             value: value.value,
             category: value.subcategory,
             voucher_name: value.voucher_name,
-            discount: value.discount
+            discount: value.discount ? value.discount : 0
         }));
         let combo = {
             voucher_array,
