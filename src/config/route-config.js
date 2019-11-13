@@ -14,7 +14,7 @@ const EditComboContainer = lazy(() => import('../redux/container/EditComboContai
 const Voucher = lazy(() => import('../components/Voucher/Voucher'))
 const ManageComboContainer = lazy(() => import('../redux/container/ManageComboContainer'))
 const Policy = lazy(() => import('../components/Policy/Policy'))
-
+const EditVoucher = lazy(() => import('../components/Voucher/EditVoucher/EditVoucher'))
 export const routes = [
     {
         path: '/',
@@ -70,6 +70,10 @@ export const routes = [
                     {
                         path: '/a/voucher/create',
                         component: CreateVoucher
+                    },
+                    {
+                        path: '/a/voucher/edit/:id',
+                        component: EditVoucher
                     }
                 ]
             },
