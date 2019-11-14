@@ -35,7 +35,12 @@ const EditCombo = ({
     useEffect(() => {
         if (combo.policy_id !== undefined && policies.length > 0) {
             const index = policies.findIndex(item => item._id === combo.policy_id)
-            setSelectedPolicy(index)
+            if (index === -1) {
+                message.warn('Policy of combo is deleted. You should select orther policy', 2)
+                setSelectedPolicy(0);
+            } else {
+                setSelectedPolicy(index)
+            }
         }
     }, [combo, policies])
     const onChangeSelectedPolicy = value => setSelectedPolicy(value)
@@ -253,13 +258,13 @@ const EditCombo = ({
     }, [combo.voucher_array])
     // handle calculate count and totoal value
     const countAndTotalValue = useMemo(() => {
-        if (policies.length > 0) {
+        if (policies.length > 0 && policies[selectedPolicy]) {
             const increase = policies[selectedPolicy].extra_percent
             const voucherProprotion = policies[selectedPolicy].voucher_percent
             return selectedVouchersArr.map((voucher, index) => {
                 const valueVoucher = voucher.value.value
                 const totalValue = calValueTotal(+changedCombo.value, increase, voucherProprotion[index])
-                if(isNaN(totalValue)) {
+                if (isNaN(totalValue)) {
                     setSelectedVouchers({
                         ...selectedVouchers,
                         [voucher.value.subcategory]: {
@@ -416,7 +421,7 @@ const EditCombo = ({
                 case 400:
                     setTimeout(hide, 100);
                     message.error('Edit combo failed', 2);
-                    if(res.data.code === 11000) {
+                    if (res.data.code === 11000) {
                         message.warning("Combo name is existed", 5);
                     }
                     break;
@@ -500,7 +505,7 @@ const EditCombo = ({
                                             handleCloseSelectVoucherModal={handleCloseSelectVoucherModal}
                                             isOpenSelectVoucherModal={isOpenSelectVoucherModal}
                                         />
-                                        <ErrorMessage hasError={!formErrors.voucher_array} message={`Number of vouchers must be ${ policies[selectedPolicy] ? policies[selectedPolicy].voucher_percent.length : ''}`} />
+                                        <ErrorMessage hasError={!formErrors.voucher_array} message={`Number of vouchers must be ${policies[selectedPolicy] ? policies[selectedPolicy].voucher_percent.length : ''}`} />
                                         <Table
                                             {...tableConfig}
                                             dataSource={selectedVouchersArr.length > 0 ? selectedVouchersArr : null}

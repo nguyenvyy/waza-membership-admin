@@ -10,7 +10,7 @@ const VouchersDetail = ({voucher_array = [], isFetchingVoucher = true}) =>  {
         <ul className="voucher-in-combo">
             {voucher_array.map((value, index) => (
                 <li key={index}>
-                    {`${value.count} x ${value.voucher_name}, service: ${value.subcategory}, value: ${formatVND(value.value)}, discount: ${value.discount} %`}
+                    {`${value.count} x ${value.voucher_name}, service: ${value.category}, value: ${formatVND(value.value)}, discount: ${value.discount} %`}
                     <Divider type="vertical"/>
                     <span>
                         <Link to={`/a/voucher/detail/${value._id}`}>view</Link>
