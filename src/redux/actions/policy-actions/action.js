@@ -80,7 +80,7 @@ export const requestDeleteComboPolicy = id => (dispatch, getState) => {
         .then(res => {
             dispatch(stopRequestComboPolicy())
             dispatch(deleteComboPolicy(res.data))
-            return res
+            return 201
         })
         .catch(err => {
             dispatch(stopRequestComboPolicy())

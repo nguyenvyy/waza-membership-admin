@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { Badge, Divider, Table, message } from 'antd';
 import moment from 'moment';
-import { dateFormat, formatOfDateFromDB } from '../../constant';
+import { dateFormat, formatOfDateFromDB, limitDelete } from '../../constant';
 import { comboStatus } from '../../constant/combo';
 export const ListPolicy = ({
     isFetching,
@@ -11,20 +11,24 @@ export const ListPolicy = ({
     requestDeleteComboPolicy
 }) => {
 
-    const handleDeletePolicy = id => {
-        dispatch(requestDeleteComboPolicy(id)).then(res => {
-            switch (res && res.status) {
+    const handleDeletePolicy = record => {
+        const limitDate = moment(record.createdAt).add(limitDelete, 'years');
+        const curr = Date.now()
+        if(curr >= limitDate.valueOf()) {
+        dispatch(requestDeleteComboPolicy(record._id)).then(res => {
+            switch (res) {
                 case 201:
                     message.success(`Delete success`)
-                    break;
-                case 400:
-                    message.error(`Delete failed`)
                     break;
                 default:
                     message.error(`Delete failed`)
                     break;
             }
         })
+    } else {
+        message.error('Delete failed',1)
+        message.warn('Current date must be gearter than '+ limitDate.format(dateFormat), 2);
+    }
     }
 
     const columns = [
@@ -90,7 +94,7 @@ export const ListPolicy = ({
                         {!record.isDeleted && (
                             <>
                                 <span className="action-delete"
-                                    onClick={() => handleDeletePolicy(record._id)}
+                                    onClick={() => handleDeletePolicy(record)}
                                 >delete</span>
                                 <Divider type="vertical" />
                                 <NavLink
