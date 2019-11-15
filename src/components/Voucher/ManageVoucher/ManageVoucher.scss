@@ -36,6 +36,10 @@
         margin-left: 20px;
         width: 180px !important;
     }
+    textarea {
+        margin-left: 20px;
+        width: 300px; 
+    }
 }
 .content-create:nth-child(5) {
     display: flex;
@@ -70,4 +74,11 @@
     position: absolute;
     right: 10px;
     top: 10px;
+}
+.validate-input {
+    font-size: 12px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: red;
+    padding: 10px;
+    height: 20px;
 }
