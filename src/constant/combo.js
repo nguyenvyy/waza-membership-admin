@@ -14,8 +14,8 @@ export const comboLimitValue = {
         max: 366
     },
     combo_name: {
-        min: 6,
-        max: 50
+        min: 5,
+        max: 25
     },
     value: {
         min: 50000,
