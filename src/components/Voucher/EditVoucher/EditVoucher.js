@@ -141,11 +141,11 @@ const EditVoucher = ({match, history}) => {
                         <label>Voucher Name:</label>
                         <input value={toggle.dataCreate.voucher_name} onChange={onChangeData} name="voucher_name"></input>
                     </div>
-                    <div className="content-create">
-                        {toggle.currentButton === 'gift' ? <label>Rank:</label> : ''}
-                        {toggle.currentButton === 'buy' ? <label>Cost:</label> : ''}
+                    {!toggle.dataCreate.voucher_name ? <p className="validate-input">Voucher name should not be null and not duplicated</p> : <p className="validate-input"></p>}
+                    {toggle.currentButton === 'gift' ?<div className="content-create">
+                        <label>Rank:</label>
                         <input onChange={onChangeData}></input>
-                    </div>
+                    </div> : <div></div>}
                     <div className="content-create">
                         <label>From Date:</label>
                         <DatePicker
@@ -154,6 +154,7 @@ const EditVoucher = ({match, history}) => {
                             value={toggle.dataCreate.from_date === null ? null : moment(toggle.dataCreate.from_date, formatOfDateFromDB)}
                         ></DatePicker>
                     </div>
+                    {!toggle.dataCreate.from_date ? <p className="validate-input">From Date should not be null</p > : <p className="validate-input"></p>}
                     <div className="content-create">
                         <label>To Date:</label>
                         <DatePicker 
@@ -162,10 +163,12 @@ const EditVoucher = ({match, history}) => {
                             value={toggle.dataCreate.to_date === null ? null : moment(toggle.dataCreate.to_date, formatOfDateFromDB)}>
                         </DatePicker>
                     </div>
+                    {!toggle.dataCreate.to_date ? <p className="validate-input">To Date should not be null and should be after today</p> : <p className="validate-input"></p>}
                     <div className="content-create">
                         <label>Description:</label>
                         <textarea value={toggle.dataCreate.description} onChange={onChangeData} name="description"></textarea>
                     </div>
+                    {!toggle.dataCreate.description ? <p className="validate-input">To Date should not be null and should be after today</p> : <p className="validate-input"></p>}
                 </div>
                 <div className="create1">
                     <div className="content-create">
@@ -183,10 +186,12 @@ const EditVoucher = ({match, history}) => {
                         <label>Value:</label>
                         <input onChange={onChangeData} value={toggle.dataCreate.value} name="value"></input>
                     </div>
+                    {!toggle.dataCreate.value ? <p className="validate-input">If you choose value or combine, value should not be null and be integer</p> : <p className="validate-input"></p>}
                     <div className="content-create">
                         <label>Percent:</label>
                         {toggle.dataCreate.discount > 0 ? <input onChange={onChangeData} value={toggle.dataCreate.discount} name="discount"></input> : <input disabled ></input>  }
                     </div>
+                    {toggle.currentType !== 'Value' && !toggle.dataCreate.discount ? <p className="validate-input">If you choose combine, percent should not be null and less than 100</p> : <p className="validate-input"></p>}
                     <div className="content-create">
                         <label>Sub Type:</label>
                         <Select style={{ width: 120 }} onChange={onChangeSub}  value={toggle.dataCreate.subcategory} >
