@@ -91,7 +91,7 @@ const StopVoucher = () => {
 
     return (
         <div>
-            <h1>
+            <h1 className="title-voucher">
                 Stop Voucher
             </h1>
             <Table columns={column} loading={toggle.dataActiveVoucher.length === 0 ? true: false} dataSource={toggle.dataActiveVoucher}></Table>

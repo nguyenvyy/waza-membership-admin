@@ -93,16 +93,16 @@ const ManageVoucher = () => {
                     <p className="text"><Link to={`/a/voucher/edit/${record._id}`}>
                         Edit
                     </Link></p>
-                    <p className="text" onClick={() => deleteVoucher(record._id)}>Delete</p>
+                    <p className="text" onClick={() => deleteVoucher(record._id, record.voucher_name)}>Delete</p>
                 </div>
             )
         }
     ]
 
-    const deleteVoucher = id => {
+    const deleteVoucher = (id, name) => {
         deleteVoucherByID(id)
             .then(() => {
-                message.success('Delete Success')
+                message.success(`${name} deleted`)
                 if(toggle.currentFilter === "1"){
                     fetchData()
                 }
@@ -180,7 +180,7 @@ const ManageVoucher = () => {
 
     return (
         <div>
-            <h1>Manage Voucher</h1>
+            <h1 className="title-voucher">Manage Voucher</h1>
 
             <Button type="primary" size='large' className="cr-voucher">
                 <Link to='/a/voucher/create'>

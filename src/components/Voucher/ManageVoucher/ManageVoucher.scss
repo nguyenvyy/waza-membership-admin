@@ -54,8 +54,9 @@
 }
 
 .btn-footer {
-    margin-top: 50px;
+    margin-top: 80px;
     margin-left: 140px;
+    margin-bottom: 20px;
     :nth-child(2){
         margin-left: 20px;
     }
@@ -81,4 +82,18 @@
     color: red;
     padding: 10px;
     height: 20px;
+}
+.ant-table-tbody > tr > td {
+    max-width: 400px;
+}
+
+.title-voucher {
+    margin-left: 20px;
+    margin-top: 20px;
+}
+.title-voucher1 {
+    margin-top: 20px;
+}
+.ant-table-wrapper {
+    margin-left: 10px;
 }
