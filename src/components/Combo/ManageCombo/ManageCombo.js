@@ -223,7 +223,7 @@ const ManageCombo = ({
                                 <span onClick={() => stopCombo(record)} className="fake-link" >stop</span>
                             </>
                         ) : null}
-                        {!record.isDeleted && (
+                        {status.text === comboStatus.stop && (
                             <>
                                 <Divider type="vertical" />
                                 <span onClick={() => deleteCombo(record)} className="fake-link">delete</span>
