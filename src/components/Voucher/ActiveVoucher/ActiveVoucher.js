@@ -70,7 +70,7 @@ const ActiveVoucher = () => {
             key: 'x',
             render: (_, record) => (
                 <div className="action-acvoucher">
-                    <p onClick={() => stopActive(record._id)} className="text">Stop</p>
+                    <p onClick={() => stopActive(record._id, record.voucher_name)} className="text">Stop</p>
                 </div>
             )
         }
@@ -79,10 +79,10 @@ const ActiveVoucher = () => {
     const dataStop = {
         to_date: new Date()
     }
-    const stopActive = id => {
+    const stopActive = (id, name) => {
         editVoucherByID(dataStop, id)
         .then(() => {
-            message.success('Voucher is stopped')
+            message.success(`${name} stopped`)
             fetchDataActive()
         })
     }
@@ -110,7 +110,7 @@ const ActiveVoucher = () => {
 
     return (
         <div>
-            <h1>
+            <h1 className="title-voucher">
                 Active Voucher
             </h1>
             <Button type="dashed" size='large' className="go-stop-voucher">
