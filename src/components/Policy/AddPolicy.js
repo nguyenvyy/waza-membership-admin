@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { Header } from '../common/Header/Header'
 import { Form, Input, Select, message, Button } from 'antd'
+import { checkMinMax } from '../../utils/validate'
 export const AddPolicy = ({
     requestAddComboPolicy,
     dispatch
@@ -27,10 +28,10 @@ export const AddPolicy = ({
         let isValid = false
         switch (name) {
             case 'policy_name':
-                isValid = value !== '' ? true : false
+                isValid = checkMinMax(value.length, 5, 25)
                 break;
             case 'description':
-                isValid = value !== '' ? true : false
+                isValid = checkMinMax(value.length, 5, 200)
                 break;
             case 'voucher_percent':
                 isValid = value
@@ -104,9 +105,11 @@ export const AddPolicy = ({
 
     const handleAddPolicy = () => {
         setIsFetching(true)
-        dispatch(requestAddComboPolicy(policy)).then(res => {
+        let policyCoppy = {...policy}
+        policyCoppy.policy_name = policy.policy_name.trim()
+        dispatch(requestAddComboPolicy(policyCoppy)).then(res => {
             setIsFetching(false)
-            switch (res) {
+            switch (res && res.status) {
                 case 201:
                     message.success(`Add success`)
                     setPolicy({ ...resetPolicy })
@@ -131,7 +134,7 @@ export const AddPolicy = ({
             <div className="add-policy__form">
                 <Form layout="inline">
                     <Form.Item label="Name"
-                        help={!formValid.policy_name && "Name is not valid"}
+                        help={!formValid.policy_name && "Name is must be from 5 to 20"}
                         hasFeedback
                         validateStatus={formValid.policy_name ? "success" : "error"} >
                         <Input name="policy_name" value={policy.policy_name} onChange={onChange} />
@@ -159,7 +162,7 @@ export const AddPolicy = ({
                         ))}
                     </Form.Item>
                     <Form.Item label="Description"
-                        help={!formValid.description && "Description is not valid"}
+                        help={!formValid.description && "Description is must be from 5 to 200"}
                         hasFeedback
                         validateStatus={formValid.description ? "success" : "error"}
                     >

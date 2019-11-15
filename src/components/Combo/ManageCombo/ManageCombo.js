@@ -8,7 +8,7 @@ import { Header } from '../Header/Header'
 import { Button, Divider, Table, message, Badge, Form, Input } from 'antd'
 import { NewComboModal } from '../Modal/NewComboModal';
 import { formatVND, debounce } from '../../../utils'
-import { formatOfDateFromDB, dateFormat } from '../../../constant'
+import { formatOfDateFromDB, dateFormat, limitDelete } from '../../../constant'
 import VouchersShort from '../VouchersInCombo/VouchersShort'
 import VouchersDetail from '../VouchersInCombo/VouchersDetail'
 import { checkStatusCombo } from '../../../utils/combo'
@@ -99,29 +99,36 @@ const ManageCombo = ({
     }
 
     const deleteCombo = (combo) => {
-        const hide = message.loading('Delete combo....', 0);
-        deletePatchCombo(combo._id).then(res => {
-            switch (res && res.status) {
-                case 200:
-                    setTimeout(hide, 50);
-                    message.success(`${combo.combo_name} deleted`, 2)
-                    break;
-                case 400:
-                    setTimeout(hide, 50);
-                    message.error('Delete combo failed', 2);
-                    message.warning(`${res.data.message}`, 3);
-                    break;
-                case 404:
-                    setTimeout(hide, 50);
-                    message.error('Combo not found', 2);
-                    message.warning(`${res.data.message}`, 3);
-                    break;
-                default:
-                    message.error('Unknown Error', 2);
-                    setTimeout(hide, 50);
-                    break;
-            }
-        })
+        const limitDate = moment(combo.createdAt).add(limitDelete, 'years');
+        const curr = Date.now()
+        if(curr >= limitDate.valueOf()) {
+            const hide = message.loading('Delete combo....', 0);
+            deletePatchCombo(combo._id).then(res => {
+                switch (res && res.status) {
+                    case 200:
+                        setTimeout(hide, 50);
+                        message.success(`${combo.combo_name} deleted`, 2)
+                        break;
+                    case 400:
+                        setTimeout(hide, 50);
+                        message.error('Delete combo failed', 2);
+                        message.warning(`${res.data.message}`, 3);
+                        break;
+                    case 404:
+                        setTimeout(hide, 50);
+                        message.error('Combo not found', 2);
+                        message.warning(`${res.data.message}`, 3);
+                        break;
+                    default:
+                        message.error('Unknown Error', 2);
+                        setTimeout(hide, 50);
+                        break;
+                }
+            })
+        }else {
+            message.error('Delete failed',1)
+            message.warn('Current date must be gearter than '+ limitDate.format(dateFormat), 2);
+        }
     }
 
 
@@ -216,7 +223,7 @@ const ManageCombo = ({
                                 <span onClick={() => stopCombo(record)} className="fake-link" >stop</span>
                             </>
                         ) : null}
-                        {!record.isDeleted && (
+                        {status.text === comboStatus.stop && (
                             <>
                                 <Divider type="vertical" />
                                 <span onClick={() => deleteCombo(record)} className="fake-link">delete</span>
