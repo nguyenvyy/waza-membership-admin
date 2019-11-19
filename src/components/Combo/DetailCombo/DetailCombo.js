@@ -10,6 +10,7 @@ import { checkStatusCombo } from '../../../utils/combo'
 import VouchersDetail from '../VouchersInCombo/VouchersDetail'
 import moment from 'moment'
 import { formatOfDateFromDB, dateFormat } from '../../../constant'
+import { comboStatus } from '../../../constant/combo'
 
 
 
@@ -17,7 +18,7 @@ import { formatOfDateFromDB, dateFormat } from '../../../constant'
 const DetailCombo = ({
     combo, history, match, isFetching, isFetchingVoucher, fetchDetailCombo,
     isMaxPageVoucher, fetchVouchers }) => {
-    const { _id, combo_name, description, value, from_date, to_date, voucher_array, days, isDeleted } = combo
+    const { _id, combo_name, description, value, from_date, to_date, voucher_array, days } = combo
     useEffect(() => {
         if (_id === undefined) fetchDetailCombo(match.params.id)
     }, [_id, fetchDetailCombo, match.params.id])
@@ -28,6 +29,7 @@ const DetailCombo = ({
             fetchVouchers({ page: 0, limit: 9999 })
     }, [fetchVouchers, isMaxPageVoucher])
     const status = checkStatusCombo(combo)
+    const canEdit = status.text === comboStatus.wait || status.text === comboStatus.stop
 
     return (
         <div className="detail-combo">
@@ -63,7 +65,7 @@ const DetailCombo = ({
                                         Go back
                                     <Icon type="left" />
                                     </Button>
-                                    <Button onClick={goEditCombo} disabled={isDeleted} className="go-back" type="primary">
+                                    <Button onClick={goEditCombo} disabled={!canEdit} className="go-back" type="primary">
                                         Edit Combo
                                     <Icon type="edit" />
                                     </Button>

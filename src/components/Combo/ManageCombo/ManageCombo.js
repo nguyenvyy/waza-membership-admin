@@ -211,7 +211,7 @@ const ManageCombo = ({
                 return (
                     <span>
                         <Link to={`/a/combo/detail/${record._id}`} onClick={() => receiveDetailCombo(record)}>view</Link>
-                        {status.text !== comboStatus.deleted && (
+                        {(status.text === comboStatus.stop || status.text === comboStatus.wait) && (
                             <>
                                 <Divider type="vertical" />
                                 <Link to={`/a/combo/edit/${record._id}`} onClick={() => receiveDetailCombo(record)}>edit</Link>
