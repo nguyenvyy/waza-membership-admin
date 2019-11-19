@@ -11,9 +11,9 @@ import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherCo
 import { PageLoading } from '../../common/PageLoading/PageLoading'
 import { formatOfDateFromDB, dateFormat } from '../../../constant'
 import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInCombo'
-import { objectConverttoArr, calValueTotal, checkErrorSuccess } from '../../../utils/combo'
+import { objectConverttoArr, calValueTotal, checkErrorSuccess, checkStatusCombo } from '../../../utils/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
-import { errorMessage, comboLimitValue } from '../../../constant/combo'
+import { errorMessage, comboLimitValue, comboStatus } from '../../../constant/combo'
 import { checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
 import { formatVND, deleteformatVND } from '../../../utils'
 
@@ -30,7 +30,7 @@ const EditCombo = ({
             fetchVouchers({ page: 0, limit: 9999 })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchVouchers, isMaxPageVoucher])
-
+    const status = checkStatusCombo(combo)
     const [selectedPolicy, setSelectedPolicy] = useState(0)
     useEffect(() => {
         if (combo.policy_id !== undefined && policies.length > 0) {
@@ -395,6 +395,10 @@ const EditCombo = ({
 
     const goBack = () => history.goBack()
     const saveChangedCombo = () => {
+        if(status.text === comboStatus.wait || status !== comboStatus.stop) {
+            message.error(`Combo can't edit!`)
+            return
+        }
         const hide = message.loading('Edit combo....', 0);
         let voucher_array = selectedVouchersArr.map(({ value }, index) => ({
             voucher_id: value._id,
