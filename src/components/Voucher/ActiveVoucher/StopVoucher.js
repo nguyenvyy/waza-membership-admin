@@ -7,12 +7,6 @@ import { formatOfDateFromDB, dateFormat } from '../../../constant'
 const StopVoucher = () => {
     const column = [
         {
-            key: 'ID',
-            title: 'ID',
-            dataIndex: '_id',
-            width: 150
-        },
-        {
             key: 'voucher_name',
             title: 'Voucher Name',
             dataIndex: 'voucher_name',
@@ -22,12 +16,13 @@ const StopVoucher = () => {
             key: 'category',
             title: 'Category',
             dataIndex: 'category',
-            width: 120
+            width: 90
         },
         {
             key: 'description',
             title: 'Description',
-            dataIndex: 'description'
+            dataIndex: 'description',
+            width: 300
         },
         {
             key: 'value',
@@ -44,14 +39,14 @@ const StopVoucher = () => {
             key: 'from_date',
             title: 'From Date',
             dataIndex: 'from_date',
-            width: 150,
+            width: 140,
             render: date => moment(date, formatOfDateFromDB).format(dateFormat)
         },
         {
             key: 'to_date',
             title: 'To Date',
             dataIndex: 'to_date',
-            width: 150,
+            width: 140,
             render: date => moment(date, formatOfDateFromDB).format(dateFormat)
         },
         {

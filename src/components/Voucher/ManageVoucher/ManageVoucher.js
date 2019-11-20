@@ -19,14 +19,8 @@ const ManageVoucher = () => {
         currentFilter: "1",
         modalDelete: false
     }
-
+    const date = new Date()
     const column = [
-        {
-            key: 'ID',
-            title: 'ID',
-            dataIndex: '_id',
-            width: 150
-        },
         {
             key: 'voucher_name',
             title: 'Voucher Name',
@@ -37,12 +31,13 @@ const ManageVoucher = () => {
             key: 'category',
             title: 'Category',
             dataIndex: 'category',
-            width: 100
+            width: 90
         },
         {
             key: 'description',
             title: 'Description',
-            dataIndex: 'description'
+            dataIndex: 'description',
+            width: 300
         },
         {
             key: 'value',
@@ -53,26 +48,44 @@ const ManageVoucher = () => {
         {
             key: 'discount',
             title: 'Discount',
-            dataIndex: 'discount'
+            dataIndex: 'discount',
+            sorter: (a, b) => a.value - b.value
         },
         {
             key: 'from_date',
             title: 'From Date',
             dataIndex: 'from_date',
-            width: 160,
+            width: 140,
+            sorter: (a, b) => a.value - b.value,
             render: date => moment(date, formatOfDateFromDB).format(dateFormat)
         },
         {
             key: 'to_date',
             title: 'To Date',
             dataIndex: 'to_date',
-            width: 150,
+            width: 140,
+            sorter: (a, b) => a.value - b.value,
             render: date => moment(date, formatOfDateFromDB).format(dateFormat)
         },
         {
             key: 'subcategoty',
             title: 'Sub Type',
             dataIndex: 'subcategory'
+        },
+        {
+            title: 'Status',
+            render: (_,record) => {
+                // console.log('aaaaaaaaaa',record.to_date)
+                if(moment(record.to_date, formatOfDateFromDB) <= date) {
+                    return <div className="traffic"><div className="tr-stop"></div>Đã dừng</div>
+                }
+                if(moment(record.from_date) > date){
+                    return <div className="traffic"><div className="tr-nogone"></div>Chưa đến</div>
+                } 
+                if(date >= moment(record.from_date) && date <= moment(record.to_date)) {
+                    return <div className="traffic"><div className="tr-doing"></div>Đang hoạt động</div>
+                }
+            }
         },
         {
             title: 'Action',
