@@ -97,3 +97,29 @@
 .ant-table-wrapper {
     margin-left: 10px;
 }
+
+.traffic {
+    display: flex;
+    align-items: center;
+}
+.tr-nogone {
+    background-color: #faad14;
+    width: 6px;
+    height: 6px;
+    border-radius: 6px;
+    margin-right: 5px;
+}
+.tr-stop {
+    background-color: #d9d9d9;
+    width: 6px;
+    height: 6px;
+    border-radius: 6px;
+    margin-right: 5px;
+}
+.tr-doing {
+    background-color: #1890ff;
+    width: 6px;
+    height: 6px;
+    border-radius: 6px;
+    margin-right: 5px;   
+}

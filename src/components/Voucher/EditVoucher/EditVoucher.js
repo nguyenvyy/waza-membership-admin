@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Button, Radio, message } from 'antd';
 import { DatePicker, Select } from 'antd';
 import { Link } from 'react-router-dom'
@@ -28,6 +28,22 @@ const EditVoucher = ({match, history}) => {
     }
 
     const [toggle, setToggle] = useState(intialState)
+
+    const date = new Date()
+    const formValid = useMemo(() => {
+        return {
+            voucher_name: toggle.dataCreate.voucher_name && toggle.dataCreate.voucher_name.split('').length >= 6 && toggle.dataCreate.voucher_name.split('').length <= 50,
+            description: toggle.dataCreate.description && toggle.dataCreate.description.split('').length >= 50 && toggle.dataCreate.voucher_name.split('').length <= 1000,
+            discount: toggle.currentType !== 'Value' ?(toggle.dataCreate.discount && toggle.dataCreate.discount > 0 && toggle.dataCreate.discount <= 100) : true ,
+            value: toggle.dataCreate.value && toggle.dataCreate.value > 10000,
+            from_date: toggle.dataCreate.from_date &&  moment(toggle.dataCreate.from_date, formatOfDateFromDB) >= date,
+            to_date: toggle.dataCreate.to_date &&  moment(toggle.dataCreate.to_date, formatOfDateFromDB) > moment(toggle.dataCreate.from_date, formatOfDateFromDB)
+        }
+    }, [toggle, date])
+
+    const canSave = useMemo(() => {
+        return Object.values(formValid).every(item => item === true)
+    }, [formValid])
 
     const changeCurrentButton = e => {
         setToggle({
@@ -92,7 +108,7 @@ const EditVoucher = ({match, history}) => {
             ...toggle,
             dataCreate: {
                 ...toggle.dataCreate,
-                discount: ''
+                discount: 0
             }
             
         })})
@@ -124,7 +140,6 @@ const EditVoucher = ({match, history}) => {
             history.goBack()
         })
     }
-    const date = new Date()
     return (
         <div className="main-crvoucher">
             <h1 className="title-voucher1">
@@ -177,7 +192,7 @@ const EditVoucher = ({match, history}) => {
                     </div>
                     <div className="content-create">
                         <label>Conditions Type:</label>
-                        <Select onChange={selectType} style={{ width: 120 }} value={toggle.dataCreate.discount > 0 ?'Combine' : toggle.currentType} >
+                        <Select onChange={selectType} style={{ width: 120 }} value={toggle.dataCreate.discount > 0 ? "Combine" : toggle.currentType} >
                             <Option onClick={resetDiscount} value="Value">Value</Option>
                             <Option value="Combine">Combine</Option>
                         </Select>
@@ -189,7 +204,7 @@ const EditVoucher = ({match, history}) => {
                     {toggle.dataCreate.value && toggle.dataCreate.value > 10000 ? <p className="validate-input"></p> : <p className="validate-input">If you choose value or combine, value should not be null and value bigger than 10.000</p>}
                     <div className="content-create">
                         <label>Percent:</label>
-                        {toggle.dataCreate.discount > 0 ? <input onChange={onChangeData} value={toggle.dataCreate.discount} name="discount"></input> : <input disabled ></input>  }
+                        {toggle.currentType !== 'Value' || toggle.dataCreate.discount > 0 ? <input onChange={onChangeData} value={toggle.dataCreate.discount} name="discount"></input> : <input disabled value={toggle.dataCreate.discount} ></input>  }
                     </div>
                     {toggle.currentType !== 'Value' ? (toggle.dataCreate.discount && toggle.dataCreate.discount >= 10 && toggle.dataCreate.discount <= 100 ? <p className="validate-input"></p> :<p className="validate-input">If you choose combine, percent should not be null and less than 100</p> )  : ''  }
                     <div className="content-create">
@@ -204,7 +219,7 @@ const EditVoucher = ({match, history}) => {
 
                     <div className="btn-footer">
                         <Button size='large' type="danger"><Link to='/a/voucher/manage'>Cancel</Link></Button>
-                        <Button size='large' type="primary" onClick={upDateVoucher}>Update</Button>
+                        <Button size='large' type="primary" disabled={!canSave} onClick={upDateVoucher}>Update</Button>
                     </div>
                 </div>
             </div>
