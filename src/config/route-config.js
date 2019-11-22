@@ -16,6 +16,10 @@ const Voucher = lazy(() => import('../components/Voucher/Voucher'))
 const ManageComboContainer = lazy(() => import('../redux/container/ManageComboContainer'))
 const Policy = lazy(() => import('../components/Policy/Policy'))
 const EditVoucher = lazy(() => import('../components/Voucher/EditVoucher/EditVoucher'))
+
+// compaign page
+const Compaign = lazy(() => import('../components/Compaign/Compaign'))
+const ManageCompaign = lazy(() => import('../redux/container/ManageCompaignContainer'))
 export const routes = [
     {
         path: '/',
@@ -85,7 +89,23 @@ export const routes = [
             {
                 path: '/a/policy',
                 component: Policy
-            }
+            },
+            {
+                path: '/a/compaign',
+                component: Compaign,
+                routes: [
+                    {
+                        from: '/a/compaign',
+                        customRoute: Redirect,
+                        to: '/a/compaign/manage',
+                        exact: true,
+                    },
+                    {
+                        path: '/a/compaign/manage',
+                        component: ManageCompaign
+                    }
+                ]
+            },
         ]
     },
     {

@@ -1,0 +1,85 @@
+.manage-compaign {
+    & .wrapper {
+        padding: 0 10px;
+        display: flex;
+        & > * {
+            flex:1 100%;
+        }
+        &__left {
+            order: 1;
+            flex-shrink: 1.5;
+        }
+        &__right {
+            order: 2;
+            
+        }
+    }
+
+    & .manage-compaign-panel{
+        padding: 10px;
+        &__add {
+            border: 1px solid #d9d9d9;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.015);
+            border-radius: 4px;
+            width: 50px;
+            height: 30px;
+            display: block;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(0,0,0,0.65);
+        }
+        &__add--active {
+            background: #1890ff;
+            color: white;
+        }
+    }
+
+    & .list-compaign {
+        & .action {
+            &--active {
+                color: #52c41a;
+            }
+            &-delete{
+                color: #1890ff;
+                cursor: pointer;
+                &:hover {
+                    color: #40a9ff;
+                }
+            }
+        }
+    }
+
+    & .add-compaign{
+        &__title {
+            font-size: 1.2em;
+            color: #002140;
+        }
+        &__form {
+            padding: 0 10px;
+            &-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    
+    }
+
+    & .edit-compaign{
+        &__title {
+            font-size: 1.2em;
+            color: #002140;
+        }
+        &__form {
+            padding: 0 10px;
+            &-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    
+    }
+}

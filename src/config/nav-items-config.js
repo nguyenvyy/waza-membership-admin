@@ -55,7 +55,7 @@ export const navItems = [
             {
                 title: 'Manage Compaign',
                 Component: MenuItem,
-                to: '/a/compaign/manage-compaign'
+                to: '/a/compaign/manage'
             }
         ]
     },

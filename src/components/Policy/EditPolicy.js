@@ -138,7 +138,7 @@ export const EditPolicy = ({
                 <div className="edit-policy__form">
                     <Form layout="inline">
                         <Form.Item label="Name"
-                            help={!formValid.policy_name && "Name is must be from 5 to 20"}
+                            help={!formValid.policy_name && "Name must be from 5 to 20"}
                             hasFeedback
                             validateStatus={formValid.policy_name ? "success" : "error"} >
                             <Input name="policy_name" value={editedPolicy.policy_name} onChange={onChange} />
@@ -165,7 +165,7 @@ export const EditPolicy = ({
                             ))}
                         </Form.Item>
                         <Form.Item label="Description"
-                            help={!formValid.description && "Description is must be from 5 to 200"}
+                            help={!formValid.description && "Description must be from 5 to 200"}
                             hasFeedback
                             validateStatus={formValid.description ? "success" : "error"}
                         >
