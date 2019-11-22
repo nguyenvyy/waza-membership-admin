@@ -1,11 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { NavLink, Switch, Route } from 'react-router-dom'
 import './ManageCompaign.scss'
 import { Header } from '../../common/Header/Header'
 import { Empty } from 'antd'
 import { AddCompaign } from './AddCompaign'
+import { ListCompaign } from './ListCompaign'
 const managePath = '/a/compaign/manage';
-export const ManageCompaign = () => {
+export const ManageCompaign = ({fetchGiftVouchers, compaigns = []}) => {
+    useEffect(() => {
+        fetchGiftVouchers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     return (
         <div className="manage-compaign">
             <Header title="Manage Compaigns" />
@@ -18,6 +23,7 @@ export const ManageCompaign = () => {
                             activeClassName="manage-compaign-panel__add--active"
                         >new</NavLink>
                     </div >
+                    <ListCompaign compaigns={compaigns}/>
                 </div>
                 <div className="wrapper__right">
                     <Switch>

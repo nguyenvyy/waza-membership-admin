@@ -11,7 +11,7 @@
         }
         &__right {
             order: 2;
-            
+
         }
     }
 
@@ -58,6 +58,8 @@
         }
         &__form {
             padding: 0 10px;
+            max-height: 510px;
+            overflow-y: auto;
             &-button {
                 display: flex;
                 justify-content: center;
