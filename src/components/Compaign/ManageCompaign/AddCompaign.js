@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Header } from '../../common/Header/Header'
 import { Form, Input, DatePicker, Button, Table } from 'antd'
 import { checkMinMax } from '../../../utils/validate'
