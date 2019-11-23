@@ -395,7 +395,7 @@ const EditCombo = ({
 
     const goBack = () => history.goBack()
     const saveChangedCombo = () => {
-        if(status.text === comboStatus.wait || status !== comboStatus.stop) {
+        if(status.text === comboStatus.active || status !== comboStatus.deleted) {
             message.error(`Combo can't edit!`)
             return
         }
