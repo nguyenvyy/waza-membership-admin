@@ -91,24 +91,22 @@ const ManageVoucher = () => {
             title: 'Action',
             dataIndex: '',
             key: 'x',
-            render: (_, record) => (
-                <div className="action-acvoucher">
-                    {/* <p className="text"><Link to={`/a/voucher/edit/${record._id}`}>
-                        Edit
-                    </Link></p>
-                    <p className="text">Delete</p>
-                    <p className="text">Active</p> */}
-                    {/* <Route path={`/a/voucher/edit/${record._id}`} render={props => {
-                        const id = props.match.params.id;
-                        return (
-                            <EditVoucher {...props}></EditVoucher>
-                        )}}/> */}
+            render: (_, record) => {
+                if(date >= moment(record.from_date) && date <= moment(record.to_date)) {
+                    return <div className="action-acvoucher">
+                        <p className="text" onClick={() => message.error('Can not edited active voucher')}>Edit</p>
+                        <p className="text" onClick={() => message.error('Can not deleted active voucher')}>deleted</p>
+                    </div>
+                }
+                else {
+                    return <div className="action-acvoucher">
                     <p className="text"><Link to={`/a/voucher/edit/${record._id}`}>
                         Edit
                     </Link></p>
                     <p className="text" onClick={() => deleteVoucher(record._id, record.voucher_name)}>Delete</p>
                 </div>
-            )
+                }
+            }
         }
     ]
 

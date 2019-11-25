@@ -1,5 +1,5 @@
 import Axios from "axios"
-import { serverURL } from "../../../constant"
+import { serverURL, RankURL } from "../../../constant"
 export const getVouchersFromAPI = (params, token) => Axios(
     {
         method: 'GET',
@@ -103,4 +103,19 @@ export const deleteVoucherByID = (id, token) => Axios(
         }
     }
 )
+
+export const getAllRank = (token) => Axios(
+    {
+        method: 'get',
+        responseType: "json",
+        url: `${RankURL}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Authorization': `Bearer ${token}`
+        }
+    }
+)
+
+
 
