@@ -23,7 +23,8 @@ const EditVoucher = ({match, history}) => {
             state: true,
             category: 'gift',
             subcategory: 'food',
-            times_to_use: 0
+            times_to_use: 0,
+            rank: ''
         }
     }
 
@@ -79,6 +80,15 @@ const EditVoucher = ({match, history}) => {
             dataCreate: {
                 ...toggle.dataCreate,
                 subcategory: value
+            }
+        })
+    }
+    const onChangeRank = value => {
+        setToggle({
+            ...toggle,
+            dataCreate: {
+                ...toggle.dataCreate,
+                rank: value
             }
         })
     }
@@ -159,7 +169,12 @@ const EditVoucher = ({match, history}) => {
                     {toggle.dataCreate.voucher_name && toggle.dataCreate.voucher_name.split('').length >= 6 && toggle.dataCreate.voucher_name.split('').length <= 50 ? <p className="validate-input"></p> : <p className="validate-input">Voucher name should not be null and has length between 6 and 50 characters</p> }
                     {toggle.currentButton === 'gift' ?<div className="content-create">
                         <label>Rank:</label>
-                        <input onChange={onChangeData}></input>
+                        <Select style={{ width: 120 }} onChange={onChangeRank} defaultValue={toggle.dataCreate.rank}  value={toggle.dataCreate.rank} >
+                            <Option value={0}>Thành Viên</Option>
+                            <Option value={1}>Bạc</Option>
+                            <Option value={2}>Vàng</Option>
+                            <Option value={3}>Bạch Kim</Option>
+                        </Select>
                     </div> : <div></div>}
                     <div className="content-create">
                         <label>From Date:</label>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { Button, Radio, message } from 'antd';
 import { DatePicker, Select } from 'antd';
 import { Link } from 'react-router-dom'
-import { createVoucherToAPI } from '../../../redux/actions/voucherx-actions/services'
+import { createVoucherToAPI, getAllRank } from '../../../redux/actions/voucherx-actions/services'
 import moment from 'moment';
 import { formatOfDateFromDB, dateFormat } from '../../../constant/index'
 
@@ -21,8 +21,10 @@ const CreateVoucher = () => {
             state: true,
             category: 'gift',
             subcategory: 'food',
-            times_to_use: 0
-        }
+            times_to_use: 0, 
+            rank: 0
+        },
+        listRank: []
     }
 
     const [toggle, setToggle] = useState(intialState)
@@ -33,7 +35,7 @@ const CreateVoucher = () => {
             description: toggle.dataCreate.description && toggle.dataCreate.description.split('').length >= 50 && toggle.dataCreate.voucher_name.split('').length <= 1000,
             discount: toggle.currentType !== 'Value' ?(toggle.dataCreate.discount && toggle.dataCreate.discount > 0 && toggle.dataCreate.discount <= 100) : true ,
             value: toggle.dataCreate.value && toggle.dataCreate.value > 10000,
-            from_date: toggle.dataCreate.from_date &&  moment(toggle.dataCreate.from_date, formatOfDateFromDB) >= date,
+            from_date: toggle.dataCreate.from_date && moment(toggle.dataCreate.from_date, formatOfDateFromDB) > date,
             to_date: toggle.dataCreate.to_date &&  moment(toggle.dataCreate.to_date, formatOfDateFromDB) > moment(toggle.dataCreate.from_date, formatOfDateFromDB)
         }
     }, [toggle, date])
@@ -119,6 +121,16 @@ const CreateVoucher = () => {
         })})
     }
 
+    const onChangeRank = (value) => {
+        setToggle({
+            ...toggle,
+            dataCreate: {
+                ...toggle.dataCreate,
+                rank: value
+            }
+        })
+    }
+
     const CreateVoucher = () => {
         createVoucherToAPI(toggle.dataCreate)
         .then(()=>{
@@ -134,6 +146,20 @@ const CreateVoucher = () => {
         console.log(toggle.dataCreate.from_date)
     }, [toggle.dataCreate.from_date])
 
+    useEffect(() => {
+        getAllRank()
+        .then((res)=> {
+            setToggle({
+                ...toggle,
+                listRank: res.data
+            })
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])   
+    
+    useEffect(() => {
+        console.log(toggle.listRank)
+    }, [toggle.listRank])
     return (
         <div className="main-crvoucher" >
             <h1 className="title-voucher1">
@@ -153,7 +179,11 @@ const CreateVoucher = () => {
                     {formValid.voucher_name ? <p className="validate-input"></p> : <p className="validate-input">Voucher name should not be null and has length between 6 and 50 characters</p> }
                     {toggle.currentButton === 'gift' ?<div className="content-create">
                         <label>Rank:</label>
-                        <input onChange={onChangeData}></input>
+                        <Select onChange={onChangeRank} defaultValue={toggle.dataCreate.rank}>
+                            {toggle.listRank && toggle.listRank.map(item => {
+                            return <Option key={item} value={item.RankValue}>{item.RankName}</Option>
+                            })}
+                        </Select>
                     </div> : <div></div>}
                     <p className="validate-input"></p>
                     <div className="content-create">
