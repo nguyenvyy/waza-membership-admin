@@ -1,7 +1,8 @@
-import { REQUEST_VOUCHER, STOP_VOUCHER_REQUEST, RECEIVE_VOUCHER, RECEIVE_EXTRA_VOUCHER, RECEIVE_DETAIL_VOUCHER } from "../actions/voucherx-actions/types"
+import { REQUEST_VOUCHER, STOP_VOUCHER_REQUEST, RECEIVE_VOUCHER, RECEIVE_EXTRA_VOUCHER, RECEIVE_DETAIL_VOUCHER, RECEIVE_GIFT_VOUCHERS } from "../actions/voucherx-actions/types"
 
 const initStateVoucher = {
     items: [],
+    giftItems: [],
     detailVouchers: [],
     isFetching: false,
     page: -1,
@@ -36,6 +37,11 @@ export const voucherxReducer = (state = initStateVoucher, action) => {
                 isFetching: false,
                 detailCombo: [...action.vouchers],
                 lastUpdated: action.receivedAt
+            }
+        case RECEIVE_GIFT_VOUCHERS:
+            return {
+                ...state,
+                giftItems: [...action.vouchers]
             }
         default:
             return state

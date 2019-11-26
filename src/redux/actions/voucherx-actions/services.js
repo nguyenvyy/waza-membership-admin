@@ -16,6 +16,23 @@ export const getVouchersFromAPI = (params, token) => Axios(
     return res.data
 })
 
+export const getVouchersGiftAPI = (params, token) => Axios(
+    {
+        method: 'GET',
+        responseType: "json",
+        url: `${serverURL}/vouchers/active?search=category:gift`,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Authorization': `Bearer ${token}`
+        },
+        params,
+    }
+).then(res => {
+    return res.data
+})
+
+
 export const createVoucherToAPI = (data, token) => Axios(
     {
         method: 'POST',
