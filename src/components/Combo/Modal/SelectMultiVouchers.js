@@ -8,7 +8,7 @@ const filters = {
     bike: 'bike'
 }
 export const SelectMultiVouchers = ({
-    vouchers, displayVouchers,
+    vouchers = [], displayVouchers,
     isFetching,
     selectedVouchers, onChangeSelectedVouchers,
     isOpenSelectVoucherModal, handleCloseSelectVoucherModal }) => {
@@ -119,7 +119,7 @@ export const SelectMultiVouchers = ({
     const rowSelection = {
         selectedRowKeys: selectedVouchers,
         onChange: (selectedRowKeys, selectedRows) => onChangeSelectedVouchers(selectedRowKeys, selectedRows, filter),
-
+        
     }
 
     return (

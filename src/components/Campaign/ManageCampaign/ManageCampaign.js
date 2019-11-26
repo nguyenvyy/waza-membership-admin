@@ -5,6 +5,8 @@ import { Header } from '../../common/Header/Header'
 import { Empty } from 'antd'
 import { AddCampaign } from './AddCampaign'
 import { ListCampaign } from './ListCampaign'
+import { EditCampaign } from './EditCampaign'
+import { CampaignDetail } from './CampaignDetail'
 const managePath = '/a/campaign/manage';
 export const ManageCampaign = ({
     fetchGiftVouchers,
@@ -12,7 +14,7 @@ export const ManageCampaign = ({
     isFetching, campaigns = []
 }) => {
     useEffect(() => {
-        fetchGiftVouchers()
+        fetchGiftVouchers({page: 0, limit: 9999})
         if(campaigns.length === 0) {
             fetchFullCampaign()
         }
@@ -36,6 +38,8 @@ export const ManageCampaign = ({
                     <Switch>
                         <Route exact path={managePath} render={() => <Empty />} />
                         <Route path={`${managePath}/add`} component={AddCampaign}  />
+                        <Route path={`${managePath}/edit/:id`} component={EditCampaign}  />
+                        <Route path={`${managePath}/detail/:id`} component={CampaignDetail}  />
                     </Switch>
                 </div>
             </div>

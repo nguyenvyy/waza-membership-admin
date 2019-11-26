@@ -20,7 +20,11 @@ export const AddCampaign = () => {
 
     const [displayVouchers, setDisplayVouchers] = useState({})
     const vouchersDetail = useMemo(() => {
-        return Object.values(displayVouchers).flat()
+        let result = Object.values(displayVouchers)
+        result = result.reduce((acc, curr) => {
+            return [...acc, ...curr]
+        }, [])
+        return result
     }, [displayVouchers])
 
     const [visibleSelectVoucherModal, setVisibleSelectVoucherModal] = useState(false)
@@ -92,17 +96,19 @@ export const AddCampaign = () => {
         // send request add campaign
         dispatch(requestAddCampaign(campaign))
             .then(status => {
-                if (status === 200)
-                    message.success(`${campaign.campaign_name} added`)
-            })
-            .catch(status => {
                 switch (status) {
+                    case 200:
+                        message.success(`${campaign.campaign_name} added`)
+                        break;
+                    case 11000:
+                        message.error(`${campaign.campaign_name} is existed`)
+                        break
                     default:
                         message.error(`${campaign.campaign_name} failed`)
                         break;
                 }
-            }) // stop loading effect
-            .finally(() => setIsAdding(false))
+                setIsAdding(false)
+            })
     }
 
     // config table
@@ -170,7 +176,7 @@ export const AddCampaign = () => {
                         validateStatus={hasError.from_to ? 'error' : 'success'}
                     >
                         <DatePicker.RangePicker
-                            // disabledDate={disabledDate}
+                            disabledDate={disabledDate}
                             onCalendarChange={onCalendarChange}
                             format={dateFormat}
                             onChange={onChangeRangePicker}

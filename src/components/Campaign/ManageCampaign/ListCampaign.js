@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { Table, Badge, Divider, message } from 'antd'
 import moment from 'moment'
 import { dateFormat, limitDelete } from '../../../constant'
@@ -17,18 +17,22 @@ export const ListCampaign = ({ campaigns, isFetching }) => {
         // calculate limit delete date
         const limitDate = moment(campaign.createdAt).add(limitDelete, 'years');
         const curr = Date.now()
-        if (curr <= limitDate.valueOf()) {
+        if (curr >= limitDate.valueOf()) {
             // start loading effect
-            const hide = message.loading('Delete campaign....');
+            const hiden = message.loading('Delete campaign....');
             // send request delete
             dispatch(requestDeleteCampaign(campaign._id))
-                .then(_ => {
-                    message.success(`${campaign.campaign_name} deleted`, 1);
+                .then(status => {
+                    switch (status) {
+                        case 200:
+                            message.success(`${campaign.campaign_name} deleted`, 1);
+                            break;
+                        default:
+                            message.error(`Delete failed`, 1);
+                            break;
+                    }
+                    hiden()
                 })
-                .catch(_ => {
-                    message.error(`Delete failed`, 1);
-                }) // stop loading effect
-                .finally(hide)
         } else {
             message.error('Delete failed', 1)
             message.warn('Current date must be gearter than ' + limitDate.format(dateFormat), 2);
@@ -37,16 +41,20 @@ export const ListCampaign = ({ campaigns, isFetching }) => {
     // handle stop Campaign
     const stopCampaign = campaign => {
         // start loading effect
-        const hide = message.loading('Stop campaign....');
+        const hiden = message.loading('Stop campaign....');
         // send request stop
         dispatch(requestStopCampaign(campaign._id))
-            .then(_ => {
-                message.success(`${campaign.campaign_name} stoped`, 1);
+            .then(status => {
+                switch (status) {
+                    case 200:
+                        message.success(`${campaign.campaign_name} stoped`, 1);
+                        break;
+                    default:
+                        message.error(`Stop failed`, 1);
+                        break;
+                }
+                hiden();
             })
-            .catch(_ => {
-                message.error(`Stop failed`, 1);
-            }) // stop loading effect
-            .finally(hide)
     }
     // table config
     const tableConfig = {
@@ -106,29 +114,40 @@ export const ListCampaign = ({ campaigns, isFetching }) => {
             render: record => {
                 const status = checkStatusCampaign(record)
                 return (
-                    <span>
-                        {/* <Link to={`/a/combo/detail/${record._id}`} onClick={() => receiveDetailCombo(record)}>view</Link> */}
+                    <div className="action">
+                        <NavLink
+                            activeClassName="action--active"
+                            to={{
+                                pathname: `/a/campaign/manage/detail/${record._id}`,
+                                state: record
+                            }}>view</NavLink>
                         {(status.text === comboStatus.stop || status.text === comboStatus.wait) && (
                             <>
                                 <Divider type="vertical" />
-                                {/* <Link to={`/a/combo/edit/${record._id}`} onClick={() => receiveDetailCombo(record)}>edit</Link> */}
+                                <NavLink
+                                    activeClassName="action--active"
+                                    to={{
+                                        pathname: `/a/campaign/manage/edit/${record._id}`,
+                                        state: record
+                                    }}
+                                >edit</NavLink>
                             </>)
                         }
-                        {status.text === comboStatus.active ? (
+                        {status.text === comboStatus.active || status.text === comboStatus.wait ? (
                             <>
                                 <Divider type="vertical" />
                                 <span onClick={() => stopCampaign(record)} className="fake-link" >stop</span>
                             </>
                         ) : null}
-                        {status.text !== comboStatus.stop && (
+                        {status.text === comboStatus.stop && (
                             <>
                                 <Divider type="vertical" />
                                 <span onClick={() => deleteCampaign(record)} className="fake-link">delete</span>
                             </>
                         )}
-                    </span>)
+                    </div>)
             },
-            width: 200
+            width: 150
         }
     ]
     return (

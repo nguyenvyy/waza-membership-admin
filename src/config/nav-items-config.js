@@ -44,20 +44,8 @@ export const navItems = [
     {
         title: 'Campaign',
         shortHand: 'CP',
-        Component: SubMenu,
-        to: '/a/campaign',
-        items: [
-            {
-                title: 'Active',
-                Component: MenuItem,
-                to: '/a/campaign/active'
-            },
-            {
-                title: 'Manage Campaign',
-                Component: MenuItem,
-                to: '/a/campaign/manage'
-            }
-        ]
+        Component: MenuItem,
+        to: '/a/campaign/manage',
     },
     {
         title: 'Policy',
