@@ -3,10 +3,10 @@ import { Switch } from 'react-router-dom'
 import { PageLoading } from '../common/PageLoading/PageLoading'
 import { RouteWithSubRoutes } from '../../routes/RouteWithSubRoutes'
 
-const Compaign = ({ routes = [] }) => {
+const Campaign = ({ routes = [] }) => {
 
     return (
-        <div className="compaign">
+        <div className="campaign">
             <Suspense fallback={<PageLoading />}>
                 <Switch>
                     {routes.map((route, index) => (
@@ -17,4 +17,4 @@ const Compaign = ({ routes = [] }) => {
         </div>
     )
 }
-export default Compaign
+export default Campaign

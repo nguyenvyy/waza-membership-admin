@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { serverURL } from "../../../constant";
 
-export const getFullCompaignListAPI = (token) => Axios({
+export const getFullCampaignListAPI = (token) => Axios({
     method: 'GET',
     url: `${serverURL}/campaigns`,
     responseType: 'json',
@@ -10,7 +10,7 @@ export const getFullCompaignListAPI = (token) => Axios({
     }
 })
 
-export const getCompaignByIdAPI = (token, _id) => Axios({
+export const getCampaignByIdAPI = (token, _id) => Axios({
     method: 'GET',
     url: `${serverURL}/campaigns`,
     responseType: 'json',
@@ -22,7 +22,7 @@ export const getCompaignByIdAPI = (token, _id) => Axios({
     }
 })
 
-export const createCompaignAPI = (compaign, token) => Axios({
+export const createCampaignAPI = (campaign, token) => Axios({
     method: 'POST',
     url: `${serverURL}/campaigns/new`,
     responseType: 'json',
@@ -30,10 +30,10 @@ export const createCompaignAPI = (compaign, token) => Axios({
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
     },
-    data: compaign
+    data: campaign
 })
 
-export const editCompaignAPI = (updated, id, token) => Axios({
+export const editCampaignAPI = (updated, id, token) => Axios({
     method: 'PATCH',
     url: `${serverURL}/campaigns/edit/${id}`,
     responseType: 'json',
@@ -44,7 +44,7 @@ export const editCompaignAPI = (updated, id, token) => Axios({
     data: updated
 })
 
-export const deleteCompaignAPI = (id, token) => Axios({
+export const deleteCampaignAPI = (id, token) => Axios({
     method: 'PATCH',
     url: `${serverURL}/campaigns/del/${id}`,
     responseType: 'json',

@@ -1,14 +1,14 @@
 import { comboStatus } from "../../constant/combo"
 import moment from "moment"
 
-export const getCompaignIndexById = (compaigns = [], id) => compaigns.findIndex(compaign => compaign._id === id)
-export const getCompaignById = (compaigns = [], id) => compaigns.find(compaign => compaign._id === id)
+export const getCampaignIndexById = (campaigns = [], id) => campaigns.findIndex(campaign => campaign._id === id)
+export const getCampaignById = (campaigns = [], id) => campaigns.find(campaign => campaign._id === id)
 
-export const checkIsActiveCompaign = compaign => {
-    if (compaign.isDeleted) return comboStatus.deleted
+export const checkIsActiveCampaign = campaign => {
+    if (campaign.isDeleted) return comboStatus.deleted
     const presentTime = Date.now();
-    const fromDate = moment(compaign.from_date).valueOf()
-    const toDate = moment(compaign.to_date).valueOf()
+    const fromDate = moment(campaign.from_date).valueOf()
+    const toDate = moment(campaign.to_date).valueOf()
     if(presentTime <= toDate) {
         if(presentTime < fromDate) {
             return comboStatus.wait
@@ -19,8 +19,8 @@ export const checkIsActiveCompaign = compaign => {
     return comboStatus.stop
 }
 
-export const checkStatusCompaign = compaign => {
-    switch (checkIsActiveCompaign(compaign)) {
+export const checkStatusCampaign = campaign => {
+    switch (checkIsActiveCampaign(campaign)) {
         case comboStatus.deleted:
             return { text: comboStatus.deleted, processing: 'error' }
         case comboStatus.active:

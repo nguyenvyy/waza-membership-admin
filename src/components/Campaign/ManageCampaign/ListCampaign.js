@@ -5,25 +5,25 @@ import { Table, Badge, Divider, message } from 'antd'
 import moment from 'moment'
 import { dateFormat, limitDelete } from '../../../constant'
 import { comboStatus } from '../../../constant/combo'
-import { checkStatusCompaign } from '../../../redux/selectors/compaign-selector'
-import { requestDeleteCompaign, requestStopCompaign } from '../../../redux/actions/compain-actions/actions'
+import { checkStatusCampaign } from '../../../redux/selectors/campaign-selector'
+import { requestDeleteCampaign, requestStopCampaign } from '../../../redux/actions/campaign-actions/actions'
 
-export const ListCompaign = ({ compaigns, isFetching }) => {
+export const ListCampaign = ({ campaigns, isFetching }) => {
     // ref dispatch to reducer
     const dispatch = useDispatch()
 
-    // handle delete Compaign
-    const deleteCompaign = compaign => {
+    // handle delete Campaign
+    const deleteCampaign = campaign => {
         // calculate limit delete date
-        const limitDate = moment(compaign.createdAt).add(limitDelete, 'years');
+        const limitDate = moment(campaign.createdAt).add(limitDelete, 'years');
         const curr = Date.now()
         if (curr <= limitDate.valueOf()) {
             // start loading effect
-            const hide = message.loading('Delete compaign....');
+            const hide = message.loading('Delete campaign....');
             // send request delete
-            dispatch(requestDeleteCompaign(compaign._id))
+            dispatch(requestDeleteCampaign(campaign._id))
                 .then(_ => {
-                    message.success(`${compaign.campaign_name} deleted`, 1);
+                    message.success(`${campaign.campaign_name} deleted`, 1);
                 })
                 .catch(_ => {
                     message.error(`Delete failed`, 1);
@@ -34,14 +34,14 @@ export const ListCompaign = ({ compaigns, isFetching }) => {
             message.warn('Current date must be gearter than ' + limitDate.format(dateFormat), 2);
         }
     }
-    // handle stop Compaign
-    const stopCompaign = compaign => {
+    // handle stop Campaign
+    const stopCampaign = campaign => {
         // start loading effect
-        const hide = message.loading('Stop compaign....');
+        const hide = message.loading('Stop campaign....');
         // send request stop
-        dispatch(requestStopCompaign(compaign._id))
+        dispatch(requestStopCampaign(campaign._id))
             .then(_ => {
-                message.success(`${compaign.campaign_name} stoped`, 1);
+                message.success(`${campaign.campaign_name} stoped`, 1);
             })
             .catch(_ => {
                 message.error(`Stop failed`, 1);
@@ -89,7 +89,7 @@ export const ListCompaign = ({ compaigns, isFetching }) => {
             dataIndex: 'state',
             width: 150,
             render: (_, record) => {
-                const status = checkStatusCompaign(record)
+                const status = checkStatusCampaign(record)
                 return <Badge status={status.processing} text={status.text} />
             },
             filters: [
@@ -98,13 +98,13 @@ export const ListCompaign = ({ compaigns, isFetching }) => {
                 { text: comboStatus.deleted, value: comboStatus.deleted },
                 { text: comboStatus.wait, value: comboStatus.wait }
             ],
-            onFilter: (value, record) => checkStatusCompaign(record).text === value,
+            onFilter: (value, record) => checkStatusCampaign(record).text === value,
         },
         {
             key: 'action',
             title: 'Action',
             render: record => {
-                const status = checkStatusCompaign(record)
+                const status = checkStatusCampaign(record)
                 return (
                     <span>
                         {/* <Link to={`/a/combo/detail/${record._id}`} onClick={() => receiveDetailCombo(record)}>view</Link> */}
@@ -117,13 +117,13 @@ export const ListCompaign = ({ compaigns, isFetching }) => {
                         {status.text === comboStatus.active ? (
                             <>
                                 <Divider type="vertical" />
-                                <span onClick={() => stopCompaign(record)} className="fake-link" >stop</span>
+                                <span onClick={() => stopCampaign(record)} className="fake-link" >stop</span>
                             </>
                         ) : null}
                         {status.text !== comboStatus.stop && (
                             <>
                                 <Divider type="vertical" />
-                                <span onClick={() => deleteCompaign(record)} className="fake-link">delete</span>
+                                <span onClick={() => deleteCampaign(record)} className="fake-link">delete</span>
                             </>
                         )}
                     </span>)
@@ -132,12 +132,12 @@ export const ListCompaign = ({ compaigns, isFetching }) => {
         }
     ]
     return (
-        <div className="list-compaign">
+        <div className="list-campaign">
             <Table
                 loading={isFetching}
                 {...tableConfig}
                 columns={columns}
-                dataSource={compaigns.length > 0 ? compaigns : null}
+                dataSource={campaigns.length > 0 ? campaigns : null}
             />
         </div>
     )

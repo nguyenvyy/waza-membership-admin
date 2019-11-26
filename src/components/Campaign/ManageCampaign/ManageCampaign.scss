@@ -1,4 +1,4 @@
-.manage-compaign {
+.manage-campaign {
     & .wrapper {
         padding: 0 10px;
         display: flex;
@@ -15,7 +15,7 @@
         }
     }
 
-    & .manage-compaign-panel{
+    & .manage-campaign-panel{
         padding: 10px;
         &__add {
             border: 1px solid #d9d9d9;
@@ -36,7 +36,7 @@
         }
     }
 
-    & .list-compaign {
+    & .list-campaign {
         & .action {
             &--active {
                 color: #52c41a;
@@ -51,7 +51,7 @@
         }
     }
 
-    & .add-compaign{
+    & .add-campaign{
         &__title {
             font-size: 1.2em;
             color: #002140;
@@ -69,7 +69,7 @@
     
     }
 
-    & .edit-compaign{
+    & .edit-campaign{
         &__title {
             font-size: 1.2em;
             color: #002140;

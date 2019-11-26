@@ -6,11 +6,11 @@ import { checkMinMax } from '../../../utils/validate'
 import { dateFormat } from '../../../constant'
 import moment from 'moment'
 import { SelectGiftVouchers } from '../../../redux/container/SelectGiftVouchers'
-import { requestAddCompaign } from '../../../redux/actions/compain-actions/actions'
+import { requestAddCampaign } from '../../../redux/actions/campaign-actions/actions'
 
-export const AddCompaign = () => {
+export const AddCampaign = () => {
     const dispatch = useDispatch();
-    const [compaign, setCompaign] = useState({
+    const [campaign, setCampaign] = useState({
         campaign_name: '',
         from_date: undefined,
         to_date: undefined,
@@ -27,36 +27,36 @@ export const AddCompaign = () => {
     const open = () => setVisibleSelectVoucherModal(true)
     const close = (memoSelectVouchers, memoDisplayVouchers) => {
         if (memoSelectVouchers !== undefined) {
-            setCompaign({ ...compaign, vouchers: [...memoSelectVouchers] })
+            setCampaign({ ...campaign, vouchers: [...memoSelectVouchers] })
             setDisplayVouchers({ ...memoDisplayVouchers })
         }
         setVisibleSelectVoucherModal(false)
     }
     const hasError = useMemo(() => {
         const errors = {
-            campaign_name: checkMinMax(compaign.campaign_name.length, 5, 50) === true ? false : true,
-            from_to: (compaign.from_date !== undefined && compaign.to_date !== undefined) ? false : true,
-            description: checkMinMax(compaign.description.length, 20, 200) === true ? false : true,
-            vouchers: checkMinMax(compaign.vouchers.length, 5, 20) === true ? false : true,
+            campaign_name: checkMinMax(campaign.campaign_name.length, 5, 50) === true ? false : true,
+            from_to: (campaign.from_date !== undefined && campaign.to_date !== undefined) ? false : true,
+            description: checkMinMax(campaign.description.length, 20, 200) === true ? false : true,
+            vouchers: checkMinMax(campaign.vouchers.length, 5, 20) === true ? false : true,
         }
         const noErrors = Object.values(errors).every(item => item === false)
         return {
             ...errors,
             noErrors
         }
-    }, [compaign])
+    }, [campaign])
 
-    const onChangeCompaign = ({ target: { name, value } }) => {
-        setCompaign({
-            ...compaign,
+    const onChangeCampaign = ({ target: { name, value } }) => {
+        setCampaign({
+            ...campaign,
             [name]: value
         })
     }
 
     const disabledDate = current => current && current <= moment().endOf('day')
     const onChangeRangePicker = ([from, to]) => {
-        setCompaign({
-            ...compaign,
+        setCampaign({
+            ...campaign,
             from_date: from,
             to_date: to
         })
@@ -64,8 +64,8 @@ export const AddCompaign = () => {
 
     const onCalendarChange = ([to]) => {
         if (to) {
-            setCompaign({
-                ...compaign,
+            setCampaign({
+                ...campaign,
                 from_date: moment(),
                 to_date: to
             })
@@ -73,8 +73,8 @@ export const AddCompaign = () => {
     }
 
     const onChangeSelectedVouchers = (selectedRowKeys, selectedRows, filter) => {
-        setCompaign({
-            ...compaign,
+        setCampaign({
+            ...campaign,
             vouchers: [...selectedRowKeys]
         })
         setDisplayVouchers({
@@ -83,22 +83,22 @@ export const AddCompaign = () => {
         })
     }
 
-    // controll loading effect of button add new compaign
+    // controll loading effect of button add new campaign
     const [isAdding, setIsAdding] = useState(false)
-    // handle add new compaign
-    const handleAddCompaign = () => {
+    // handle add new campaign
+    const handleAddCampaign = () => {
         //start loading effect
         setIsAdding(true)
-        // send request add compaign
-        dispatch(requestAddCompaign(compaign))
+        // send request add campaign
+        dispatch(requestAddCampaign(campaign))
             .then(status => {
                 if (status === 200)
-                    message.success(`${compaign.campaign_name} added`)
+                    message.success(`${campaign.campaign_name} added`)
             })
             .catch(status => {
                 switch (status) {
                     default:
-                        message.error(`${compaign.campaign_name} failed`)
+                        message.error(`${campaign.campaign_name} failed`)
                         break;
                 }
             }) // stop loading effect
@@ -148,22 +148,22 @@ export const AddCompaign = () => {
     ]
 
     return (
-        <div className="add-compaign">
-            <Header className="add-compaign__title" title="Add new compaign" />
-            <div className="add-compaign__form">
+        <div className="add-campaign">
+            <Header className="add-campaign__title" title="Add new campaign" />
+            <div className="add-campaign__form">
                 <Form layout="vertical">
                     <Form.Item label="Name"
                         help={hasError.campaign_name && "Name must be from 5 to 50 character"}
                         hasFeedback
                         validateStatus={hasError.campaign_name ? 'error' : 'success'}
                     >
-                        <Input name="campaign_name" onChange={onChangeCompaign} value={compaign.campaign_name} />
+                        <Input name="campaign_name" onChange={onChangeCampaign} value={campaign.campaign_name} />
                     </Form.Item>
                     <Form.Item label="Description"
                         help={hasError.description && "Description must be from 20 to 200 character"}
                         validateStatus={hasError.description ? 'error' : 'success'}
                     >
-                        <Input.TextArea rows={3} name="description" onChange={onChangeCompaign} value={compaign.description} />
+                        <Input.TextArea rows={3} name="description" onChange={onChangeCampaign} value={campaign.description} />
                     </Form.Item>
                     <Form.Item label="From date - To date"
                         help={hasError.from_to && "From date, to date must be not null"}
@@ -174,7 +174,7 @@ export const AddCompaign = () => {
                             onCalendarChange={onCalendarChange}
                             format={dateFormat}
                             onChange={onChangeRangePicker}
-                            value={[compaign.from_date, compaign.to_date]}
+                            value={[campaign.from_date, campaign.to_date]}
                         />
                     </Form.Item>
                     <Form.Item
@@ -182,7 +182,7 @@ export const AddCompaign = () => {
                         validateStatus={hasError.vouchers ? 'error' : 'success'}>
                         <Button onClick={open}>add vouchers</Button>
                         <SelectGiftVouchers
-                            selectedVouchers={compaign.vouchers}
+                            selectedVouchers={campaign.vouchers}
                             displayVouchers={displayVouchers}
                             onChangeSelectedVouchers={onChangeSelectedVouchers}
                             isOpenSelectVoucherModal={visibleSelectVoucherModal}
@@ -199,7 +199,7 @@ export const AddCompaign = () => {
                 </Form>
             </div>
             <div className="d-flex-center">
-                <Button onClick={handleAddCompaign} disabled={!hasError.noErrors} loading={isAdding}>Add</Button>
+                <Button onClick={handleAddCampaign} disabled={!hasError.noErrors} loading={isAdding}>Add</Button>
             </div>
         </div>
     )
