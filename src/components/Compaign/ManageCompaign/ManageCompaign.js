@@ -6,9 +6,16 @@ import { Empty } from 'antd'
 import { AddCompaign } from './AddCompaign'
 import { ListCompaign } from './ListCompaign'
 const managePath = '/a/compaign/manage';
-export const ManageCompaign = ({fetchGiftVouchers, compaigns = []}) => {
+export const ManageCompaign = ({
+    fetchGiftVouchers,
+    fetchFullCompaign,
+    isFetching, compaigns = []
+}) => {
     useEffect(() => {
         fetchGiftVouchers()
+        if(compaigns.length === 0) {
+            fetchFullCompaign()
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
@@ -23,7 +30,7 @@ export const ManageCompaign = ({fetchGiftVouchers, compaigns = []}) => {
                             activeClassName="manage-compaign-panel__add--active"
                         >new</NavLink>
                     </div >
-                    <ListCompaign compaigns={compaigns}/>
+                    <ListCompaign isFetching={isFetching} compaigns={compaigns}/>
                 </div>
                 <div className="wrapper__right">
                     <Switch>

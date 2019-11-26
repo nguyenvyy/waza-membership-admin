@@ -12,7 +12,6 @@ export const SelectMultiVouchers = ({
     isFetching,
     selectedVouchers, onChangeSelectedVouchers,
     isOpenSelectVoucherModal, handleCloseSelectVoucherModal }) => {
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const memoSelectVouchers = useMemo(() => selectedVouchers, [isOpenSelectVoucherModal])
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,6 +95,12 @@ export const SelectMultiVouchers = ({
             dataIndex: 'voucher_name',
             width: 100,
             ...getColumnSearchProps('voucher_name')
+        },
+        {
+            title: 'Rank',
+            dataIndex: 'rank',
+            key: 'rank',
+            width: 100,
         },
         {
             title: 'Value',

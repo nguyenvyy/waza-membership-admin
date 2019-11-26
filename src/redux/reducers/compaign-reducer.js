@@ -6,7 +6,7 @@ const initState = {
     isFetching: false,
     detail: null
 }
-export const compaignReducer = (state, action) => {
+export const compaignReducer = (state = initState, action) => {
     switch (action.type) {
         case SEND_COMPAIGN_REQUEST:
             return {
@@ -21,7 +21,7 @@ export const compaignReducer = (state, action) => {
         case RECEIVE_FULL_COMPAIGN:
             return {
                 ...state,
-                items: [...action.compaign]
+                items: [...action.compaigns]
             }
         case RECEIVE_COMPAIGN_DETAIL:
             return {

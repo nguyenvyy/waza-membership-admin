@@ -1,14 +1,15 @@
 import React, { useState, useMemo } from 'react'
+import { useDispatch } from 'react-redux'
 import { Header } from '../../common/Header/Header'
-import { Form, Input, DatePicker, Button, Table } from 'antd'
+import { Form, Input, DatePicker, Button, Table, message } from 'antd'
 import { checkMinMax } from '../../../utils/validate'
 import { dateFormat } from '../../../constant'
 import moment from 'moment'
 import { SelectGiftVouchers } from '../../../redux/container/SelectGiftVouchers'
+import { requestAddCompaign } from '../../../redux/actions/compain-actions/actions'
 
 export const AddCompaign = () => {
-
-
+    const dispatch = useDispatch();
     const [compaign, setCompaign] = useState({
         campaign_name: '',
         from_date: undefined,
@@ -82,6 +83,29 @@ export const AddCompaign = () => {
         })
     }
 
+    // controll loading effect of button add new compaign
+    const [isAdding, setIsAdding] = useState(false)
+    // handle add new compaign
+    const handleAddCompaign = () => {
+        //start loading effect
+        setIsAdding(true)
+        // send request add compaign
+        dispatch(requestAddCompaign(compaign))
+            .then(status => {
+                if (status === 200)
+                    message.success(`${compaign.campaign_name} added`)
+            })
+            .catch(status => {
+                switch (status) {
+                    default:
+                        message.error(`${compaign.campaign_name} failed`)
+                        break;
+                }
+            }) // stop loading effect
+            .finally(() => setIsAdding(false))
+    }
+
+    // config table
     const tableConfig = {
         pagination: false,
         size: 'small',
@@ -99,6 +123,12 @@ export const AddCompaign = () => {
             title: 'Service',
             dataIndex: 'subcategory',
             key: 'subcategory',
+            width: 100,
+        },
+        {
+            title: 'Rank',
+            dataIndex: 'rank',
+            key: 'rank',
             width: 100,
         },
         {
@@ -140,7 +170,7 @@ export const AddCompaign = () => {
                         validateStatus={hasError.from_to ? 'error' : 'success'}
                     >
                         <DatePicker.RangePicker
-                            disabledDate={disabledDate}
+                            // disabledDate={disabledDate}
                             onCalendarChange={onCalendarChange}
                             format={dateFormat}
                             onChange={onChangeRangePicker}
@@ -169,7 +199,7 @@ export const AddCompaign = () => {
                 </Form>
             </div>
             <div className="d-flex-center">
-                <Button disabled={!hasError.noErrors}>Add</Button>
+                <Button onClick={handleAddCompaign} disabled={!hasError.noErrors} loading={isAdding}>Add</Button>
             </div>
         </div>
     )
