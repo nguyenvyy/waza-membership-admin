@@ -8,7 +8,7 @@ import * as types from '../../redux/actions/combo-actions/types'
 // const middlewares = [thunk]
 // const mockStore = configureMockStore(middlewares)
 
-describe('US25 start request combo', () => {
+describe('US30 start request combo', () => {
     it('UTCID01', () => {
         const expectAction = {
             type: types.REQUEST_COMBOS
@@ -17,7 +17,7 @@ describe('US25 start request combo', () => {
     })
 })
 
-describe('US25 stop request combo', () => {
+describe('US30 stop request combo', () => {
     it('UTCID01', () => {
         const expectAction = {
             type: types.STOP_COMBOS_REQUEST

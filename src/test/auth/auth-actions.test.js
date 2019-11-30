@@ -8,7 +8,7 @@ import { serverURL } from '../../constant';
 const middlewares = [thunk]
 const mockStore = configureMockStore(middlewares)   
 
-describe('US22 login', () => {
+describe('US26 login', () => {
     it('UTCID01', () => {
         const expectAction = {
             type: types.LOGIN
@@ -17,7 +17,7 @@ describe('US22 login', () => {
     })
 })
 
-describe('US22 save user info to store', () => {
+describe('US26 save user info to store', () => {
     it('UTCID01', () => {
         const user = {
             user: {
@@ -38,7 +38,7 @@ describe('US22 save user info to store', () => {
     })
 })
 
-describe('US22 stop request', () => {
+describe('US26 stop request', () => {
     it('UTCID01', () => {
         const expectAction = {
             type: types.STOP_LOGIN
@@ -48,7 +48,7 @@ describe('US22 stop request', () => {
     })
 })
 
-describe('US22 send request login', () => {
+describe('US26 send request login', () => {
     let store
     let url
     beforeEach(() => {
@@ -148,7 +148,7 @@ describe('US22 send request login', () => {
     })
 })
 
-describe('US24 send request logout', () => {
+describe('US29 send request logout', () => {
     let store
     let url
     beforeEach(() => {
