@@ -11,7 +11,10 @@ export const getComboFromAPI = (params, token, isActive = false) => Axios(
             'Access-Control-Allow-Origin': '*',
             'Authorization': `Bearer ${token}`
         },
-        params
+        params: {
+            sortBy: 'createdAt:desc',
+            ...params
+        }
     }
 )
 

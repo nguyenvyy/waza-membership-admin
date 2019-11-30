@@ -67,7 +67,7 @@ export const comboReducer = (state = initState, action) => {
             return {
                 ...state,
                 isFetching: false,
-                items: [...state.items, action.combo],
+                items: [action.combo, ...state.items],
                 lastUpdated: action.receivedAt
             }
         default:
