@@ -140,6 +140,12 @@ const CreateVoucher = () => {
                 dataCreate: intialState.dataCreate
             })
         })
+        .catch(err => {
+            debugger
+            if(err.response && err.response.data && err.response.data.code === 11000) {
+                message.error(`${toggle.dataCreate.voucher_name} is existed`)
+            }
+        })
     }
 
     useEffect(() => {
