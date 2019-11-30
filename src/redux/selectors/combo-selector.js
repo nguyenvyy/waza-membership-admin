@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect'
 import moment from 'moment'
-import { formatOfDateFromDB } from '../../constant'
 import { comboStatus } from '../../constant/combo'
 // handle combo
 const getCombos = combo => combo.items
@@ -10,8 +9,8 @@ export const checkIsActiveCombo = combo => {
     if (combo.isDeleted) return comboStatus.deleted
     if (!combo.state) return comboStatus.stop
     const presentTime = Date.now();
-    const fromDate = moment(combo.from_date, formatOfDateFromDB).valueOf()
-    const toDate = moment(combo.to_date,formatOfDateFromDB).valueOf()
+    const fromDate = moment(combo.from_date).valueOf()
+    const toDate = moment(combo.to_date).valueOf()
     if(presentTime <= toDate) {
         if(presentTime < fromDate) {
             return comboStatus.wait

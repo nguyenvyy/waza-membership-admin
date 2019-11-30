@@ -9,7 +9,7 @@ import { checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../..
 import { comboLimitValue, errorMessage } from '../../../constant/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { deleteformatVND, formatVND } from '../../../utils'
-import { formatOfDateFromDB, dateFormat } from '../../../constant'
+import { dateFormat } from '../../../constant'
 import { checkErrorSuccess, calValueTotal, objectConverttoArr } from '../../../utils/combo'
 import { fetchFullComboPolicy } from '../../../redux/actions/policy-actions/action'
 import { getActivePolicySelector } from '../../../redux/selectors/policy-selector'
@@ -244,12 +244,12 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     }
     const onChangeRangePicker = ([from, to]) => {
         if(from && to) {
-            setNewCombo({ ...newCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
+            setNewCombo({ ...newCombo, from_date: from.format(), to_date: to.format() })
         }
     }
     const onCalendarChange = ([to]) => {
         if(to) {
-            setNewCombo({ ...newCombo, from_date: moment().format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
+            setNewCombo({ ...newCombo, from_date: moment().format(), to_date: to.format() })
         }
     }
     const disabledDate = current => current && current <= moment().endOf('day')
@@ -265,9 +265,15 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             voucher_name: value.voucher_name,
             discount: value.discount ? value.discount : 0
         }));
+        let from_date = new Date(newCombo.from_date)
+        from_date.setHours(0, 0, 1)
+        let to_date = new Date(newCombo.to_date)
+        to_date.setHours(23, 59, 59)
         let combo = {
             voucher_array,
             ...newCombo,
+            from_date,
+            to_date,
             policy_id: policies[selectedPolicy]._id
         }
         addPostCombo(combo).then(res => {
@@ -401,7 +407,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             onCalendarChange={onCalendarChange}
                             value={
                                 newCombo.from_date !== null ?
-                                    [moment(newCombo.from_date, formatOfDateFromDB), moment(newCombo.to_date, formatOfDateFromDB)] :
+                                    [moment(newCombo.from_date), moment(newCombo.to_date)] :
                                     null
                             }
                             format={dateFormat}

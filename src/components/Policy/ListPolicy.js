@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { Badge, Divider, Table, message } from 'antd';
 import moment from 'moment';
-import { dateFormat, formatOfDateFromDB, limitDelete } from '../../constant';
+import { dateFormat, limitDelete } from '../../constant';
 import { comboStatus } from '../../constant/combo';
 export const ListPolicy = ({
     isFetching,
@@ -74,14 +74,14 @@ export const ListPolicy = ({
             title: 'Create',
             key: 'createAt',
             dataIndex: 'createdAt',
-            render: createAt => moment(createAt, formatOfDateFromDB).format(dateFormat),
+            render: createAt => moment(createAt).format(dateFormat),
             sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         },
         {
             title: 'Update',
             key: 'updateAt',
             dataIndex: 'createdAt',
-            render: updateAt => moment(updateAt, formatOfDateFromDB).format(dateFormat),
+            render: updateAt => moment(updateAt).format(dateFormat),
             sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         },
         {

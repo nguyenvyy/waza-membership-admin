@@ -9,7 +9,7 @@ import { Header } from '../Header/Header'
 import { ComboNotFound } from '../CompoNotFound'
 import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
 import { PageLoading } from '../../common/PageLoading/PageLoading'
-import { formatOfDateFromDB, dateFormat } from '../../../constant'
+import { dateFormat } from '../../../constant'
 import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInCombo'
 import { objectConverttoArr, calValueTotal, checkErrorSuccess, checkStatusCombo } from '../../../utils/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
@@ -36,7 +36,7 @@ const EditCombo = ({
         if (combo.policy_id !== undefined && policies.length > 0) {
             const index = policies.findIndex(item => item._id === combo.policy_id)
             if (index === -1) {
-                message.warn('Policy of combo is deleted. You should select orther policy', 2)
+                message.warn('Policy of combo is deleted. You should select orther policy', 3)
                 setSelectedPolicy(0);
             } else {
                 setSelectedPolicy(index)
@@ -114,9 +114,9 @@ const EditCombo = ({
 
     const onChangeToDate = (to) => {
         if (to && to.valueOf() >= Date.now()) {
-            setChangedCombo({ ...changedCombo, to_date: to.format(formatOfDateFromDB) })
+            setChangedCombo({ ...changedCombo, to_date: to.format() })
         } else {
-            message.error("To date mus be greater than present")
+            message.error("To date mus be greater than current date", 3)
         }
     }
 
@@ -397,7 +397,7 @@ const EditCombo = ({
     const saveChangedCombo = () => {
         if(status.text === comboStatus.active || status === comboStatus.deleted) {
             message.error(`Combo can't edit!`)
-            return
+            return ; // break
         }
         const hide = message.loading('Edit combo....', 0);
         let voucher_array = selectedVouchersArr.map(({ value }, index) => ({
@@ -408,9 +408,12 @@ const EditCombo = ({
             voucher_name: value.voucher_name,
             discount: value.discount ? value.discount : 0
         }));
+        let to_date = new Date(changedCombo.to_date)
+        to_date.setHours(23, 59, 59)
         let combo = {
             ...changedCombo,
             voucher_array,
+            to_date,
             policy_id: policies[selectedPolicy]._id
         }
         delete combo.vouchers
@@ -468,7 +471,7 @@ const EditCombo = ({
                                             format={dateFormat}
                                             onChange={onChangeToDate}
                                             value={
-                                                changedCombo.to_date !== null ? moment(changedCombo.to_date, formatOfDateFromDB) : null
+                                                changedCombo.to_date !== null ? moment(changedCombo.to_date) : null
                                             }
                                         />
                                     </Form.Item>
