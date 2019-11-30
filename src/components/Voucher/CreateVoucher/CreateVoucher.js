@@ -219,7 +219,7 @@ const CreateVoucher = () => {
                 <div className="create1">
                     <div className="content-create">
                         <label>Status:</label>
-                        <input className="input-read" defaultValue="Unavailable" readOnly></input>
+                        <input className="input-read" defaultValue="Chưa đến" readOnly></input>
                     </div>
                     <p className="validate-input"></p>
                     <div className="content-create">
