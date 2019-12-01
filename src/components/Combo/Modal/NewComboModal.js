@@ -2,17 +2,18 @@ import uuid from 'uuid'
 import moment from 'moment'
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Modal, Form, Input, DatePicker, Select, Button, Table, message, Icon, Divider } from 'antd'
+import { Modal, Form, Input, DatePicker, Select, Button, Table, message, Icon } from 'antd'
 
 import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
 import { checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
 import { comboLimitValue, errorMessage } from '../../../constant/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { deleteformatVND, formatVND } from '../../../utils'
-import { formatOfDateFromDB, dateFormat } from '../../../constant'
+import { dateFormat, services, persentList } from '../../../constant'
 import { checkErrorSuccess, calValueTotal, objectConverttoArr } from '../../../utils/combo'
 import { fetchFullComboPolicy } from '../../../redux/actions/policy-actions/action'
 import { getActivePolicySelector } from '../../../redux/selectors/policy-selector'
+import { createVoucherToAPI } from '../../../redux/actions/voucherx-actions/services'
 
 
 
@@ -81,6 +82,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         description: '',
         days: 0
     })
+
     // selected vouchers
     const [selectedVouchers, setSelectedVouchers] = useState({
         move: {
@@ -155,6 +157,10 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         return result.sort((a, b) => a.index - b.index);
         // return result
     }, [selectedVouchers])
+
+
+
+
     useEffect(() => {
         if (policies.length > 0) {
             handleValidate('voucher_array', selectedVouchersArr.length, policies[selectedPolicy].voucher_percent.length)
@@ -169,7 +175,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             return selectedVouchersArr.map((voucher, index) => {
                 const valueVoucher = voucher.value.value
                 const totalValue = calValueTotal(+newCombo.value, increase, voucherProprotion[index])
-                if(isNaN(totalValue)) {
+                if (isNaN(totalValue)) {
                     setSelectedVouchers({
                         ...selectedVouchers,
                         [voucher.value.subcategory]: {
@@ -187,7 +193,42 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 }
             })
         }
+        return []
     }, [newCombo.value, policies, selectedPolicy, selectedVouchers, selectedVouchersArr])
+
+    // handle auto generate  voucher
+    const residualValue = useMemo(() => {
+        if (countAndTotalValue.length > 0) {
+            return countAndTotalValue.reduce((acc, curr) => acc + curr.excess, 0)
+        }
+        return -1
+    }, [countAndTotalValue])
+    //  auto voucher 
+
+    const [autoVoucher, setAutoVoucher] = useState({
+        voucher_name: 'Voucher food' + Date.now(),
+        description: 'Voucher food trị giá 0đ',
+        discount: 0,
+        value: 0,
+        category: 'buy',
+        subcategory: 'food',
+        times_to_use: 0,
+    })
+    useEffect(() => {
+        setAutoVoucher(autoVoucher => ({ ...autoVoucher, value: residualValue }))
+    }, [residualValue]) 
+    useEffect(() => {
+        setAutoVoucher((autoVoucher) => ({
+            ...autoVoucher,
+            voucher_name: `Voucher ${autoVoucher.subcategory}- ${Date.now()}`,
+            description: `Voucher ${autoVoucher.value} trị giá ${formatVND(residualValue)}đ`
+        }))
+    }, [newCombo, residualValue])
+    const onChangeVoucher = (value, name) => {
+
+        setAutoVoucher({ ...autoVoucher, [name]: value })
+    }
+
 
     // Extra number of vouchers
     const [countExtra, setCountExtra] = useState([0, 0, 0, 0]);
@@ -204,16 +245,16 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         handleValidate('count', countArr)
     }, [countAndTotalValue, countExtra, handleValidate, selectedVouchersArr])
 
-    const onChangeCountExtra = (index, value) => {
-        const newValue = countExtra[index] + value
-        if (newValue >= 0 && newValue <= 5) {
-            const newCountExtra = countExtra.slice();
-            newCountExtra.splice(index, 1, newValue);
-            setCountExtra(newCountExtra)
-        } else {
-            message.warn("Extra must be from 0 to 5")
-        }
-    }
+    // const onChangeCountExtra = (index, value) => {
+    //     const newValue = countExtra[index] + value
+    //     if (newValue >= 0 && newValue <= 5) {
+    //         const newCountExtra = countExtra.slice();
+    //         newCountExtra.splice(index, 1, newValue);
+    //         setCountExtra(newCountExtra)
+    //     } else {
+    //         message.warn("Extra must be from 0 to 5")
+    //     }
+    // }
 
     // handle close/open  SelectVoucherModal
     const [isOpenSelectVoucherModal, setIsOpenSelectVoucherModal] = useState(false);
@@ -243,53 +284,84 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
         handleValidate(name, value)
     }
     const onChangeRangePicker = ([from, to]) => {
-        if(from && to) {
-            setNewCombo({ ...newCombo, from_date: from.format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
+        if (from && to) {
+            setNewCombo({ ...newCombo, from_date: from.format(), to_date: to.format() })
         }
     }
     const onCalendarChange = ([to]) => {
-        if(to) {
-            setNewCombo({ ...newCombo, from_date: moment().format(formatOfDateFromDB), to_date: to.format(formatOfDateFromDB) })
+        if (to) {
+            setNewCombo({ ...newCombo, from_date: moment().format(), to_date: to.format() })
         }
     }
     const disabledDate = current => current && current <= moment().endOf('day')
 
     // handle add combo
-    const handleAddCombo = () => {
+    const handleAddCombo = async () => {
         const hide = message.loading('Add combo....', 0);
-        let voucher_array = selectedVouchersArr.map(({value}, index) => ({
-            voucher_id: value._id,
-            count: countAndTotalValue[index].count + countExtra[index],
-            value: value.value,
-            category: value.subcategory,
-            voucher_name: value.voucher_name,
-            discount: value.discount ? value.discount : 0
-        }));
-        let combo = {
-            voucher_array,
-            ...newCombo,
-            policy_id: policies[selectedPolicy]._id
-        }
-        addPostCombo(combo).then(res => {
-            switch (res && res.status) {
-                case 201:
-                    setTimeout(hide, 100);
-                    message.success(`${combo.combo_name} added`, 2)
-                    resetNewCombo();
-                    break;
-                case 400:
-                    setTimeout(hide, 100);
-                    message.error('Add combo failed', 2);
-                    if(res.data.code === 11000) {
-                        message.warning("Combo name is existed", 5);
-                    }
-                    break;
-                default:
-                    message.error('Unknown Error', 2);
-                    setTimeout(hide, 50);
-                    break;
+        try {
+            // handle create auto voucher when residualValue > 0 
+
+            let voucher_array = selectedVouchersArr.map(({ value }, index) => ({
+                voucher_id: value._id,
+                count: countAndTotalValue[index].count + countExtra[index],
+                value: value.value,
+                category: value.subcategory,
+                voucher_name: value.voucher_name,
+                discount: value.discount ? value.discount : 0
+            }));
+            if (residualValue > 0) {
+                const from_date = new Date()
+                let to_date = moment(from_date).add(1, 'month').toDate()
+                to_date.setHours(23, 59, 59)
+                const res = await createVoucherToAPI({ ...autoVoucher, to_date, from_date })
+                if (res.data !== undefined) {
+                    const newVoucher = res.data
+                    voucher_array.push({
+                        voucher_id: newVoucher._id,
+                        count: 1,
+                        value: newVoucher.value,
+                        category: newVoucher.subcategory,
+                        voucher_name: newVoucher.voucher_name,
+                        discount: newVoucher.discount
+                    })
+                }
             }
-        })
+            let from_date = new Date(newCombo.from_date)
+            from_date.setHours(0, 0, 1)
+            let to_date = new Date(newCombo.to_date)
+            to_date.setHours(23, 59, 59)
+            let combo = {
+                voucher_array,
+                ...newCombo,
+                from_date,
+                to_date,
+                policy_id: policies[selectedPolicy]._id
+            }
+            addPostCombo(combo).then(res => {
+                switch (res && res.status) {
+                    case 201:
+                        hide()
+                        message.success(`${combo.combo_name} added`, 2)
+                        resetNewCombo();
+                        break;
+                    case 400:
+                        hide()
+                        message.error('Add combo failed', 2);
+                        if (res.data.code === 11000) {
+                            message.warning("Combo name is existed", 5);
+                        }
+                        break;
+                    default:
+                        message.error('Unknown Error', 2);
+                        hide()
+                        break;
+                }
+            })
+        } catch (error) {
+            message.error('Add combo failed', 2)
+            hide()
+        }
+
 
     }
 
@@ -340,21 +412,21 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
             render: (_, record, index) => countAndTotalValue[index].count,
             width: 80
         },
-        {
-            key: 'extra',
-            title: 'Extra',
-            render: (_, record, index) => countExtra[index],
-            width: 80
-        },
+        // {
+        //     key: 'extra',
+        //     title: 'Extra',
+        //     render: (_, record, index) => countExtra[index],
+        //     width: 80
+        // },
         {
             key: 'action',
             title: 'Action',
             render: (_, record, index) => (
                 <span>
-                    <Icon type="plus-circle" className="pointer fake-link" onClick={(e) => onChangeCountExtra(index, 1)} />
+                    {/* <Icon type="plus-circle" className="pointer fake-link" onClick={(e) => onChangeCountExtra(index, 1)} />
                     <Divider type="vertical" />
                     <Icon type="minus-circle" className="pointer fake-link" onClick={(e) => onChangeCountExtra(index, -1)} />
-                    <Divider type="vertical" />
+                    <Divider type="vertical" /> */}
                     <span className="fake-link" onClick={(e) => handleDeleteVoucher(e, record.value.subcategory)}>delete</span>
                 </span>
             ),
@@ -401,7 +473,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             onCalendarChange={onCalendarChange}
                             value={
                                 newCombo.from_date !== null ?
-                                    [moment(newCombo.from_date, formatOfDateFromDB), moment(newCombo.to_date, formatOfDateFromDB)] :
+                                    [moment(newCombo.from_date), moment(newCombo.to_date)] :
                                     null
                             }
                             format={dateFormat}
@@ -449,14 +521,40 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                             isOpenSelectVoucherModal={isOpenSelectVoucherModal}
                         />
                     </Form.Item>
+
                     <Form.Item wrapperCol={{ span: 25 }}
                     >
-                        <ErrorMessage hasError={!formErrors.voucher_array} message={`Number of vouchers must be ${ policies[selectedPolicy] ? policies[selectedPolicy].voucher_percent.length : ''}`} />
+                        <ErrorMessage hasError={!formErrors.voucher_array} message={`Number of vouchers must be ${policies[selectedPolicy] ? policies[selectedPolicy].voucher_percent.length : ''}`} />
                         <Table
                             {...tableConfig}
                             dataSource={selectedVouchersArr.length > 0 ? selectedVouchersArr : null}
                             columns={columns} />
                     </Form.Item>
+                    {
+                        residualValue > 0 && (
+                            <Form.Item label={`Auto generate voucher fit real value of Combo with value is ${formatVND(autoVoucher.value)}`} labelCol={{ span: 20 }}>
+                                <div className="d-flex align-items-center">
+                                    <span  >Service:</span>
+                                    <Select
+
+                                        style={{ width: '100px', margin: '0 10px' }}
+                                        value={autoVoucher.subcategory}
+                                        onChange={value => onChangeVoucher(value, 'subcategory')}
+                                    >
+                                        {services.map(service => <Select.Option key={service} value={service}>{service}</Select.Option>)}
+                                    </Select>
+                                    <span>Persent:</span>
+                                    <Select
+                                        style={{ width: '100px', margin: '0 10px' }}
+                                        value={autoVoucher.discount}
+                                        onChange={value => onChangeVoucher(value, 'discount')}
+                                    >
+                                        {persentList.map(item => <Select.Option key={item} value={item}>{item}%</Select.Option>)}
+                                    </Select>
+                                </div>
+                            </Form.Item>
+                        )
+                    }
                 </Form>
             </div>
         </Modal>

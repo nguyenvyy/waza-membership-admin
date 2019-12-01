@@ -8,7 +8,7 @@ import { Header } from '../Header/Header'
 import { Button, Divider, Table, message, Badge, Form, Input } from 'antd'
 import { NewComboModal } from '../Modal/NewComboModal';
 import { formatVND, debounce } from '../../../utils'
-import { formatOfDateFromDB, dateFormat, limitDelete } from '../../../constant'
+import { dateFormat, limitDelete } from '../../../constant'
 import VouchersShort from '../VouchersInCombo/VouchersShort'
 import VouchersDetail from '../VouchersInCombo/VouchersDetail'
 import { checkStatusCombo } from '../../../utils/combo'
@@ -21,12 +21,12 @@ const ManageCombo = ({
 }) => {
     useEffect(() => {
         fetchVouchers({ page: 0, limit: 9999 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     useEffect(() => {
         if (!isMaxPageCombo)
             fetchCombos({ page: 0, limit: 9999 })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchCombos, isMaxPageCombo])
     //handle display combo
     const [displayCombos, setDisplayCombos] = useState([]);
@@ -98,43 +98,41 @@ const ManageCombo = ({
         })
     }
 
-    const deleteCombo = (combo) => {
+    const deleteCombo = (combo, status) => {
         const limitDate = moment(combo.createdAt).add(limitDelete, 'years');
         const curr = Date.now()
-        if(curr >= limitDate.valueOf()) {
-            const hide = message.loading('Delete combo....', 0);
-            deletePatchCombo(combo._id).then(res => {
-                switch (res && res.status) {
-                    case 200:
-                        setTimeout(hide, 50);
-                        message.success(`${combo.combo_name} deleted`, 2)
-                        break;
-                    case 400:
-                        setTimeout(hide, 50);
-                        message.error('Delete combo failed', 2);
-                        message.warning(`${res.data.message}`, 3);
-                        break;
-                    case 404:
-                        setTimeout(hide, 50);
-                        message.error('Combo not found', 2);
-                        message.warning(`${res.data.message}`, 3);
-                        break;
-                    default:
-                        message.error('Unknown Error', 2);
-                        setTimeout(hide, 50);
-                        break;
-                }
-            })
-        }else {
-            message.error('Delete failed',1)
-            message.warn('Current date must be gearter than '+ limitDate.format(dateFormat), 2);
+        if (curr <= limitDate.valueOf() && status === comboStatus.stop) {
+            message.warn(`You can only delete this combo when current date must be gearter than ` + limitDate.format(dateFormat), 3);
+            return; // break 
         }
+        const hide = message.loading('Delete combo....', 0);
+        deletePatchCombo(combo._id).then(res => {
+            switch (res && res.status) {
+                case 200:
+                    setTimeout(hide, 50);
+                    message.success(`${combo.combo_name} deleted`, 2)
+                    break;
+                case 400:
+                    setTimeout(hide, 50);
+                    message.error('Delete combo failed', 2);
+                    break;
+                case 404:
+                    setTimeout(hide, 50);
+                    message.error('Combo not found', 2);
+                    break;
+                default:
+                    message.error('Unknown Error', 2);
+                    setTimeout(hide, 50);
+                    break;
+            }
+        })
     }
 
 
     // config combos table
     const tableConfig = {
         pagination: { position: 'bottom' },
+        size: 'small',
         scroll: { y: 500 },
         expandedRowRender: record => <VouchersDetail isFetchingVoucher={isFetchingVoucher} voucher_array={record.voucher_array} />,
         rowKey: () => uuid()
@@ -144,7 +142,7 @@ const ManageCombo = ({
             key: 'name',
             title: 'Name',
             dataIndex: 'combo_name',
-            width: 100
+            width: 150
         },
         {
             key: 'value',
@@ -164,18 +162,18 @@ const ManageCombo = ({
         },
         {
             key: 'fromDate',
-            title: 'From',
+            title: 'Start',
             dataIndex: 'from_date',
             width: 100,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
+            render: date => moment(date).format(dateFormat),
             sorter: (a, b) => new Date(a.from_date) - new Date(b.from_date)
         },
         {
             key: 'toDate',
-            title: 'To',
+            title: 'End',
             dataIndex: 'to_date',
             width: 100,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
+            render: date => moment(date).format(dateFormat),
             sorter: (a, b) => new Date(a.from_date) - new Date(b.from_date)
         },
         {
@@ -204,6 +202,14 @@ const ManageCombo = ({
             width: 150
         },
         {
+            key: 'createdAt',
+            title: 'Create date',
+            dataIndex: 'createdAt',
+            render: date => moment(date).format(dateFormat),
+            sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+            width: 120
+        },
+        {
             key: 'action',
             title: 'Action',
             render: record => {
@@ -211,24 +217,20 @@ const ManageCombo = ({
                 return (
                     <span>
                         <Link to={`/a/combo/detail/${record._id}`} onClick={() => receiveDetailCombo(record)}>view</Link>
-                        {(status.text === comboStatus.stop || status.text === comboStatus.wait) && (
-                            <>
-                                <Divider type="vertical" />
-                                <Link to={`/a/combo/edit/${record._id}`} onClick={() => receiveDetailCombo(record)}>edit</Link>
-                            </>)
-                        }
-                        {status.text === comboStatus.active ? (
+                        {status.text === comboStatus.active && (
                             <>
                                 <Divider type="vertical" />
                                 <span onClick={() => stopCombo(record)} className="fake-link" >stop</span>
                             </>
-                        ) : null}
-                        {status.text === comboStatus.stop && (
+                        )}
+                        {(status.text === comboStatus.stop || status.text === comboStatus.wait) && (
                             <>
                                 <Divider type="vertical" />
-                                <span onClick={() => deleteCombo(record)} className="fake-link">delete</span>
-                            </>
-                        )}
+                                <Link to={`/a/combo/edit/${record._id}`} onClick={() => receiveDetailCombo(record)}>edit</Link>
+                                <Divider type="vertical" />
+                                <span onClick={() => deleteCombo(record, status.text)} className="fake-link">delete</span>
+                            </>)
+                        }
                     </span>)
             },
             width: 200

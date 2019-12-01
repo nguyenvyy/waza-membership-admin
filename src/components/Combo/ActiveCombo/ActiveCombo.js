@@ -7,7 +7,7 @@ import './ActiveCombo.scss'
 import { debounce, formatVND } from '../../../utils';
 import { Header } from '../Header/Header';
 import moment from 'moment';
-import { formatOfDateFromDB, dateFormat } from '../../../constant';
+import { dateFormat } from '../../../constant';
 import VouchersShort from '../VouchersInCombo/VouchersShort';
 import VouchersDetail from '../VouchersInCombo/VouchersDetail';
 
@@ -64,7 +64,6 @@ const ActiveCombo = ({
             state: false,
             to_date: new Date()
         }
-
         stopPatchCombo(newCombo).then(res => {
             switch (res && res.status) {
                 case 200:
@@ -120,17 +119,17 @@ const ActiveCombo = ({
         },
         {
             key: 'fromDate',
-            title: 'From',
+            title: 'Start',
             dataIndex: 'from_date',
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
+            render: date => moment(date).format(dateFormat),
             width: 150,
             sorter: (a, b) => new Date(a.from_date) - new Date(b.from_date)
         },
         {
             key: 'toDate',
-            title: 'To',
+            title: 'End',
             dataIndex: 'to_date',
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
+            render: date => moment(date).format(dateFormat),
             width: 150,
             sorter: (a, b) => new Date(a.from_date) - new Date(b.from_date)
         },

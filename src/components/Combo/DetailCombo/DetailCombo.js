@@ -9,7 +9,7 @@ import { ComboNotFound } from '../CompoNotFound'
 import { checkStatusCombo } from '../../../utils/combo'
 import VouchersDetail from '../VouchersInCombo/VouchersDetail'
 import moment from 'moment'
-import { formatOfDateFromDB, dateFormat } from '../../../constant'
+import { dateFormat } from '../../../constant'
 import { comboStatus } from '../../../constant/combo'
 
 
@@ -42,8 +42,8 @@ const DetailCombo = ({
                             <div className="">
                                 <Descriptions title={combo_name} bordered  >
                                     <Descriptions.Item label="Duration">{days} Ngày</Descriptions.Item>
-                                    <Descriptions.Item label="From Date">{moment(from_date, formatOfDateFromDB).format(dateFormat)}</Descriptions.Item>
-                                    <Descriptions.Item label="To Date">{moment(to_date, formatOfDateFromDB).format(dateFormat)}</Descriptions.Item>
+                                    <Descriptions.Item label="From Date">{moment(from_date).format(dateFormat)}</Descriptions.Item>
+                                    <Descriptions.Item label="To Date">{moment(to_date).format(dateFormat)}</Descriptions.Item>
                                     <Descriptions.Item label="Price" >{value}</Descriptions.Item>
                                     <Descriptions.Item label="Status" span={2}>
                                         <Badge status={status.processing} text={status.text} />
