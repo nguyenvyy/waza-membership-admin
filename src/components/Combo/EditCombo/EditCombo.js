@@ -2,25 +2,26 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import uuid from 'uuid'
 import moment from 'moment'
 import ButtonGroup from 'antd/lib/button/button-group'
-import { Button, Icon, Input, Form, DatePicker, Select, Table, Divider, message } from 'antd'
+import { Button, Icon, Input, Form, DatePicker, Select, Table, message } from 'antd'
 
 import './EditCombo.scss'
 import { Header } from '../Header/Header'
 import { ComboNotFound } from '../CompoNotFound'
 import { SelectVoucherContainer } from '../../../redux/container/SelectVoucherContainer'
 import { PageLoading } from '../../common/PageLoading/PageLoading'
-import { dateFormat } from '../../../constant'
+import { dateFormat, services, persentList } from '../../../constant'
 import { useVouchersDetailInCombo } from '../../../hooks/useVouchersDetailInCombo'
 import { objectConverttoArr, calValueTotal, checkErrorSuccess, checkStatusCombo } from '../../../utils/combo'
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 import { errorMessage, comboLimitValue, comboStatus } from '../../../constant/combo'
 import { checkMinMax, checkIsNaN, checkIsInterge, checkDivideBy } from '../../../utils/validate'
 import { formatVND, deleteformatVND } from '../../../utils'
+import { createVoucherToAPI } from '../../../redux/actions/voucherx-actions/services'
 
 
 const EditCombo = ({
     policies = [], fetchFullComboPolicy,
-    combo, history, match, fetchDetailCombo, editPatchCombo, isFetching,
+    combo: preCombo, history, match, fetchDetailCombo, editPatchCombo, isFetching,
     isMaxPageVoucher, fetchVouchers
 }) => {
     useEffect(() => {
@@ -30,11 +31,11 @@ const EditCombo = ({
             fetchVouchers({ page: 0, limit: 9999 })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchVouchers, isMaxPageVoucher])
-    const status = checkStatusCombo(combo)
+    const status = checkStatusCombo(preCombo)
     const [selectedPolicy, setSelectedPolicy] = useState(0)
     useEffect(() => {
-        if (combo.policy_id !== undefined && policies.length > 0) {
-            const index = policies.findIndex(item => item._id === combo.policy_id)
+        if (preCombo.policy_id !== undefined && policies.length > 0) {
+            const index = policies.findIndex(item => item._id === preCombo.policy_id)
             if (index === -1) {
                 message.warn('Policy of combo is deleted. You should select orther policy', 3)
                 setSelectedPolicy(0);
@@ -42,7 +43,7 @@ const EditCombo = ({
                 setSelectedPolicy(index)
             }
         }
-    }, [combo, policies])
+    }, [preCombo, policies])
     const onChangeSelectedPolicy = value => setSelectedPolicy(value)
 
     const [formErrors, setFormErrors] = useState({
@@ -96,13 +97,13 @@ const EditCombo = ({
         days: 30
     })
     useEffect(() => {
-        if (combo._id !== undefined) {
-            setChangedCombo({ ...combo })
+        if (preCombo._id !== undefined) {
+            setChangedCombo({ ...preCombo })
         } else {
             fetchDetailCombo(match.params.id)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [combo])
+    }, [preCombo])
     const onChange = ({ target: { name, value } }) => {
         value = value.trimStart()
         if (name === 'value') {
@@ -116,11 +117,11 @@ const EditCombo = ({
         if (to && to.valueOf() >= Date.now()) {
             setChangedCombo({ ...changedCombo, to_date: to.format() })
         } else {
-            message.error("To date mus be greater than current date", 3)
+            message.error("To date mus be greater than or equal to current date", 3)
         }
     }
 
-    const vouchers = useVouchersDetailInCombo(combo.voucher_array)
+    const vouchers = useVouchersDetailInCombo(preCombo.voucher_array)
     // manage selected voucher
     const [selectedVouchers, setSelectedVouchers] = useState({
         move: {
@@ -163,7 +164,7 @@ const EditCombo = ({
             }))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [combo.voucher_array, isMaxPageVoucher])
+    }, [preCombo.voucher_array, isMaxPageVoucher])
 
     // handle close/open  SelectVoucherModal
     const [isOpenSelectVoucherModal, setIsOpenSelectVoucherModal] = useState(false);
@@ -249,13 +250,13 @@ const EditCombo = ({
     }, [handleValidate, policies, selectedPolicy, selectedVouchersArr.length])
     const preCounts = useMemo(() => {
         let newPreCounts = [0, 0, 0, 0]
-        if (combo.voucher_array) {
-            const counts = combo.voucher_array.map(item => item.count);
+        if (preCombo.voucher_array) {
+            const counts = preCombo.voucher_array.map(item => item.count);
             newPreCounts.splice(0, counts.length);
             newPreCounts = [...counts, ...newPreCounts]
         }
         return newPreCounts
-    }, [combo.voucher_array])
+    }, [preCombo.voucher_array])
     // handle calculate count and totoal value
     const countAndTotalValue = useMemo(() => {
         if (policies.length > 0 && policies[selectedPolicy]) {
@@ -282,17 +283,49 @@ const EditCombo = ({
                 }
             })
         }
+        return []
     }, [changedCombo.value, policies, selectedPolicy, selectedVouchers, selectedVouchersArr])
+    // handle auto generate  voucher
+    const residualValue = useMemo(() => {
+        if (countAndTotalValue.length > 0) {
+            return countAndTotalValue.reduce((acc, curr) => acc + curr.excess, 0)
+        }
+        return -1
+    }, [countAndTotalValue])
+    //  auto voucher 
 
+    const [autoVoucher, setAutoVoucher] = useState({
+        voucher_name: 'Voucher food' + Date.now(),
+        description: 'Voucher food trị giá 0đ',
+        discount: 0,
+        value: 0,
+        category: 'buy',
+        subcategory: 'food',
+        times_to_use: 0,
+    })
+    useEffect(() => {
+        setAutoVoucher(autoVoucher => ({ ...autoVoucher, value: residualValue }))
+    }, [residualValue])
+    useEffect(() => {
+        setAutoVoucher((autoVoucher) => ({
+            ...autoVoucher,
+            voucher_name: `Voucher ${autoVoucher.subcategory} - ${Date.now()}`,
+            description: `Voucher ${autoVoucher.value} trị giá ${formatVND(residualValue)}đ`
+        }))
+    }, [changedCombo, residualValue])
+    const onChangeVoucher = (value, name) => {
+
+        setAutoVoucher({ ...autoVoucher, [name]: value })
+    }
     const [countExtra, setCountExtra] = useState([0, 0, 0, 0]);
     useEffect(() => {
-        if (countAndTotalValue !== undefined && combo.voucher_array !== undefined) {
+        if (countAndTotalValue !== undefined && preCombo.voucher_array !== undefined) {
             let canChange = false
-            if (selectedVouchersArr.length === combo.voucher_array.length)
-                canChange = selectedVouchersArr.every((item, index) => item.value._id === combo.voucher_array[index].voucher_id)
+            if (selectedVouchersArr.length === preCombo.voucher_array.length)
+                canChange = selectedVouchersArr.every((item, index) => item.value._id === preCombo.voucher_array[index].voucher_id)
             let canChangePolicy = false
             if (policies.length > 0) {
-                canChangePolicy = combo.policy_id === policies[selectedPolicy]._id
+                canChangePolicy = preCombo.policy_id === policies[selectedPolicy]._id
             }
             if (canChange && canChangePolicy) {
                 const newCountExtra = countAndTotalValue.map((item, index) => preCounts[index] - item.count)
@@ -307,18 +340,18 @@ const EditCombo = ({
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [countAndTotalValue, preCounts, combo, policies, selectedVouchersArr, selectedPolicy])
+    }, [countAndTotalValue, preCounts, preCombo, policies, selectedVouchersArr, selectedPolicy])
 
-    const onChangeCountExtra = (index, value) => {
-        const newValue = countExtra[index] + value
-        if (newValue >= 0 && newValue <= 5) {
-            const newCountExtra = countExtra.slice();
-            newCountExtra.splice(index, 1, newValue);
-            setCountExtra(newCountExtra)
-        } else {
-            message.warn("Extra must be from 0 to 5")
-        }
-    }
+    // const onChangeCountExtra = (index, value) => {
+    //     const newValue = countExtra[index] + value
+    //     if (newValue >= 0 && newValue <= 5) {
+    //         const newCountExtra = countExtra.slice();
+    //         newCountExtra.splice(index, 1, newValue);
+    //         setCountExtra(newCountExtra)
+    //     } else {
+    //         message.warn("Extra must be from 0 to 5")
+    //     }
+    // }
 
     useEffect(() => {
         const countArr = selectedVouchersArr.map((_, index) => countAndTotalValue[index].count + countExtra[index])
@@ -371,21 +404,21 @@ const EditCombo = ({
             render: (_, record, index) => countAndTotalValue[index].count,
             width: 80
         },
-        {
-            key: 'extra',
-            title: 'Extra',
-            render: (_, record, index) => countExtra[index],
-            width: 80
-        },
+        // {
+        //     key: 'extra',
+        //     title: 'Extra',
+        //     render: (_, record, index) => countExtra[index],
+        //     width: 80
+        // },
         {
             key: 'action',
             title: 'Action',
             render: (_, record, index) => (
                 <span>
-                    <Icon type="plus-circle" className="pointer fake-link" onClick={(e) => onChangeCountExtra(index, 1)} />
+                    {/* <Icon type="plus-circle" className="pointer fake-link" onClick={(e) => onChangeCountExtra(index, 1)} />
                     <Divider type="vertical" />
                     <Icon type="minus-circle" className="pointer fake-link" onClick={(e) => onChangeCountExtra(index, -1)} />
-                    <Divider type="vertical" />
+                    <Divider type="vertical" /> */}
                     <span className="fake-link" onClick={(e) => handleDeleteVoucher(e, record.value.subcategory)}>delete</span>
                 </span>
             ),
@@ -394,55 +427,78 @@ const EditCombo = ({
     ]
 
     const goBack = () => history.goBack()
-    const saveChangedCombo = () => {
-        if(status.text === comboStatus.active || status === comboStatus.deleted) {
-            message.error(`Combo can't edit!`)
-            return ; // break
+    const saveChangedCombo = async () => {
+        if (status.text === comboStatus.active || status === comboStatus.deleted) {
+            message.error(`Combo can't edit!`, 2)
+            return; // break
         }
         const hide = message.loading('Edit combo....', 0);
-        let voucher_array = selectedVouchersArr.map(({ value }, index) => ({
-            voucher_id: value._id,
-            count: countAndTotalValue[index].count + countExtra[index],
-            value: value.value,
-            category: value.subcategory,
-            voucher_name: value.voucher_name,
-            discount: value.discount ? value.discount : 0
-        }));
-        let to_date = new Date(changedCombo.to_date)
-        to_date.setHours(23, 59, 59)
-        let combo = {
-            ...changedCombo,
-            voucher_array,
-            to_date,
-            policy_id: policies[selectedPolicy]._id
-        }
-        delete combo.vouchers
-        delete combo.isDeleted
-        delete combo.from_date
-        editPatchCombo(combo).then(res => {
-            switch (res && res.status) {
-                case 200:
-                    setTimeout(hide, 100);
-                    message.success(`${combo.combo_name} edited`, 2)
-                    break;
-                case 400:
-                    setTimeout(hide, 100);
-                    message.error('Edit combo failed', 2);
-                    if (res.data.code === 11000) {
-                        message.warning("Combo name is existed", 5);
-                    }
-                    break;
-                case 404:
-                    setTimeout(hide, 100);
-                    message.error('Combo not found', 2);
-                    message.warning(`${res.data.message}`, 5);
-                    break;
-                default:
-                    message.error('Unknown Error', 2);
-                    setTimeout(hide, 100);
-                    break;
+        try {
+            let voucher_array = selectedVouchersArr.map(({ value }, index) => ({
+                voucher_id: value._id,
+                count: countAndTotalValue[index].count + countExtra[index],
+                value: value.value,
+                category: value.subcategory,
+                voucher_name: value.voucher_name,
+                discount: value.discount ? value.discount : 0
+            }));
+            if (residualValue > 0  && +changedCombo.value !==  +preCombo.value) {
+                const from_date = new Date()
+                let to_date = moment(from_date).add(1, 'month').toDate()
+                to_date.setHours(23, 59, 59)
+                const res = await createVoucherToAPI({ ...autoVoucher, to_date, from_date })
+                if (res.data !== undefined) {
+                    const newVoucher = res.data
+                    voucher_array.push({
+                        voucher_id: newVoucher._id,
+                        count: 1,
+                        value: newVoucher.value,
+                        category: newVoucher.subcategory,
+                        voucher_name: newVoucher.voucher_name,
+                        discount: newVoucher.discount
+                    })
+                }
             }
-        })
+            let to_date = new Date(changedCombo.to_date)
+            to_date.setHours(23, 59, 59)
+            let combo = {
+                ...changedCombo,
+                voucher_array,
+                to_date,
+                policy_id: policies[selectedPolicy]._id
+            }
+            delete combo.vouchers
+            delete combo.isDeleted
+            delete combo.from_date
+            editPatchCombo(combo).then(res => {
+                switch (res && res.status) {
+                    case 200:
+                        hide()
+                        message.success(`${combo.combo_name} edited`, 2)
+                        break;
+                    case 400:
+                        hide()
+                        message.error('Edit combo failed', 2);
+                        if (res.data.code === 11000) {
+                            message.warning("Combo name is existed", 5);
+                        }
+                        break;
+                    case 404:
+                        hide()
+                        message.error('Combo not found', 2);
+                        message.warning(`${res.data.message}`, 5);
+                        break;
+                    default:
+                        message.error('Unknown Error', 2);
+                        hide()
+                        break;
+                }
+            })
+
+        } catch (error) {
+            hide()
+            message.error('Edit combo failed', 2);
+        }
     }
 
 
@@ -450,7 +506,7 @@ const EditCombo = ({
         <div className="edit-combo">
             <Header title="Edit Combo" />
             {
-                (combo._id === undefined) ? (
+                (preCombo._id === undefined) ? (
                     isFetching ? <PageLoading /> : <ComboNotFound />
                 ) : (
                         <div className="body">
@@ -518,6 +574,31 @@ const EditCombo = ({
                                             dataSource={selectedVouchersArr.length > 0 ? selectedVouchersArr : null}
                                             columns={columns} />
                                     </Form.Item>
+                                    {
+                                        residualValue > 0 && (
+                                            <Form.Item label={`Auto generate voucher fit real value of Combo with value is ${formatVND(autoVoucher.value)}`} labelCol={{ span: 20 }}>
+                                                <div className="d-flex align-items-center">
+                                                    <span  >Service:</span>
+                                                    <Select
+
+                                                        style={{ width: '100px', margin: '0 10px' }}
+                                                        value={autoVoucher.subcategory}
+                                                        onChange={value => onChangeVoucher(value, 'subcategory')}
+                                                    >
+                                                        {services.map(service => <Select.Option key={service} value={service}>{service}</Select.Option>)}
+                                                    </Select>
+                                                    <span>Persent:</span>
+                                                    <Select
+                                                        style={{ width: '100px', margin: '0 10px' }}
+                                                        value={autoVoucher.discount}
+                                                        onChange={value => onChangeVoucher(value, 'discount')}
+                                                    >
+                                                        {persentList.map(item => <Select.Option key={item} value={item}>{item}%</Select.Option>)}
+                                                    </Select>
+                                                </div>
+                                            </Form.Item>
+                                        )
+                                    }
                                 </Form>
                             </div>
                             <div className="d-flex-center panel">
