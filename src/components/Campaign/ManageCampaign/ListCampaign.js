@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import { Table, Badge, Divider, message } from 'antd'
+import { Table, Badge, Divider, message, Button, Icon, Input } from 'antd'
 import moment from 'moment'
 import { dateFormat, limitDelete } from '../../../constant'
 import { comboStatus } from '../../../constant/combo'
@@ -13,7 +13,24 @@ export const ListCampaign = ({ campaigns, isFetching }) => {
     const dispatch = useDispatch()
 
     // handle delete Campaign
-    const deleteCampaign = campaign => {
+    const deleteCampaign = (campaign, status) => {
+        if (status === comboStatus.wait) {
+            const hiden = message.loading('Delete campaign....');
+            // send request delete
+            dispatch(requestDeleteCampaign(campaign._id))
+                .then(status => {
+                    switch (status) {
+                        case 200:
+                            message.success(`${campaign.campaign_name} deleted`, 1);
+                            break;
+                        default:
+                            message.error(`Delete failed`, 1);
+                            break;
+                    }
+                    hiden()
+                })
+            return
+        }
         // calculate limit delete date
         const limitDate = moment(campaign.createdAt).add(limitDelete, 'years');
         const curr = Date.now()
@@ -34,7 +51,6 @@ export const ListCampaign = ({ campaigns, isFetching }) => {
                     hiden()
                 })
         } else {
-            message.error('Delete failed', 1)
             message.warn('Current date must be gearter than ' + limitDate.format(dateFormat), 2);
         }
     }
@@ -56,12 +72,67 @@ export const ListCampaign = ({ campaigns, isFetching }) => {
                 hiden();
             })
     }
+
+    // search with property
+    const [search, setSearch] = useState('');
+    const handleSearch = (selectedKeys, confirm) => {
+        confirm();
+        setSearch({ searchText: selectedKeys[0] });
+    };
+
+    const handleReset = clearFilters => {
+        clearFilters();
+        setSearch({ searchText: '' });
+    };
+    // handle search
+    const getColumnSearchProps = dataIndex => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+            <div style={{ padding: 8 }}>
+                <Input
+                    ref={node => {
+                        setSearch(node);
+                    }}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm)}
+                    style={{ width: 188, marginBottom: 8, display: 'block' }}
+                />
+                <Button
+                    type="primary"
+                    onClick={() => handleSearch(selectedKeys, confirm)}
+                    icon="search"
+                    size="small"
+                    style={{ width: 90, marginRight: 8 }}
+                >
+                    Search
+            </Button>
+                <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+                    Reset
+            </Button>
+            </div>
+        ),
+        filterIcon: filtered => (
+            <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
+        ),
+        onFilter: (value, record) =>
+            record[dataIndex]
+                .toString()
+                .toLowerCase()
+                .includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+            if (visible) {
+                setTimeout(() => search.select());
+            }
+        }
+    });
+
     // table config
     const tableConfig = {
         pagination: false,
         size: 'small',
         rowKey: (record) => record._id,
-        scroll: { y: 650 },
+        scroll: { y: 500 },
     }
 
     const columns = [
@@ -69,20 +140,23 @@ export const ListCampaign = ({ campaigns, isFetching }) => {
             title: 'Name',
             dataIndex: 'campaign_name',
             align: 'center',
-            width: 100,
+            width: 150,
+            ...getColumnSearchProps('campaign_name')
         },
         {
-            title: 'From',
+            title: 'Start',
             dataIndex: 'from_date',
             render: date => moment(date).format(dateFormat),
             width: 100,
+            sorter: (a, b) => new Date(a.from_date) - new Date(b.from_date)
         },
         {
-            title: 'To',
+            title: 'End',
             dataIndex: 'to_date',
             render: date => moment(date).format(dateFormat),
             align: 'center',
             width: 100,
+            sorter: (a, b) => new Date(a.to_date) - new Date(b.to_date)
         },
         {
             title: 'Voucher count',
@@ -90,6 +164,7 @@ export const ListCampaign = ({ campaigns, isFetching }) => {
             render: vouchers => vouchers.length,
             align: 'center',
             width: 100,
+            sorter: (a, b) => a.length - b.length
         },
         {
             key: 'status',
@@ -131,20 +206,16 @@ export const ListCampaign = ({ campaigns, isFetching }) => {
                                         state: record
                                     }}
                                 >edit</NavLink>
+                                <Divider type="vertical" />
+                                <span onClick={() => deleteCampaign(record, status.text)} className="fake-link">delete</span>
                             </>)
                         }
-                        {status.text === comboStatus.active || status.text === comboStatus.wait ? (
+                        {status.text === comboStatus.active ? (
                             <>
                                 <Divider type="vertical" />
                                 <span onClick={() => stopCampaign(record)} className="fake-link" >stop</span>
                             </>
                         ) : null}
-                        {status.text === comboStatus.stop && (
-                            <>
-                                <Divider type="vertical" />
-                                <span onClick={() => deleteCampaign(record)} className="fake-link">delete</span>
-                            </>
-                        )}
                     </div>)
             },
             width: 150

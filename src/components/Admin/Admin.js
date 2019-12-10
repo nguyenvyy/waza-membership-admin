@@ -1,13 +1,28 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { Switch } from 'react-router-dom'
 
 import './Admin.scss'
 import { NavBar } from '../NavBar/NavBar';
 import { PageLoading } from '../common/PageLoading/PageLoading';
 import { RouteWithSubRoutes } from '../../routes/RouteWithSubRoutes';
+import moment from 'moment';
 
-const Admin = ({ routes = [] }) => {
-
+const Admin = ({ routes = [], history }) => {
+    useEffect(() => {
+        // reload page at 23h59p59s
+        const endDay = moment().endOf('day').valueOf()
+        const interval = setInterval(() => {
+            const curr = Date.now()
+            if(curr === endDay) {
+                history.push('/a')
+                console.log('reload')
+            }
+        }, 1000);
+        return () => {
+            clearInterval(interval)
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     const navWidth = {
         maxWidth: {
             minWidth: '200px',

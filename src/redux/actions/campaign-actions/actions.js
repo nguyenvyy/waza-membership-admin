@@ -83,8 +83,7 @@ export const requestStopCampaign = id => async (dispatch, getState) => {
         dispatch(sendRequestCampaign())
         const user = getState().user.info;
         const token = user && user.token
-        const res = await editCampaignAPI({ from_date: new Date() }, id, token)
-        debugger
+        const res = await editCampaignAPI({ to_date: new Date() }, id, token)
         dispatch(eidtCampaign(res.data))
         dispatch(stopRequestCampaign())
         return 200

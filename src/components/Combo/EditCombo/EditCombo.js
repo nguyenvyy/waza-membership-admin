@@ -51,6 +51,7 @@ const EditCombo = ({
         value: true,
         description: true,
         voucher_array: true,
+        to_date: true,
         days: true,
         count: true,
     })
@@ -58,7 +59,7 @@ const EditCombo = ({
         return Object.values(formErrors).every(item => item === true)
     }, [formErrors])
 
-    const handleValidate = useCallback((name, value, minmax = 0) => {
+    const handleValidate = useCallback((name, value, addValue = 0) => {
         let isValid = false
         switch (name) {
             case 'combo_name':
@@ -72,8 +73,12 @@ const EditCombo = ({
                 break;
             case 'voucher_array':
                 // value = length 
-                isValid = checkMinMax(value, minmax, minmax)
+                isValid = checkMinMax(value, addValue, addValue)
                 break;
+            case 'to_date': 
+                //value: to_date, addValue: from_date : timestamp
+                isValid = (value > addValue) ? true : false
+                break
             case 'count':
                 // receive array is count + extra of voucher 
                 isValid = value.every(ele => ele > 0)
@@ -116,6 +121,7 @@ const EditCombo = ({
     const onChangeToDate = (to) => {
         if (to && to.valueOf() >= Date.now()) {
             setChangedCombo({ ...changedCombo, to_date: to.format() })
+            handleValidate('to_date', to.valueOf(), (new Date(preCombo.from_date).getTime()))
         } else {
             message.error("To date mus be greater than or equal to current date", 3)
         }
@@ -522,7 +528,14 @@ const EditCombo = ({
                                         </Form.Item>
                                         <ErrorMessage hasError={!formErrors.days} message={errorMessage.days} />
                                     </Form.Item>
-                                    <Form.Item label="To date" wrapperCol={{ span: 15 }}  >
+                                    <Form.Item label="Start" wrapperCol={{ span: 15 }}  >
+                                        <DatePicker
+                                            format={dateFormat}
+                                            value={moment(changedCombo.from_date)}
+                                            disabled
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="End" wrapperCol={{ span: 15 }}  >
                                         <DatePicker
                                             format={dateFormat}
                                             onChange={onChangeToDate}
@@ -530,6 +543,7 @@ const EditCombo = ({
                                                 changedCombo.to_date !== null ? moment(changedCombo.to_date) : null
                                             }
                                         />
+                                        <ErrorMessage hasError={!formErrors.to_date} message={` End date is not valid`} />
                                     </Form.Item>
                                     <Form.Item label="Price" >
                                         <Form.Item wrapperCol={{ span: 10 }}>
