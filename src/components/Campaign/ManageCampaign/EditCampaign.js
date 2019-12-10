@@ -9,6 +9,8 @@ import moment from 'moment'
 import { getVoucherById } from '../../../redux/actions/voucherx-actions/services'
 // import { checkIsActiveVoucher } from '../../../redux/selectors/voucherx-selector'
 import { requestEditCampaign } from '../../../redux/actions/campaign-actions/actions'
+import { checkStatusCampaign } from '../../../redux/selectors/campaign-selector'
+import { comboStatus } from '../../../constant/combo'
 
 export const EditCampaign = ({ match, location: { state } }) => {
     const dispatch = useDispatch();
@@ -19,6 +21,7 @@ export const EditCampaign = ({ match, location: { state } }) => {
         description: '',
         vouchers: [],
     })
+    const status = state && checkStatusCampaign(state);
     useEffect(() => {
         if (state !== undefined) {
             setCampaign({ ...state, from_date: moment(state.from_date), to_date: moment(state.to_date) })
@@ -95,7 +98,11 @@ export const EditCampaign = ({ match, location: { state } }) => {
             [name]: value
         })
     }
-
+    const disabledEndDate = current => {
+        const curr = new Date();
+        curr.setDate(curr.getDate() -1 )
+        return current && current <= moment(curr).endOf('day')
+    }
     const disabledDate = current => current && current <= moment().endOf('day')
     const onChangeRangePicker = ([from, to]) => {
         setCampaign({
@@ -106,6 +113,16 @@ export const EditCampaign = ({ match, location: { state } }) => {
     }
 
     const onCalendarChange = ([to]) => {
+        if (to) {
+            setCampaign({
+                ...campaign,
+                from_date: moment(),
+                to_date: to
+            })
+        }
+    }
+
+    const onChangeToDate = (to) => {
         if (to) {
             setCampaign({
                 ...campaign,
@@ -134,16 +151,24 @@ export const EditCampaign = ({ match, location: { state } }) => {
             //start loading effect
             setIsAdding(true)
             // send request add campaign
+            const campaignCopy = {...campaign}
             const allowsUpdate = ['campaign_name', 'to_date', 'from_date', 'description']
             const updated = allowsUpdate.reduce((acc, curr) => {
-                acc[curr] = campaign[curr]
+                acc[curr] = campaignCopy[curr]
                 return acc
             }, {})
+            updated.from_date = state.from_date
+            if(status.text === comboStatus.wait) {
+                updated.from_date = updated.from_date.toDate()
+                updated.from_date.setHours(0,0,0)
+            }
+            updated.to_date = updated.to_date.toDate()
+            updated.to_date.setHours(23,59,59)
             dispatch(requestEditCampaign(updated, campaign._id))
                 .then(status => {
                     switch (status) {
                         case 200:
-                            message.success(`${campaign.campaign_name} added`)
+                            message.success(`${campaign.campaign_name} edited`)
                             break;
                         case 11000:
                             message.error(`${campaign.campaign_name} is existed`)
@@ -217,18 +242,46 @@ export const EditCampaign = ({ match, location: { state } }) => {
                     >
                         <Input.TextArea rows={3} name="description" onChange={onChangeCampaign} value={campaign.description} />
                     </Form.Item>
-                    <Form.Item label="From date - To date"
-                        help={hasError.from_to && "From date, to date must be not null"}
-                        validateStatus={hasError.from_to ? 'error' : 'success'}
-                    >
-                        <DatePicker.RangePicker
-                            disabledDate={disabledDate}
-                            onCalendarChange={onCalendarChange}
-                            format={dateFormat}
-                            onChange={onChangeRangePicker}
-                            value={[campaign.from_date, campaign.to_date]}
-                        />
-                    </Form.Item>
+                    {
+                        status.text === comboStatus.wait ? (
+                            <Form.Item label="Start - End"
+                                help={hasError.from_to && "Start date, End date must be not null"}
+                                validateStatus={hasError.from_to ? 'error' : 'success'}
+                            >
+                                <DatePicker.RangePicker
+                                    disabledDate={disabledEndDate}
+                                    onCalendarChange={onCalendarChange}
+                                    format={dateFormat}
+                                    onChange={onChangeRangePicker}
+                                    value={[campaign.from_date, campaign.to_date]}
+                                />
+                            </Form.Item>
+                        ) : (
+                                <>
+                                    <Form.Item label="Start" wrapperCol={{ span: 15 }}  >
+                                        <DatePicker
+                                            format={dateFormat}
+                                            value={moment(state.from_date)}
+                                            disabled
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="End" wrapperCol={{ span: 15 }}
+                                        help={hasError.to_date && "End date is not valid"}
+                                        validateStatus={hasError.to_date ? 'error' : 'success'}
+                                    >
+                                        <DatePicker
+                                            format={dateFormat}
+                                            onChange={onChangeToDate}
+                                            disabledDate={disabledDate}
+                                            value={
+                                                campaign.to_date !== null ? moment(campaign.to_date) : null
+                                            }
+                                        />
+                                    </Form.Item>
+                                </>
+                            )
+                    }
+
                     {/* <Form.Item
                         help={hasError.vouchers && "Number of vouchers must be from 5 to 20"}
                         validateStatus={hasError.vouchers ? 'error' : 'success'}>

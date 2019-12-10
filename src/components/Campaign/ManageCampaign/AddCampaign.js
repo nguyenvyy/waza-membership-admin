@@ -57,7 +57,11 @@ export const AddCampaign = () => {
         })
     }
 
-    const disabledDate = current => current && current <= moment().endOf('day')
+    const disabledDate = current => {
+        const curr = new Date();
+        curr.setDate(curr.getDate() -1 )
+        return current && current <= moment(curr).endOf('day')
+    }
     const onChangeRangePicker = ([from, to]) => {
         setCampaign({
             ...campaign,
@@ -94,7 +98,9 @@ export const AddCampaign = () => {
         //start loading effect
         setIsAdding(true)
         // send request add campaign
-        dispatch(requestAddCampaign(campaign))
+        const to_date =  campaign.to_date.toDate()
+        to_date.setHours(23,59,59)
+        dispatch(requestAddCampaign({...campaign, to_date}))
             .then(status => {
                 switch (status) {
                     case 200:
@@ -171,8 +177,8 @@ export const AddCampaign = () => {
                     >
                         <Input.TextArea rows={3} name="description" onChange={onChangeCampaign} value={campaign.description} />
                     </Form.Item>
-                    <Form.Item label="From date - To date"
-                        help={hasError.from_to && "From date, to date must be not null"}
+                    <Form.Item label="Start - End"
+                        help={hasError.from_to && "Start date, End date must be not null"}
                         validateStatus={hasError.from_to ? 'error' : 'success'}
                     >
                         <DatePicker.RangePicker
