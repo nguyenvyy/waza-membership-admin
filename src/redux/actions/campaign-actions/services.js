@@ -5,6 +5,7 @@ export const getFullCampaignListAPI = (token) => Axios({
     method: 'GET',
     url: `${serverURL}/campaigns`,
     responseType: 'json',
+    timeout: 30000,
     headers: {
         'Authorization': `Bearer ${token}`
     }
@@ -14,6 +15,7 @@ export const getCampaignByIdAPI = (token, _id) => Axios({
     method: 'GET',
     url: `${serverURL}/campaigns`,
     responseType: 'json',
+    timeout: 30000,
     headers: {
         'Authorization': `Bearer ${token}`
     },

@@ -9,6 +9,7 @@ export const loginRequest = user => Axios({
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
     },
+    timeout: 30000,
     data: user
 })
 
@@ -16,6 +17,7 @@ export const logoutRequest = token => Axios({
     method: 'POST',
     url: `${serverURL}/admins/logout`,
     responseType: 'json',
+    timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
