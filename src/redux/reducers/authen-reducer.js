@@ -2,7 +2,7 @@ import { LOGIN, AUTHENTICATION_SUCCEEDED, STOP_LOGIN, LOGOUT } from "../actions/
 
 const initState = {
     info: null,
-    isLoggedIn: false,
+    isLoggedIn: true,
     isLoadingUser: false,
 }
 
