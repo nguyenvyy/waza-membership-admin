@@ -95,7 +95,7 @@ const ManageVoucher = () => {
                 if(date >= moment(record.from_date) && date <= moment(record.to_date)) {
                     return <div className="action-acvoucher">
                         <p className="text" onClick={() => message.error('Can not edited active voucher')}>Edit</p>
-                        <p className="text" onClick={() => message.error('Can not deleted active voucher')}>deleted</p>
+                        <p className="text" onClick={() => message.error('Can not deleted active voucher')}>Delete</p>
                     </div>
                 }
                 else {
