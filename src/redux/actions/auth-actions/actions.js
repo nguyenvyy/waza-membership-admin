@@ -1,41 +1,20 @@
-import { LOGIN, AUTHENTICATION_SUCCEEDED, STOP_LOGIN, LOGOUT } from "./types";
-import { loginRequest, logoutRequest } from "./services";
+import { SEND_REQUEST_LOGIN, AUTHENTICATION_SUCCEEDED, STOP_REQUEST_LOGIN, LOGOUT } from "./types";
+import { loginAPI } from "./services";
 
-export const login = () => ({ type: LOGIN })
+export const sendLoginRequest = () => ({ type: SEND_REQUEST_LOGIN })
 export const saveUser = user => ({ type: AUTHENTICATION_SUCCEEDED, user })
-export const stopLogin = () => ({ type: STOP_LOGIN })
+export const stopLoginRequest = () => ({ type: STOP_REQUEST_LOGIN })
 export const logout = () => ({ type: LOGOUT })
 
-export const requestLogin = user => dispatch => {
-    dispatch(login())
-    return loginRequest(user)
-        .then(res => {
-            dispatch(stopLogin())
-            dispatch(saveUser(res.data))
-            return res.status
-        })
-        .catch(err => {
-            dispatch(stopLogin())
-            if (err.response !== undefined) {
-                return err.response.status
-            }
-            return undefined
-        })
+// login action
+export const requestLogin = user => async dispatch => {
+    dispatch(sendLoginRequest())
+    const userRes = await loginAPI(user)
+    dispatch(stopLoginRequest())
+    if(userRes === 400) {
+        return userRes
+    }
+    dispatch(saveUser(userRes))
+    return 200;
 }
 
-export const requestLogout = () => (dispatch, getState) => {
-    const user = getState().user.info;
-    const token = user && user.token
-    return logoutRequest(token)
-        .then(res => {
-            dispatch(logout())
-            return res.status
-        })
-        .catch(err => {
-            dispatch(logout())
-            if (err.response !== undefined) {
-                return err.response.status
-            }
-            return undefined
-        })
-}
