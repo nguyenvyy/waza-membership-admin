@@ -21,6 +21,7 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
     // handle policy
     const dispatch = useDispatch()
     const policies = useSelector(state => getActivePolicySelector(state.policy.combo))
+    const vouchers = useSelector(state => state.voucherx.items)
     useEffect(() => {
         if (policies.length === 0)
             dispatch(fetchFullComboPolicy())
@@ -313,17 +314,29 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                 const from_date = new Date()
                 let to_date = moment(from_date).add(1, 'month').toDate()
                 to_date.setHours(23, 59, 59)
-                const res = await createVoucherToAPI({ ...autoVoucher, to_date, from_date })
-                if (res.data !== undefined) {
-                    const newVoucher = res.data
+                let findedVoucher = vouchers.find(voucher => {
+                    if( voucher.value === residualValue && 
+                        voucher.subcategory === autoVoucher.subcategory && 
+                        voucher.discount === autoVoucher.discount) {
+                        return true
+                    } else {
+                        return false
+                    }
+                })
+                if(findedVoucher === undefined) {
+                    findedVoucher = await createVoucherToAPI({ ...autoVoucher, to_date, from_date }).then(res => res.data).catch(_ => undefined)
+                }
+                if (findedVoucher !== undefined) {
                     voucher_array.push({
-                        voucher_id: newVoucher._id,
+                        voucher_id: findedVoucher._id,
                         count: 1,
-                        value: newVoucher.value,
-                        category: newVoucher.subcategory,
-                        voucher_name: newVoucher.voucher_name,
-                        discount: newVoucher.discount
+                        value: findedVoucher.value,
+                        category: findedVoucher.subcategory,
+                        voucher_name: findedVoucher.voucher_name,
+                        discount: findedVoucher.discount
                     })
+                } else {
+                    throw new Error()
                 }
             }
             let from_date = new Date(newCombo.from_date)
