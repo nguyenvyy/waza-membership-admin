@@ -1,4 +1,4 @@
-import { LOGIN, AUTHENTICATION_SUCCEEDED, STOP_LOGIN, LOGOUT } from "../actions/auth-actions/types"
+import { SEND_REQUEST_LOGIN, AUTHENTICATION_SUCCEEDED, STOP_REQUEST_LOGIN, LOGOUT } from "../actions/auth-actions/types"
 
 const initState = {
     info: null,
@@ -8,7 +8,7 @@ const initState = {
 
 export const authReducer = (state = initState, action) => {
     switch (action.type) {
-        case LOGIN:
+        case SEND_REQUEST_LOGIN:
             return {
                 ...state,
                 isLoadingUser: true
@@ -22,7 +22,7 @@ export const authReducer = (state = initState, action) => {
                 },
                 isLoggedIn: true,
             }
-        case STOP_LOGIN:
+        case STOP_REQUEST_LOGIN:
             return {
                 ...state,
                 isLoadingUser: false

@@ -4,7 +4,6 @@ import DetailCombo from '../../components/Combo/DetailCombo/DetailCombo'
 import { fetchVouchers } from '../actions/voucherx-actions/actions'
 
 const mapStateToProps = ({combo, voucherx}, ownProps) => {
-    
     const isMaxPageVoucher = (voucherx.page >= voucherx.maxPage) ? true : false
     return {
         combo: combo.detailCombo, 
