@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Table} from 'antd'
 import { getVoucher } from '../../../redux/actions/voucherx-actions/services'
-import moment from 'moment'
-import { formatOfDateFromDB, dateFormat } from '../../../constant'
+// import moment from 'moment'
+// import { formatOfDateFromDB, dateFormat } from '../../../constant'
 
 const StopVoucher = () => {
     const column = [
@@ -36,18 +36,11 @@ const StopVoucher = () => {
             dataIndex: 'discount'
         },
         {
-            key: 'from_date',
-            title: 'From Date',
-            dataIndex: 'from_date',
+            key: 'times_to_use',
+            title: 'Times to use',
+            dataIndex: 'times_to_use',
             width: 140,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat)
-        },
-        {
-            key: 'to_date',
-            title: 'To Date',
-            dataIndex: 'to_date',
-            width: 140,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat)
+            sorter: (a, b) => a.value - b.value,
         },
         {
             key: 'subcategoty',
@@ -69,14 +62,14 @@ const StopVoucher = () => {
     }, [])
 
 
-    const date = Date.now()
+    // const date = Date.now()
     const fetchDataActive = () => {
         getVoucher()
             .then(res => {
                 setToggle({
                     ...toggle,
                     dataActiveVoucher: res.data.filter(item => {
-                        return moment(item.to_date, formatOfDateFromDB).valueOf() < date
+                        return item.state === false
                     })
                 })
             }

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Button, Radio, message } from 'antd';
-import { DatePicker, Select } from 'antd';
+import { Select } from 'antd';
 import { Link } from 'react-router-dom'
 import { createVoucherToAPI, getAllRank } from '../../../redux/actions/voucherx-actions/services'
-import moment from 'moment';
-import { formatOfDateFromDB, dateFormat } from '../../../constant/index'
 
 const Option = Select.Option;
 const CreateVoucher = () => {
@@ -16,8 +14,8 @@ const CreateVoucher = () => {
             description: '',
             discount: 0,
             value: 0,
-            from_date: null,
-            to_date: null,
+            from_date: '1/1/2050',
+            to_date: '1/1/2050',
             state: true,
             category: 'gift',
             subcategory: 'food',
@@ -35,9 +33,10 @@ const CreateVoucher = () => {
             description: toggle.dataCreate.description && toggle.dataCreate.description.split('').length >= 50 && toggle.dataCreate.voucher_name.split('').length <= 1000,
             discount: toggle.currentType !== 'Value' ?(toggle.dataCreate.discount && toggle.dataCreate.discount > 0 && toggle.dataCreate.discount <= 100) : true ,
             value: toggle.dataCreate.value && toggle.dataCreate.value > 10000,
-            from_date: toggle.dataCreate.from_date && moment(toggle.dataCreate.from_date, formatOfDateFromDB) > date,
-            to_date: toggle.dataCreate.to_date &&  moment(toggle.dataCreate.to_date, formatOfDateFromDB) > moment(toggle.dataCreate.from_date, formatOfDateFromDB)
+            // from_date: toggle.dataCreate.from_date && moment(toggle.dataCreate.from_date, formatOfDateFromDB) > date,
+            // to_date: toggle.dataCreate.to_date &&  moment(toggle.dataCreate.to_date, formatOfDateFromDB) > moment(toggle.dataCreate.from_date, formatOfDateFromDB)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [toggle, date])
 
     const canSave = useMemo(() => {
@@ -86,25 +85,25 @@ const CreateVoucher = () => {
             }
         })
     }
-    const onChangeFromDate = (from) => {
-        setToggle({
-            ...toggle,
-            dataCreate: {
-                ...toggle.dataCreate,
-                from_date:from.format(formatOfDateFromDB)
-            }
-        })
-    }
+    // const onChangeFromDate = (from) => {
+    //     setToggle({
+    //         ...toggle,
+    //         dataCreate: {
+    //             ...toggle.dataCreate,
+    //             from_date:from.format(formatOfDateFromDB)
+    //         }
+    //     })
+    // }
 
-    const onChangeToDate = (to) => {
-        setToggle({
-            ...toggle,
-            dataCreate: {
-                ...toggle.dataCreate,
-                to_date:to.format(formatOfDateFromDB)
-            }
-        })
-    }
+    // const onChangeToDate = (to) => {
+    //     setToggle({
+    //         ...toggle,
+    //         dataCreate: {
+    //             ...toggle.dataCreate,
+    //             to_date:to.format(formatOfDateFromDB)
+    //         }
+    //     })
+    // }
     
     const resetDiscount = () => {
         console.log('run')
@@ -141,7 +140,6 @@ const CreateVoucher = () => {
             })
         })
         .catch(err => {
-            debugger
             if(err.response && err.response.data && err.response.data.code === 11000) {
                 message.error(`${toggle.dataCreate.voucher_name} is existed`)
             }
@@ -193,6 +191,10 @@ const CreateVoucher = () => {
                     </div> : <div></div>}
                     <p className="validate-input"></p>
                     <div className="content-create">
+                        <label>Times to use:</label>
+                        <input onChange={onChangeData} value={toggle.dataCreate.times_to_use} name="times_to_use"></input>
+                    </div>
+                    {/* <div className="content-create">
                         <label>From Date:</label>
                         <DatePicker
                             format={dateFormat}
@@ -208,8 +210,8 @@ const CreateVoucher = () => {
                             onChange={onChangeToDate}
                             value={toggle.dataCreate.to_date === null ? null : moment(toggle.dataCreate.to_date, formatOfDateFromDB)}>
                         </DatePicker>
-                    </div>
-                    {formValid.to_date ?  <p className="validate-input"></p> : <p className="validate-input">To Date should not be null and To Date should not be after From Date</p > }
+                    </div> */}
+                    {/* {formValid.to_date ?  <p className="validate-input"></p> : <p className="validate-input">To Date should not be null and To Date should not be after From Date</p > } */}
                     <div className="content-create">
                         <label>Description:</label>
                         <textarea value={toggle.dataCreate.description} onChange={onChangeData} name="description"></textarea>
@@ -217,10 +219,6 @@ const CreateVoucher = () => {
                     {formValid.description? <p className="validate-input"></p> : <p className="validate-input">Description should not be null and has length between 50 and 1000 characters</p> }
                 </div>
                 <div className="create1">
-                    <div className="content-create">
-                        <label>Status:</label>
-                        <input className="input-read" defaultValue="Chưa đến" readOnly></input>
-                    </div>
                     <p className="validate-input"></p>
                     <div className="content-create">
                         <label>Conditions Type:</label>

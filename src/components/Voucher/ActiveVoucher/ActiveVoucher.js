@@ -2,8 +2,8 @@ import uuid from 'uuid'
 import React, { useState, useEffect } from 'react'
 import { Table, message, Button } from 'antd'
 import { getVoucherActive } from '../../../redux/actions/voucherx-actions/services'
-import moment from 'moment'
-import { formatOfDateFromDB, dateFormat } from '../../../constant'
+// import moment from 'moment'
+// import { formatOfDateFromDB, dateFormat } from '../../../constant'
 import {editVoucherByID} from '../../../redux/actions/voucherx-actions/services'
 import {
     Link
@@ -42,20 +42,11 @@ const ActiveVoucher = () => {
             sorter: (a, b) => a.value - b.value
         },
         {
-            key: 'from_date',
-            title: 'From Date',
-            dataIndex: 'from_date',
+            key: 'times_to_use',
+            title: 'Times to use',
+            dataIndex: 'times_to_use',
             width: 140,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
-            sorter: (a, b) => a.value - b.value
-        },
-        {
-            key: 'to_date',
-            title: 'To Date',
-            dataIndex: 'to_date',
-            width: 140,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat),
-            sorter: (a, b) => a.value - b.value
+            sorter: (a, b) => a.value - b.value,
         },
         {
             key: 'subcategoty',
@@ -75,7 +66,7 @@ const ActiveVoucher = () => {
     ]
 
     const dataStop = {
-        to_date: new Date()
+        state: false
     }
     const stopActive = (id, name) => {
         editVoucherByID(dataStop, id)
