@@ -6,8 +6,8 @@ import { getVoucher, deleteVoucherByID } from '../../../redux/actions/voucherx-a
 import {
     Link
 } from "react-router-dom";
-import moment from 'moment'
-import { formatOfDateFromDB, dateFormat } from '../../../constant'
+// import moment from 'moment'
+// import { formatOfDateFromDB } from '../../../constant'
 
 const { TabPane } = Tabs;
 
@@ -17,9 +17,10 @@ const ManageVoucher = () => {
         dataVoucher: [],
         dataFilter: [],
         currentFilter: "1",
-        modalDelete: false
+        modalDelete: false,
+        currentRadio: ''
     }
-    const date = new Date()
+    // const date = new Date()
     const column = [
         {
             key: 'voucher_name',
@@ -52,38 +53,48 @@ const ManageVoucher = () => {
             sorter: (a, b) => a.value - b.value
         },
         {
-            key: 'from_date',
-            title: 'From Date',
-            dataIndex: 'from_date',
+            key: 'times_to_use',
+            title: 'Times to use',
+            dataIndex: 'times_to_use',
             width: 140,
             sorter: (a, b) => a.value - b.value,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat)
         },
-        {
-            key: 'to_date',
-            title: 'To Date',
-            dataIndex: 'to_date',
-            width: 140,
-            sorter: (a, b) => a.value - b.value,
-            render: date => moment(date, formatOfDateFromDB).format(dateFormat)
-        },
+        
         {
             key: 'subcategoty',
             title: 'Sub Type',
-            dataIndex: 'subcategory'
+            dataIndex: 'subcategory',
+            filters: [
+                {
+                  text: 'Shopping',
+                  value: 'shopping',
+                },
+                {
+                  text: 'Bike',
+                  value: 'bike',
+                },
+                {
+                    text: 'Move',
+                    value: 'move',
+                },
+                {
+                    text: 'Food',
+                    value: 'food',
+                },
+            ],
+            onFilter: (value, record) => {
+                return record.subcategory === value
+            }
         },
         {
             title: 'Status',
             render: (_,record) => {
                 // console.log('aaaaaaaaaa',record.to_date)
-                if(moment(record.to_date, formatOfDateFromDB) <= date) {
-                    return <div className="traffic"><div className="tr-stop"></div>Đã dừng</div>
-                }
-                if(moment(record.from_date) > date){
-                    return <div className="traffic"><div className="tr-nogone"></div>Chưa đến</div>
-                } 
-                if(date >= moment(record.from_date) && date <= moment(record.to_date)) {
+                if(record.state) {
                     return <div className="traffic"><div className="tr-doing"></div>Đang hoạt động</div>
+                }
+                if(!record.state) {
+                    return <div className="traffic"><div className="tr-stop"></div>Đã dừng</div>
                 }
             }
         },
@@ -92,10 +103,11 @@ const ManageVoucher = () => {
             dataIndex: '',
             key: 'x',
             render: (_, record) => {
-                if(date >= moment(record.from_date) && date <= moment(record.to_date)) {
+                if(record.state) {
                     return <div className="action-acvoucher">
                         <p className="text" onClick={() => message.error('Can not edited active voucher')}>Edit</p>
                         <p className="text" onClick={() => message.error('Can not deleted active voucher')}>Delete</p>
+                        <p className="text"><Link to={`/a/voucher/view/${record._id}`}>View</Link></p>
                     </div>
                 }
                 else {
@@ -104,6 +116,7 @@ const ManageVoucher = () => {
                         Edit
                     </Link></p>
                     <p className="text" onClick={() => deleteVoucher(record._id, record.voucher_name)}>Delete</p>
+                    <p className="text"><Link to={`/a/voucher/view/${record._id}`}>View</Link></p>
                 </div>
                 }
             }
@@ -198,7 +211,6 @@ const ManageVoucher = () => {
                     Create Voucher
                 </Link>
             </Button>
-
             <Tabs defaultActiveKey="1" className="data-table" onChange={filterData}>
                 <TabPane tab="Buy" key="1">
                     <Table rowKey={() => uuid()} loading={toggle.dataFilter.length === 0 ? true: false} columns={column} dataSource={toggle.dataFilter} ></Table>
