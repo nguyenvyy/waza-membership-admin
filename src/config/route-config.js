@@ -21,6 +21,9 @@ const ViewVoucher = lazy(() => import('../components/Voucher/ViewVoucher/ViewVou
 // campaign page
 const Campaign = lazy(() => import('../components/Campaign/Campaign'))
 const ManageCampaign = lazy(() => import('../redux/container/ManageCampaignContainer'))
+//report page
+const ReportPage = lazy(() => import('../components/Report/Report'))
+
 export const routes = [
     {
         path: '/',
@@ -110,6 +113,10 @@ export const routes = [
                         component: ManageCampaign
                     }
                 ]
+            },
+            {
+                path: '/a/report/:id',
+                component: ReportPage
             },
         ]
     },

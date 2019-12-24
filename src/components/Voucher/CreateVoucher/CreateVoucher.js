@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { Button, Radio, message } from 'antd';
 import { Select } from 'antd';
 import { Link } from 'react-router-dom'
-import { createVoucherToAPI, getAllRank } from '../../../redux/actions/voucherx-actions/services'
+import { createVoucherToAPI, getAllRank } from '../../../redux/actions/voucherx-actions/services' 
 
 const Option = Select.Option;
 const CreateVoucher = () => {
