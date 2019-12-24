@@ -140,6 +140,7 @@ const DetailCombo = ({
                                     </Button>
                                 </ButtonGroup>
                             </div>
+                            <Link to={`/a/report/${combo._id}`}>Report Combo</Link>
                         </div>
                     )
 
