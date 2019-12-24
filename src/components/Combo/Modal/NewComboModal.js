@@ -14,6 +14,7 @@ import { checkErrorSuccess, calValueTotal, objectConverttoArr } from '../../../u
 import { fetchFullComboPolicy } from '../../../redux/actions/policy-actions/action'
 import { getActivePolicySelector } from '../../../redux/selectors/policy-selector'
 import { createVoucherToAPI } from '../../../redux/actions/voucherx-actions/services'
+import { addVoucher } from '../../../redux/reducers/voucherx-reducer'
 
 
 
@@ -318,13 +319,18 @@ export const NewComboModal = ({ isOpenNewComboModal, handleCloseNewComboModal, a
                     if( voucher.value === residualValue && 
                         voucher.subcategory === autoVoucher.subcategory && 
                         voucher.discount === autoVoucher.discount) {
+                            console.log(true)
                         return true
                     } else {
                         return false
                     }
                 })
                 if(findedVoucher === undefined) {
-                    findedVoucher = await createVoucherToAPI({ ...autoVoucher, to_date, from_date }).then(res => res.data).catch(_ => undefined)
+                    findedVoucher = await createVoucherToAPI({ ...autoVoucher, to_date, from_date }).then(res => {
+                        const voucher = res.data
+                        dispatch(addVoucher(voucher))
+                        return true
+                    }).catch(_ => undefined)
                 }
                 if (findedVoucher !== undefined) {
                     voucher_array.push({

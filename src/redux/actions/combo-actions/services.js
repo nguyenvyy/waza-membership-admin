@@ -77,3 +77,15 @@ export const deleteComboToAPI = (_id, token) => Axios(
         }
     }
 )
+
+export const getQuantitySoldOfComboAPI = comboId => Axios({
+    method: 'GET',
+    responseType: "json",
+        url: `${serverURL}/report/combo/number-of-sold-combos/${comboId}`,
+        timeout: 20000,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        }
+}).then(res => res.data.all)
+.catch(_ => null)

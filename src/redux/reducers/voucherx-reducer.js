@@ -8,6 +8,7 @@ const initStateVoucher = {
     page: -1,
     maxPage: 0
 }
+export const addVoucher = voucher => ({type: RECEIVE_EXTRA_VOUCHER, voucher}) 
 
 
 export const voucherxReducer = (state = initStateVoucher, action) => {
@@ -28,7 +29,7 @@ export const voucherxReducer = (state = initStateVoucher, action) => {
             return {
                 ...state,
                 isFetching: false,
-                items: [...state.items, ...action.vouchers],
+                items: [...state.items, action.voucher],
                 lastUpdated: action.receivedAt
             }
         case RECEIVE_DETAIL_VOUCHER: 
