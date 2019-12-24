@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
-import {comboSalesDaily, comboSalesMonthly, comboSalesYearly, comboRevenueDaily, comboRevenueMonthly, comboRevenueYearly} from '../../redux/actions/report-actions/service'
+import React, { useState, useEffect} from 'react'
+import {getNumberSoldCombo, comboSalesDaily, comboSalesMonthly, comboSalesYearly, comboRevenueDaily, comboRevenueMonthly, comboRevenueYearly} from '../../redux/actions/report-actions/service'
 import {DatePicker} from 'antd'
 import moment from 'moment'
 import { formatOfDateFromDB, dateFormat } from '../../constant'
 const ReportPage = ({match, history}) => {
     const intitalState = {
+        numberSoldCombo: '',
         comboSalesDaily: [],
         comboSalesMonthly: [],
         comboSalesYearly: [],
@@ -22,6 +23,15 @@ const ReportPage = ({match, history}) => {
     const [toggle, setToggle] = useState(intitalState)
     const comboId = match.params.id
 
+    useEffect(()=> {
+        getNumberSoldCombo (comboId)
+        .then(res => {
+            setToggle({
+                ...toggle,
+                numberSoldCombo: res
+            })
+        })
+    })
     const onChangeFromDateDaily = (from) => {
         setToggle({
             ...toggle,
@@ -125,6 +135,7 @@ const ReportPage = ({match, history}) => {
     }
     return <div>
         <h1 className="title-voucher">Report Page</h1>
+        <p>Số lượng bán combo: {toggle.numberSoldCombo.all}</p>
         <h1>Report Daily</h1>
             <DatePicker
                 format={dateFormat}

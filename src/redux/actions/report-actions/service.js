@@ -1,5 +1,21 @@
 import Axios from "axios"
 import { serverURL } from "../../../constant"
+
+export const getNumberSoldCombo = (id, token) => Axios(
+    {
+        method: 'GET',
+        responseType: "json",
+        url: `${serverURL}/report/combo/number-of-sold-combos/${id}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Authorization': `Bearer ${token}`
+        }
+    }
+).then(res => {
+    return res.data
+})
+
 export const comboSalesDaily = (comboId,start,end, token) => Axios(
     {
         method: 'GET',
