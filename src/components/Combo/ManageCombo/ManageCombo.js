@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import './ManageCombo.scss'
 import { Header } from '../Header/Header'
-import { Button, Divider, Table, message, Badge, Form, Input } from 'antd'
+import { Button, Divider, Table, message, Badge, Form, Input, Tag, Icon } from 'antd'
 import { NewComboModal } from '../Modal/NewComboModal';
 import { formatVND, debounce } from '../../../utils'
 import { dateFormat, limitDelete } from '../../../constant'
@@ -13,11 +13,12 @@ import VouchersShort from '../VouchersInCombo/VouchersShort'
 import VouchersDetail from '../VouchersInCombo/VouchersDetail'
 import { checkStatusCombo } from '../../../utils/combo'
 import { comboStatus } from '../../../constant/combo'
+import { getQuantitySoldOfComboAPI } from '../../../redux/actions/combo-actions/services'
 
 const ManageCombo = ({
     combos, isFetchingCombo, isMaxPageCombo,
     receiveDetailCombo, fetchCombos, addPostCombo, stopPatchCombo, deletePatchCombo,
-    isFetchingVoucher, isMaxPageVoucher, fetchVouchers
+    isFetchingVoucher, fetchVouchers
 }) => {
     useEffect(() => {
         fetchVouchers({ page: 0, limit: 9999 });
@@ -127,13 +128,41 @@ const ManageCombo = ({
             }
         })
     }
-
+    const [currPage, setCurrPage] = useState(1)
+    const [quantitySolds, setQuantitySolds] = useState(null)
+    let timeout
+    useEffect(() => {
+        if (currPage === 1 && displayCombos.length > 0) {
+            const start = currPage * 10 - 10
+            const end = currPage * 10
+            let currCombosID = displayCombos.slice(start, end)
+            currCombosID = currCombosID.map(combo => combo._id)
+            setQuantitySolds(null)
+            Promise.all(currCombosID.map(id => getQuantitySoldOfComboAPI(id))).then(res => {
+                setQuantitySolds(res)
+            })
+        }
+    }, [currPage, displayCombos])
+    const onChangeTable = ({ current, pageSize }) => {
+        setCurrPage(current)
+        clearTimeout(timeout)
+        const start = current * pageSize - pageSize
+        const end = current * pageSize
+        let currCombosID = displayCombos.slice(start, end)
+        currCombosID = currCombosID.map(combo => combo._id)
+        setQuantitySolds(null)
+        timeout = setTimeout(() => {
+            Promise.all(currCombosID.map(id => getQuantitySoldOfComboAPI(id))).then(res => {
+                setQuantitySolds(res)
+            })
+        }, 1000);
+    }
 
     // config combos table
     const tableConfig = {
-        pagination: { position: 'bottom' },
+        pagination: { position: 'bottom', currPage },
         size: 'small',
-        scroll: { y: 500 },
+        scroll: { y: 450 },
         expandedRowRender: record => <VouchersDetail isFetchingVoucher={isFetchingVoucher} voucher_array={record.voucher_array} />,
         rowKey: () => uuid()
     }
@@ -210,6 +239,13 @@ const ManageCombo = ({
             width: 120
         },
         {
+            key: 'quantitySold',
+            title: 'Quantity sold',
+            align: 'center',
+            render: (_, record, index) => quantitySolds === null ? <Tag color="blue">laoding...</Tag> : quantitySolds[index],
+            width: 120
+        },
+        {
             key: 'action',
             title: 'Action',
             render: record => {
@@ -236,6 +272,12 @@ const ManageCombo = ({
             width: 200
         }
     ]
+
+    const reload = () => { 
+        if(isFetchingCombo === false) {
+            fetchCombos({ page: 0, limit: 9999 })
+        }
+    }
     return (
         <div className="detail-combo">
             <Header title="Manage Combos" />
@@ -251,6 +293,7 @@ const ManageCombo = ({
                         </Form.Item>
                     </Form>
                     <Button onClick={handleOpenNewComboModal}>Add Combo</Button>
+                    <Button disabled={isFetchingCombo} onClick={reload}><Icon type="reload" /></Button>
                 </div>
                 <NewComboModal addPostCombo={addPostCombo} isOpenNewComboModal={isOpenNewComboModal} handleCloseNewComboModal={handleCloseNewComboModal} />
                 <Table
@@ -258,6 +301,7 @@ const ManageCombo = ({
                     {...tableConfig}
                     dataSource={(displayCombos.length > 0 ? displayCombos : null)}
                     columns={columns}
+                    onChange={onChangeTable}
                 />
             </div>
 

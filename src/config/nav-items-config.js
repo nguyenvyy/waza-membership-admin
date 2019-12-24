@@ -59,12 +59,5 @@ export const navItems = [
         Component: MenuItem,
         to: '/a/report',
         CollapsedIcon: LetterIcon
-    },
-    {
-        title: 'Account',
-        shortHand: 'A',
-        Component: MenuItem,
-        to: '/a/account',
-        CollapsedIcon: LetterIcon
     }
 ]

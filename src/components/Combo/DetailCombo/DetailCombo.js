@@ -15,6 +15,7 @@ import { useState } from 'react'
 import { getComboPolicyByIdAPI } from '../../../redux/actions/policy-actions/service'
 import { formatVND } from '../../../utils'
 import { Link } from 'react-router-dom'
+import { getQuantitySoldOfComboAPI } from '../../../redux/actions/combo-actions/services'
 
 
 
@@ -34,6 +35,14 @@ const DetailCombo = ({
             })
         }
     }, [policy_id])
+    const [quantitySold, setQuantitySold] = useState(null)
+    useEffect(() => {
+        if (_id !== undefined) {
+            getQuantitySoldOfComboAPI(_id).then(res => {
+                setQuantitySold(res)
+            })
+        }
+    }, [_id])
     const goBack = () => history.goBack()
     const goEditCombo = () => history.push(`/a/combo/edit/${_id}`)
     useEffect(() => {
@@ -114,7 +123,9 @@ const DetailCombo = ({
                                             {description}
                                         </p>
                                     </Descriptions.Item>
-
+                                    <Descriptions.Item label="Quantity sold" span={3}>
+                                        {quantitySold !== null ? quantitySold : <Tag color="blue">loading...</Tag>}
+                                    </Descriptions.Item>
                                 </Descriptions>
                             </div>
                             <div className="panel d-flex-center">
