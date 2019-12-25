@@ -190,10 +190,10 @@ const CreateVoucher = () => {
                         </Select>
                     </div> : <div></div>}
                     <p className="validate-input"></p>
-                    <div className="content-create">
+                    {toggle.currentButton === 'gift' && <div className="content-create">
                         <label>Times to use:</label>
                         <input onChange={onChangeData} value={toggle.dataCreate.times_to_use} name="times_to_use"></input>
-                    </div>
+                    </div>}
                     {/* <div className="content-create">
                         <label>From Date:</label>
                         <DatePicker
