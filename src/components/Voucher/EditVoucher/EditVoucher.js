@@ -175,10 +175,10 @@ const EditVoucher = ({match, history}) => {
                             <Option value={3}>Bạch Kim</Option>
                         </Select>
                     </div> : <div></div>}
-                    <div className="content-create">
+                    {toggle.currentButton === 'gift' && <div className="content-create">
                         <label>Times to use:</label>
                         <input value={toggle.dataCreate.times_to_use} onChange={onChangeData} name="times_to_use"></input>
-                    </div>
+                    </div>}
                     {/* <div className="content-create">
                         <label>From Date:</label>
                         <DatePicker
