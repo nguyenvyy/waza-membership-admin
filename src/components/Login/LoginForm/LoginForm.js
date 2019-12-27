@@ -12,8 +12,8 @@ export const LoginForm = () => {
     const isLogging = useSelector(state => state.user.isLoadingUser)
     const dispath = useDispatch()
     const [user, setUser] = useState({
-        username: '',
-        password: ''
+        username: 'nguyenvy',
+        password: 'Vy@123'
     })
     useEffect(() => {
         const user = localStorage.getItem('user')

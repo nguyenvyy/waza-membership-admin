@@ -37,6 +37,12 @@ export const routes = [
         customRoute: PrivateRoute,
         routes: [
             {
+                path: '/a',
+                exact: true,
+                to: '/a/combo',
+                customRoute: Redirect
+            },
+            {
                 path: '/a/combo',
                 component: Combo,
                 routes: [
