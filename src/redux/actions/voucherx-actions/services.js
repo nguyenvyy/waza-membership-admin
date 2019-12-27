@@ -21,7 +21,7 @@ export const getVouchersGiftAPI = (params, token) => Axios(
     {
         method: 'GET',
         responseType: "json",
-        url: `${serverURL}/vouchers?search=category:gift`,
+        url: `${serverURL}/vouchers?search=category:gift%state:true`,
         timeout: 30000,
         headers: {
             'Content-Type': 'application/json',
@@ -136,5 +136,15 @@ export const getAllRank = (token) => Axios(
     }
 )
 
-
+export const getNumberOfUsedVoucher = voucherId => Axios({
+    method: 'GET',
+    responseType: "json",
+        url: `${serverURL}/report/voucher/number-of-used-vouchers/all/${voucherId}`,
+        timeout: 20000,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        }
+}).then(res => res.data.all)
+.catch(_ => null)
 

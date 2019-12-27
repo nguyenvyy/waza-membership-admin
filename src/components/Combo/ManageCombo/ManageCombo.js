@@ -139,11 +139,13 @@ const ManageCombo = ({
             currCombosID = currCombosID.map(combo => combo._id)
             setQuantitySolds(null)
             Promise.all(currCombosID.map(id => getQuantitySoldOfComboAPI(id))).then(res => {
+                if(res[0] === null) res = null
                 setQuantitySolds(res)
             })
         }
     }, [currPage, displayCombos])
     const onChangeTable = ({ current, pageSize }) => {
+        if(current === 1) return
         setCurrPage(current)
         clearTimeout(timeout)
         const start = current * pageSize - pageSize
@@ -153,6 +155,7 @@ const ManageCombo = ({
         setQuantitySolds(null)
         timeout = setTimeout(() => {
             Promise.all(currCombosID.map(id => getQuantitySoldOfComboAPI(id))).then(res => {
+                if(res[0] === null) res = null
                 setQuantitySolds(res)
             })
         }, 1000);

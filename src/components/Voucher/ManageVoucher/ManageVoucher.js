@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import uuid from 'uuid'
-import { Tabs, Button, Table, message } from 'antd';
+import { Tabs, Button, Table, message, Tag } from 'antd';
 import './ManageVoucher.scss'
-import { getVoucher, deleteVoucherByID } from '../../../redux/actions/voucherx-actions/services'
+import { getVoucher, deleteVoucherByID, getNumberOfUsedVoucher } from '../../../redux/actions/voucherx-actions/services'
 import {
     Link
 } from "react-router-dom";
@@ -59,19 +59,19 @@ const ManageVoucher = () => {
             width: 140,
             sorter: (a, b) => a.value - b.value,
         },
-        
+
         {
             key: 'subcategoty',
             title: 'Sub Type',
             dataIndex: 'subcategory',
             filters: [
                 {
-                  text: 'Shopping',
-                  value: 'shopping',
+                    text: 'Shopping',
+                    value: 'shopping',
                 },
                 {
-                  text: 'Bike',
-                  value: 'bike',
+                    text: 'Bike',
+                    value: 'bike',
                 },
                 {
                     text: 'Move',
@@ -88,12 +88,12 @@ const ManageVoucher = () => {
         },
         {
             title: 'Status',
-            render: (_,record) => {
+            render: (_, record) => {
                 // console.log('aaaaaaaaaa',record.to_date)
-                if(record.state) {
+                if (record.state) {
                     return <div className="traffic"><div className="tr-doing"></div>Đang hoạt động</div>
                 }
-                if(!record.state) {
+                if (!record.state) {
                     return <div className="traffic"><div className="tr-stop"></div>Đã dừng</div>
                 }
             }
@@ -103,7 +103,7 @@ const ManageVoucher = () => {
             dataIndex: '',
             key: 'x',
             render: (_, record) => {
-                if(record.state) {
+                if (record.state) {
                     return <div className="action-acvoucher">
                         <p className="text" onClick={() => message.error('Can not edited active voucher')}>Edit</p>
                         <p className="text" onClick={() => message.error('Can not deleted active voucher')}>Delete</p>
@@ -112,12 +112,12 @@ const ManageVoucher = () => {
                 }
                 else {
                     return <div className="action-acvoucher">
-                    <p className="text"><Link to={`/a/voucher/edit/${record._id}`}>
-                        Edit
+                        <p className="text"><Link to={`/a/voucher/edit/${record._id}`}>
+                            Edit
                     </Link></p>
-                    <p className="text" onClick={() => deleteVoucher(record._id, record.voucher_name)}>Delete</p>
-                    <p className="text"><Link to={`/a/voucher/view/${record._id}`}>View</Link></p>
-                </div>
+                        <p className="text" onClick={() => deleteVoucher(record._id, record.voucher_name)}>Delete</p>
+                        <p className="text"><Link to={`/a/voucher/view/${record._id}`}>View</Link></p>
+                    </div>
                 }
             }
         }
@@ -127,21 +127,21 @@ const ManageVoucher = () => {
         deleteVoucherByID(id)
             .then(() => {
                 message.success(`${name} deleted`)
-                if(toggle.currentFilter === "1"){
+                if (toggle.currentFilter === "1") {
                     fetchData()
                 }
-                
-                if(toggle.currentFilter === "2") {
+
+                if (toggle.currentFilter === "2") {
                     fetchDataGift()
                 }
             })
     }
 
     const [toggle, setToggle] = useState(intitalState)
-    
+
     useEffect(() => {
         fetchData()
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const fetchData = () => {
@@ -179,7 +179,7 @@ const ManageVoucher = () => {
                 }))
             })
     }
-    
+
 
     const filterData = (key) => {
         if (key === "1") {
@@ -202,10 +202,52 @@ const ManageVoucher = () => {
         }
     }
 
+    const [currPage, setCurrPage] = useState(1)
+
+    const [numberOfUsedVouchers, setNumberOfUsedVouchers] = useState(null)
+    const configColumn = {
+        key: 'numberOfUsedVoucher',
+        title: 'Number of used vouchers',
+        align: 'center',
+        render: (_, record, index) => numberOfUsedVouchers === null ? <Tag color="blue">laoding...</Tag> : numberOfUsedVouchers[index],
+        width: 120
+    }
+    let timeout
+    useEffect(() => {
+        if (currPage === 1 && toggle.dataFilter.length > 0) {
+            const start = currPage * 10 - 10
+            const end = currPage * 10
+            let currVoucherID = toggle.dataFilter.slice(start, end)
+            currVoucherID = currVoucherID.map(voucher => voucher._id)
+            console.log(toggle.dataFilter)
+            setNumberOfUsedVouchers(null)
+            Promise.all(currVoucherID.map(id => getNumberOfUsedVoucher(id))).then(res => {
+                if(res[0] === null) res = null
+                setNumberOfUsedVouchers(res)
+            })
+        }
+    }, [currPage, toggle.dataFilter])
+    const onChangeTable = ({ current, pageSize }) => {
+        if (current === 1) return
+        setCurrPage(current)
+        clearTimeout(timeout)
+        const start = current * pageSize - pageSize
+        const end = current * pageSize
+        let currVoucherID = toggle.dataFilter.slice(start, end)
+        currVoucherID = currVoucherID.map(combo => combo._id)
+        setNumberOfUsedVouchers(null)
+        timeout = setTimeout(() => {
+            Promise.all(currVoucherID.map(id => getNumberOfUsedVoucher(id))).then(res => {
+                if(res[0] === null) res = null
+                setNumberOfUsedVouchers(res)
+            })
+        }, 1000);
+    }
+
+
     return (
         <div>
             <h1 className="title-voucher">Manage Voucher</h1>
-
             <Button type="primary" size='large' className="cr-voucher">
                 <Link to='/a/voucher/create'>
                     Create Voucher
@@ -213,10 +255,12 @@ const ManageVoucher = () => {
             </Button>
             <Tabs defaultActiveKey="1" className="data-table" onChange={filterData}>
                 <TabPane tab="Buy" key="1">
-                    <Table rowKey={() => uuid()} loading={toggle.dataFilter.length === 0 ? true: false} columns={column} dataSource={toggle.dataFilter} ></Table>
+                    <Table rowKey={() => uuid()} loading={toggle.dataFilter.length === 0 ? true : false} columns={column} dataSource={toggle.dataFilter} ></Table>
                 </TabPane>
                 <TabPane tab="Gift" key="2">
-                    <Table rowKey={() => uuid()} loading={toggle.dataFilter.length === 0 ? true: false} columns={column} dataSource={toggle.dataFilter} ></Table>
+                    <Table 
+                    onChange={onChangeTable}
+                    rowKey={() => uuid()} loading={toggle.dataFilter.length === 0 ? true : false} columns={[configColumn,...column]} dataSource={toggle.dataFilter} ></Table>
                 </TabPane>
             </Tabs>
         </div>

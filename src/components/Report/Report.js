@@ -26,12 +26,12 @@ const ReportPage = ({match, history}) => {
     useEffect(()=> {
         getNumberSoldCombo (comboId)
         .then(res => {
-            setToggle({
+            setToggle(toggle => ({
                 ...toggle,
                 numberSoldCombo: res
-            })
+            }))
         })
-    })
+    }, [comboId])
     const onChangeFromDateDaily = (from) => {
         setToggle({
             ...toggle,
@@ -53,8 +53,7 @@ const ReportPage = ({match, history}) => {
                 ...toggle,
                 comboSalesDaily: res
             })
-        })
-        
+        }) 
     }
 
     const reportRevenueDaily = () => {
